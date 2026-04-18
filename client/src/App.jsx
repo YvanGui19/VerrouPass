@@ -6,6 +6,7 @@ import VaultList from './components/Vault/VaultList';
 import { Settings } from './pages/Settings';
 import { Goodbye } from './pages/Goodbye';
 import PasswordGenerator from './pages/PasswordGenerator';
+import { CliDownload } from './pages/CliDownload';
 
 // Route protégée
 function PrivateRoute({ children }) {
@@ -81,8 +82,9 @@ function AppRoutes() {
         }
       />
 
-      {/* Route publique pour Goodbye (après suppression de compte) */}
+      {/* Routes publiques */}
       <Route path="/goodbye" element={<Goodbye />} />
+      <Route path="/cli" element={<CliDownload />} />
 
       <Route path="/" element={<Navigate to="/vault" />} />
       <Route path="*" element={<Navigate to="/vault" />} />

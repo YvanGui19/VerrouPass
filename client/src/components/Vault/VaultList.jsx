@@ -66,13 +66,12 @@ export default function VaultList() {
           <h1 className="text-xl font-bold text-slate-800">Vault</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-500">{user?.email}</span>
-            <a
-              href="/downloads/verroupass-cli.zip"
-              download
+            <Link
+              to="/cli"
               className="text-sm text-primary-600 hover:text-primary-700 font-medium"
             >
               Télécharger CLI
-            </a>
+            </Link>
             <Link
               to="/settings"
               className="text-sm text-slate-600 hover:text-slate-800 font-medium"
