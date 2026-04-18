@@ -1,0 +1,168 @@
+=================================================================
+  VÉRIFICATION DE SÉCURITÉ
+=================================================================
+
+  Avant d'utiliser ce CLI, vérifiez l'intégrité du fichier :
+
+  Le hash SHA-256 officiel est disponible sur :
+  https://verroupass.yvangui.fr/download
+
+  Pour vérifier sous Windows (PowerShell) :
+  Get-FileHash verroupass-cli.zip -Algorithm SHA256
+
+  Pour vérifier sous Linux/Mac :
+  sha256sum verroupass-cli.zip
+
+  Si le hash ne correspond pas à celui affiché sur la page web,
+  NE PAS UTILISER LE CLI !
+
+=================================================================
+  VERROUPASS CLI - INSTALLATION SIMPLIFIÉE (Windows)
+=================================================================
+
+  PRÉREQUIS :
+  -----------
+  Node.js version 18.x ou supérieure
+  Télécharger sur : https://nodejs.org/
+
+  INSTALLATION RAPIDE :
+  ---------------------
+  1. Décompressez ce fichier
+  2. Double-cliquez sur "install.bat"
+  3. Suivez les instructions à l'écran
+
+  L'installateur va :
+  - Vérifier Node.js et npm
+  - Installer les dépendances automatiquement
+  - Proposer la création d'un raccourci sur le Bureau (optionnel)
+  - Proposer la création d'un raccourci dans le Menu Démarrer (optionnel)
+  - Proposer une installation globale (optionnel)
+
+  UTILISATION :
+  -------------
+  Après installation, vous pouvez :
+
+  Option 1 : Utiliser le raccourci
+  - Double-cliquez sur "VerrouPass" depuis le Bureau
+  - Ou cherchez "VerrouPass" dans le Menu Démarrer
+
+  Option 2 : Installation globale (si choisie)
+  - Ouvrez un terminal
+  - Utilisez : v-login, v-list, v-get, v-add, v-generate, etc.
+
+  Option 3 : Lancement manuel
+  - Double-cliquez sur "verroupass.bat"
+
+  COMMANDES DISPONIBLES :
+  -----------------------
+  v-login          - Se connecter
+  v-logout         - Se déconnecter
+  v-list           - Lister vos mots de passe
+  v-get            - Récupérer un mot de passe
+  v-add            - Ajouter un nouveau mot de passe
+  v-edit           - Modifier un mot de passe
+  v-delete         - Supprimer un mot de passe
+  v-search         - Rechercher dans vos mots de passe
+  v-generate       - Générer un mot de passe sécurisé
+  v-config         - Configurer l'URL du serveur
+  v-account-delete - Supprimer définitivement votre compte
+
+  DÉSINSTALLATION :
+  -----------------
+  Double-cliquez sur "uninstall.bat"
+
+=================================================================
+  INSTALLATION SIMPLIFIÉE (Linux)
+=================================================================
+
+  PRÉREQUIS :
+  -----------
+  Node.js version 18.x ou supérieure
+
+  Ubuntu/Debian :
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+
+  Fedora/RHEL :
+    sudo dnf install nodejs
+
+  INSTALLATION RAPIDE :
+  ---------------------
+  1. Décompressez ce fichier
+  2. Ouvrez un terminal dans le dossier décompressé
+  3. Rendez le script exécutable :
+     chmod +x install.sh
+  4. Lancez l'installateur :
+     ./install.sh
+  5. Suivez les instructions à l'écran
+
+  L'installateur va :
+  - Vérifier Node.js et npm
+  - Installer les dépendances automatiquement
+  - Proposer la création d'un raccourci sur le Bureau (optionnel)
+  - Proposer la création d'un raccourci dans le menu Applications (optionnel)
+  - Proposer une installation globale (optionnel)
+
+  UTILISATION :
+  -------------
+  Après installation :
+
+  Option 1 : Utiliser le raccourci (si créé)
+  - Bureau : Double-clic sur VerrouPass.desktop
+  - Menu Applications : Cherchez "VerrouPass"
+
+  Option 2 : Installation globale (si choisie)
+  - Ouvrez un terminal
+  - Utilisez : v-login, v-list, v-get, v-add, v-generate, etc.
+
+  Option 3 : Lancement manuel
+  - ./verroupass.sh
+
+  DÉSINSTALLATION :
+  -----------------
+  chmod +x uninstall.sh
+  ./uninstall.sh
+
+=================================================================
+  INSTALLATION SIMPLIFIÉE (macOS)
+=================================================================
+
+  PRÉREQUIS :
+  -----------
+  Node.js version 18.x ou supérieure
+
+  Avec Homebrew :
+    brew install node
+
+  INSTALLATION :
+  --------------
+  1. Décompressez ce fichier
+  2. Ouvrez un terminal dans le dossier décompressé
+  3. Rendez le script exécutable :
+     chmod +x install.sh
+  4. Lancez l'installateur :
+     ./install.sh
+  5. Suivez les instructions
+
+  Note : Les raccourcis .desktop ne sont pas supportés sur macOS.
+  Utilisez ./verroupass.sh ou l'installation globale.
+
+=================================================================
+  INSTALLATION MANUELLE (tous systèmes)
+=================================================================
+
+  1. Décompressez ce fichier
+  2. Ouvrez un terminal dans le dossier décompressé
+  3. Installez les dépendances :
+     npm install
+
+  4. Option A - Installation globale :
+     npm install -g .
+     (ou : sudo npm install -g . si permissions requises)
+     Puis utilisez : v-login, v-list, v-get, etc.
+
+  5. Option B - Lancement local :
+     node src/index.js --help
+
+=================================================================
+ 

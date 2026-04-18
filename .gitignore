@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+*.log
+*.tgz
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PM2
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Backups
+backup/
+backup_*/
+*.bak
+*.backup
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# VPS specific (keep configs but not generated files)
+downloads/
+ecosystem.config.js
+
+# Testing
+coverage/
+.nyc_output/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
