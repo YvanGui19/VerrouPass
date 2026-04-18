@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export function CliDownload() {
-  const [cliInfo, setCli
-
-Info] = useState(null);
+  const [cliInfo, setCliInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
