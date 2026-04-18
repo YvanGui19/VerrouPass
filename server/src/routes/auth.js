@@ -2,7 +2,7 @@ import express from 'express';
   import { User } from '../models/User.js';
   import { generateToken, authenticateToken } from '../middleware/auth.js';
   import { loginLimiter, registerLimiter } from '../middleware/rateLimiter.js';
-  import { pool } from '../db.js';
+  import pool from '../db.js';
 
   const router = express.Router();
 
