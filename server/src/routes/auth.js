@@ -129,8 +129,8 @@ import express from 'express';
         return res.status(400).json({ error: 'Mot de passe requis pour supprimer le compte' });
       }
 
-      // Récupérer l'utilisateur
-      const user = await User.findById(userId);
+      // Récupérer l'utilisateur avec password_hash pour vérification
+      const user = await User.findByEmail(req.user.email);
       if (!user) {
         return res.status(404).json({ error: 'Utilisateur non trouvé' });
       }
