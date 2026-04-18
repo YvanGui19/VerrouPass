@@ -1,18 +1,8 @@
 import { DeleteAccount } from '../components/DeleteAccount';
-import { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 export function Settings() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Récupérer les informations de l'utilisateur depuis le localStorage ou API
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading) {
     return <div className="loading">Chargement...</div>;

@@ -1,7 +1,8 @@
 import express from 'express';
   import { User } from '../models/User.js';
-  import { generateToken } from '../middleware/auth.js';
+  import { generateToken, authenticateToken } from '../middleware/auth.js';
   import { loginLimiter, registerLimiter } from '../middleware/rateLimiter.js';
+  import { pool } from '../db.js';
 
   const router = express.Router();
 
@@ -114,6 +115,42 @@ import express from 'express';
       });
     } catch (err) {
       res.status(401).json({ valid: false });
+    }
+  });
+
+  // DELETE /api/auth/account - Supprimer définitivement le compte
+  router.delete('/account', authenticateToken, async (req, res) => {
+    try {
+      const { passwordHash } = req.body;
+      const userId = req.user.userId;
+
+      // Validation
+      if (!passwordHash) {
+        return res.status(400).json({ error: 'Mot de passe requis pour supprimer le compte' });
+      }
+
+      // Récupérer l'utilisateur
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+
+      // Vérifier le mot de passe
+      const isValid = await User.verifyPassword(user, passwordHash);
+      if (!isValid) {
+        return res.status(401).json({ error: 'Mot de passe incorrect' });
+      }
+
+      // Supprimer toutes les vault_items de l'utilisateur
+      await pool.query('DELETE FROM vault_items WHERE user_id = $1', [userId]);
+
+      // Supprimer l'utilisateur
+      await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+      res.json({ message: 'Compte supprimé avec succès' });
+    } catch (err) {
+      console.error('Erreur suppression compte:', err);
+      res.status(500).json({ error: 'Erreur lors de la suppression du compte' });
     }
   });
 

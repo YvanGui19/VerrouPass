@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deriveKeys, hashForServer } from '../utils/crypto';
+import api from '../utils/api';
 
 export function DeleteAccount({ user }) {
   const [showModal, setShowModal] = useState(false);
@@ -32,20 +33,9 @@ export function DeleteAccount({ user }) {
       const hashedPassword = await hashForServer(authKey);
 
       // Appeler l'API de suppression
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/auth/account`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ passwordHash: hashedPassword })
+      await api.delete('/auth/account', {
+        data: { passwordHash: hashedPassword }
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la suppression');
-      }
 
       // Déconnexion locale
       localStorage.clear();
@@ -54,7 +44,7 @@ export function DeleteAccount({ user }) {
       // Redirection vers page de confirmation
       navigate('/goodbye');
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error || err.message);
     } finally {
       setLoading(false);
     }
