@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 export function CliDownload() {
   const [cliInfo, setCliInfo] = useState(null);
@@ -18,26 +18,31 @@ export function CliDownload() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-navy flex items-center justify-center">
-        <div className="inline-block animate-pulse">
-          <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+      <div className="min-h-screen bg-dark-navy">
+        <Header />
+        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
+          <div className="inline-block animate-pulse">
+            <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-navy px-4 py-8">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="font-display text-5xl sm:text-6xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_20px_rgba(194,254,11,0.5)]">
-            VERROUPASS CLI
-          </h1>
-          <p className="font-mono text-cyan text-sm sm:text-base tracking-wide uppercase">
-            // Interface en ligne de commande pour gérer vos mots de passe
-          </p>
-        </div>
+    <div className="min-h-screen bg-dark-navy">
+      <Header />
+      <div className="px-4 py-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Page Title */}
+          <div className="text-center mb-12">
+            <h1 className="font-display text-5xl sm:text-6xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_20px_rgba(194,254,11,0.5)]">
+              VERROUPASS CLI
+            </h1>
+            <p className="font-mono text-cyan text-sm sm:text-base tracking-wide uppercase">
+              // Interface en ligne de commande pour gérer vos mots de passe
+            </p>
+          </div>
 
         {/* Download Card */}
         <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 mb-6 shadow-glow-lg">
@@ -195,14 +200,6 @@ export function CliDownload() {
             </div>
           </div>
         </div>
-
-        {/* Back Link */}
-        <Link
-          to="/vault"
-          className="inline-block font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide text-sm"
-        >
-          ← Retour à VerrouPass
-        </Link>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useVault } from '../../hooks/useVault';
 import { useAuth } from '../../hooks/useAuth';
+import Header from '../Header';
 import VaultItem from './VaultItem';
 import VaultForm from './VaultForm';
 import UnlockPrompt from './UnlockPrompt';
@@ -60,42 +60,7 @@ export default function VaultList() {
 
   return (
     <div className="min-h-screen bg-dark-navy">
-      {/* Header */}
-      <header className="bg-mid-navy border-b-2 border-lime/20 shadow-glow">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <h1 className="font-display text-3xl font-bold text-lime tracking-wider drop-shadow-[0_0_10px_rgba(194,254,11,0.5)]">
-            VERROUPASS
-          </h1>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
-            <span className="font-mono text-grey">{user?.email}</span>
-            <span className="text-lime/30">|</span>
-            <Link
-              to="/generator"
-              className="font-mono text-lime hover:text-lime-dim transition-colors uppercase tracking-wide"
-            >
-              [ Générateur ]
-            </Link>
-            <Link
-              to="/cli"
-              className="font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide"
-            >
-              [ CLI ]
-            </Link>
-            <Link
-              to="/settings"
-              className="font-mono text-grey hover:text-cyan transition-colors uppercase tracking-wide"
-            >
-              [ Paramètres ]
-            </Link>
-            <button
-              onClick={logout}
-              className="font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wide"
-            >
-              [ Déconnexion ]
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Actions */}

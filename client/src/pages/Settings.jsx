@@ -1,15 +1,18 @@
 import { DeleteAccount } from '../components/DeleteAccount';
 import { useAuth } from '../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 export function Settings() {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-navy flex items-center justify-center">
-        <div className="inline-block animate-pulse">
-          <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+      <div className="min-h-screen bg-dark-navy">
+        <Header />
+        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
+          <div className="inline-block animate-pulse">
+            <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+          </div>
         </div>
       </div>
     );
@@ -17,29 +20,28 @@ export function Settings() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-dark-navy flex items-center justify-center">
-        <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-6 py-4 rounded font-mono text-sm">
-          <span className="text-red-500 font-bold">ERROR:</span> Vous devez être connecté pour accéder aux paramètres.
+      <div className="min-h-screen bg-dark-navy">
+        <Header />
+        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
+          <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-6 py-4 rounded font-mono text-sm">
+            <span className="text-red-500 font-bold">ERROR:</span> Vous devez être connecté pour accéder aux paramètres.
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-navy px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <h1 className="font-display text-4xl font-bold text-lime tracking-wider drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] m-0">
-            [ PARAMÈTRES ]
-          </h1>
-          <Link
-            to="/vault"
-            className="font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide text-sm"
-          >
-            ← Retour à VerrouPass
-          </Link>
-        </div>
+    <div className="min-h-screen bg-dark-navy">
+      <Header />
+      <div className="px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Page Title */}
+          <div className="mb-8">
+            <h1 className="font-display text-4xl font-bold text-lime tracking-wider drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] m-0">
+              [ PARAMÈTRES ]
+            </h1>
+          </div>
 
         {/* Main container */}
         <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg">

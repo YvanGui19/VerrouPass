@@ -30,10 +30,12 @@ function EntropyDemo({ onClose }) {
   // Toggle pour afficher/masquer la section "Comment ça marche"
   const [showHowItWorks, setShowHowItWorks] = useState(false);
 
-  // Fermer avec Échap
+  // Fermer avec Échap (seulement si utilisé en modal)
   useEffect(() => {
+    if (!onClose) return;
+
     const handleKeyDown = (e) => {
-      if (e.key === "Escape" && onClose) {
+      if (e.key === "Escape") {
         onClose();
       }
     };
@@ -86,7 +88,7 @@ function EntropyDemo({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-dark-navy flex flex-col md:flex-row">
+    <div className={`${onClose ? 'fixed inset-0 z-50' : 'h-[calc(100vh-73px)]'} bg-dark-navy flex flex-col md:flex-row`}>
       {/* Section Serpents - En haut sur mobile, à gauche sur desktop */}
       <div className="h-[30vh] md:h-full w-full md:w-[40%] relative border-b md:border-b-0 md:border-r border-lime/20 shrink-0">
         <SymbolSnake ref={snakeRef} primaryColor="#C2FE0B" />
@@ -99,7 +101,7 @@ function EntropyDemo({ onClose }) {
 
       {/* Section Contenu - En bas sur mobile, à droite sur desktop */}
       <div className="flex-1 h-[70vh] md:h-full w-full md:w-[60%] overflow-y-auto p-4 md:p-6">
-        {/* Bouton fermer */}
+        {/* Bouton fermer - seulement si utilisé en modal */}
         {onClose && (
           <button
             onClick={onClose}
@@ -593,10 +595,12 @@ function EntropyDemo({ onClose }) {
             )}
           </div>
 
-          {/* Close hint */}
-          <p className="text-center font-mono text-grey/50 text-xs pb-6">
-            Échap pour fermer
-          </p>
+          {/* Close hint - seulement si utilisé en modal */}
+          {onClose && (
+            <p className="text-center font-mono text-grey/50 text-xs pb-6">
+              Échap pour fermer
+            </p>
+          )}
         </div>
       </div>
     </div>

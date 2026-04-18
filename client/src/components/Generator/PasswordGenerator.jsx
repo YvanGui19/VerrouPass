@@ -67,15 +67,15 @@ export default function PasswordGenerator({ onSelect, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[60]">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+      <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-slate-800">Générateur de mot de passe</h2>
+            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider">[ Générateur ]</h2>
             <button
               onClick={onClose}
-              className="p-1 text-slate-400 hover:text-slate-600 rounded"
+              className="p-1 text-grey hover:text-red-400 rounded transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -87,40 +87,40 @@ export default function PasswordGenerator({ onSelect, onClose }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setMode('password')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+              className={`flex-1 py-2 px-4 rounded font-heading uppercase tracking-wider transition ${
                 mode === 'password'
-                  ? 'bg-primary-100 text-primary-700 border-2 border-primary-500'
-                  : 'bg-slate-100 text-slate-600 border-2 border-transparent'
+                  ? 'bg-lime text-dark-navy border-2 border-lime'
+                  : 'bg-dark-navy text-grey border-2 border-grey/30 hover:border-lime/30'
               }`}
             >
-              Mot de passe
+              Password
             </button>
             <button
               onClick={() => setMode('passphrase')}
-              className={`flex-1 py-2 px-4 rounded-lg font-medium transition ${
+              className={`flex-1 py-2 px-4 rounded font-heading uppercase tracking-wider transition ${
                 mode === 'passphrase'
-                  ? 'bg-primary-100 text-primary-700 border-2 border-primary-500'
-                  : 'bg-slate-100 text-slate-600 border-2 border-transparent'
+                  ? 'bg-lime text-dark-navy border-2 border-lime'
+                  : 'bg-dark-navy text-grey border-2 border-grey/30 hover:border-lime/30'
               }`}
             >
-              Phrase secrète
+              Passphrase
             </button>
           </div>
 
           {/* Generated password */}
-          <div className="bg-slate-100 rounded-lg p-4 mb-4">
+          <div className="bg-dark-navy border-2 border-lime/50 rounded p-4 mb-4">
             <div className="flex items-center justify-between gap-2">
-              <code className="text-lg font-mono text-slate-800 break-all flex-1">
+              <code className="text-lg font-mono text-lime break-all flex-1">
                 {password}
               </code>
               <div className="flex gap-1">
                 <button
                   onClick={copyToClipboard}
-                  className="p-2 text-slate-500 hover:text-primary-600 rounded"
+                  className="p-2 text-cyan hover:text-lime rounded transition-colors"
                   title="Copier"
                 >
                   {copied ? (
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : (
@@ -131,7 +131,7 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                 </button>
                 <button
                   onClick={generate}
-                  className="p-2 text-slate-500 hover:text-primary-600 rounded"
+                  className="p-2 text-cyan hover:text-lime rounded transition-colors"
                   title="Régénérer"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,12 +145,12 @@ export default function PasswordGenerator({ onSelect, onClose }) {
             {strength && (
               <div className="mt-3">
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="text-slate-500">Force du mot de passe</span>
-                  <span style={{ color: strength.color }} className="font-medium">
+                  <span className="text-grey font-mono">Force du mot de passe</span>
+                  <span style={{ color: strength.color }} className="font-mono font-medium">
                     {strength.label}
                   </span>
                 </div>
-                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-mid-navy rounded-full overflow-hidden">
                   <div
                     className="h-full transition-all duration-300"
                     style={{
@@ -159,7 +159,7 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                     }}
                   />
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-grey font-mono mt-1">
                   {entropyPool.calculateEntropy(password)} bits d'entropie
                 </p>
               </div>
@@ -171,7 +171,7 @@ export default function PasswordGenerator({ onSelect, onClose }) {
             <div className="space-y-4 mb-6">
               <div>
                 <label className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-slate-700">Longueur: {length}</span>
+                  <span className="text-sm font-mono text-cyan uppercase tracking-wider">Longueur: {length}</span>
                 </label>
                 <input
                   type="range"
@@ -179,9 +179,9 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                   max="64"
                   value={length}
                   onChange={(e) => setLength(parseInt(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                  className="w-full h-2 bg-dark-navy rounded-lg appearance-none cursor-pointer accent-lime"
                 />
-                <div className="flex justify-between text-xs text-slate-400 mt-1">
+                <div className="flex justify-between text-xs text-grey font-mono mt-1">
                   <span>8</span>
                   <span>64</span>
                 </div>
@@ -199,9 +199,9 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                       type="checkbox"
                       checked={options[key]}
                       onChange={() => handleOptionChange(key)}
-                      className="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500"
+                      className="w-4 h-4 accent-lime rounded border-cyan/30"
                     />
-                    <span className="text-sm text-slate-700">{label}</span>
+                    <span className="text-sm text-grey font-mono">{label}</span>
                   </label>
                 ))}
               </div>
@@ -211,15 +211,15 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                   type="checkbox"
                   checked={options.excludeAmbiguous}
                   onChange={() => handleOptionChange('excludeAmbiguous')}
-                  className="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500"
+                  className="w-4 h-4 accent-lime rounded border-cyan/30"
                 />
-                <span className="text-sm text-slate-700">Exclure les caractères ambigus (0, O, l, 1, I)</span>
+                <span className="text-sm text-grey font-mono">Exclure les caractères ambigus (0, O, l, 1, I)</span>
               </label>
             </div>
           ) : (
             <div className="mb-6">
               <label className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-700">Nombre de mots: {wordCount}</span>
+                <span className="text-sm font-mono text-cyan uppercase tracking-wider">Nombre de mots: {wordCount}</span>
               </label>
               <input
                 type="range"
@@ -227,9 +227,9 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                 max="8"
                 value={wordCount}
                 onChange={(e) => setWordCount(parseInt(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-2 bg-dark-navy rounded-lg appearance-none cursor-pointer accent-lime"
               />
-              <div className="flex justify-between text-xs text-slate-400 mt-1">
+              <div className="flex justify-between text-xs text-grey font-mono mt-1">
                 <span>3 mots</span>
                 <span>8 mots</span>
               </div>
@@ -237,31 +237,31 @@ export default function PasswordGenerator({ onSelect, onClose }) {
           )}
 
           {/* Entropy indicator */}
-          <div className="bg-slate-50 rounded-lg p-3 mb-6">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-dark-navy border border-lime/30 rounded p-3 mb-6">
+            <div className="flex items-center gap-2 text-sm text-grey font-mono">
+              <svg className="w-4 h-4 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               <span>
-                Entropie collectée : {Math.min(entropyLevel, 100)}%
-                {entropyLevel < 20 && ' - Bougez la souris pour plus d\'entropie'}
+                Entropie collectée : <span className="text-lime">{Math.min(entropyLevel, 100)}%</span>
+                {entropyLevel < 20 && <span className="text-cyan"> - Bougez la souris pour plus d\'entropie</span>}
               </span>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition"
+              className="flex-1 py-3 px-4 bg-grey/20 hover:bg-grey/30 text-grey hover:text-white border-2 border-grey/30 font-heading uppercase tracking-wider rounded transition-all"
             >
-              Annuler
+              [ Annuler ]
             </button>
             <button
               onClick={handleSelect}
-              className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition"
+              className="flex-1 bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider py-3 px-4 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)] hover:shadow-[0_0_25px_rgba(194,254,11,0.6)]"
             >
-              Utiliser ce mot de passe
+              [ Utiliser ]
             </button>
           </div>
         </div>
