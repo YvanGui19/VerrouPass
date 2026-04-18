@@ -51,28 +51,42 @@ export function DeleteAccount({ user }) {
   };
 
   return (
-    <div className="delete-account-section">
-      <div className="danger-zone">
-        <h2>Zone dangereuse</h2>
-        <p className="warning-text">
-          La suppression de votre compte est <strong>définitive et irréversible</strong>.
+    <div>
+      {/* Danger Zone */}
+      <div className="border-2 border-red-500/50 rounded-lg p-6 bg-red-900/10">
+        <h2 className="font-heading text-2xl text-red-400 uppercase tracking-wider mb-3 mt-0">
+          [ Zone Dangereuse ]
+        </h2>
+        <p className="font-mono text-red-300 text-sm mb-6 leading-relaxed">
+          <span className="text-red-500 font-bold">⚠ ATTENTION:</span><br />
+          La suppression de votre compte est <strong className="text-red-400">définitive et irréversible</strong>.
         </p>
 
         <button
           onClick={() => setShowModal(true)}
-          className="btn btn-danger"
+          className="bg-red-500 hover:bg-red-600 text-white font-heading text-lg uppercase tracking-wider px-6 py-3 rounded transition-all shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]"
         >
-          Supprimer mon compte
+          [ Supprimer mon compte ]
         </button>
       </div>
 
+      {/* Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>⚠️ ATTENTION: Suppression définitive</h3>
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-mid-navy border-2 border-red-500/50 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_50px_rgba(239,68,68,0.3)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-red-500/30">
+              <h3 className="font-display text-2xl text-red-400 tracking-wider m-0">
+                ⚠️ SUPPRESSION DÉFINITIVE
+              </h3>
               <button
-                className="modal-close"
+                className="text-grey hover:text-red-400 text-4xl leading-none transition-colors w-8 h-8 flex items-center justify-center"
                 onClick={() => setShowModal(false)}
                 disabled={loading}
               >
@@ -80,29 +94,35 @@ export function DeleteAccount({ user }) {
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="warning-box">
-                <p><strong>Cette action va supprimer définitivement:</strong></p>
-                <ul>
+            {/* Modal Body */}
+            <div className="p-6">
+              {/* Warning Box */}
+              <div className="bg-amber-900/20 border-2 border-amber-500/30 rounded-lg p-4 mb-6">
+                <p className="font-mono text-amber-200 text-sm mb-2">
+                  <strong className="text-amber-400">Cette action va supprimer définitivement:</strong>
+                </p>
+                <ul className="font-mono text-amber-300 text-sm list-disc list-inside space-y-1 mb-4">
                   <li>Tous vos mots de passe sauvegardés</li>
                   <li>Toutes vos notes</li>
                   <li>Votre compte utilisateur</li>
                 </ul>
-                <p className="text-muted">
-                  Compte: <strong>{user.email}</strong>
+                <p className="font-mono text-grey text-xs">
+                  Compte: <strong className="text-cyan">{user.email}</strong>
                 </p>
               </div>
 
+              {/* Error */}
               {error && (
-                <div className="alert alert-error">
-                  {error}
+                <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">
+                  <span className="text-red-500 font-bold">ERROR:</span> {error}
                 </div>
               )}
 
-              <form onSubmit={handleDeleteAccount}>
-                <div className="form-group">
-                  <label htmlFor="confirm-text">
-                    Tapez <strong>"SUPPRIMER"</strong> en majuscules pour confirmer:
+              {/* Form */}
+              <form onSubmit={handleDeleteAccount} className="space-y-6">
+                <div>
+                  <label htmlFor="confirm-text" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
+                    Tapez <strong className="text-lime">"SUPPRIMER"</strong> en majuscules pour confirmer:
                   </label>
                   <input
                     id="confirm-text"
@@ -110,14 +130,14 @@ export function DeleteAccount({ user }) {
                     value={confirmText}
                     onChange={(e) => setConfirmText(e.target.value)}
                     placeholder="SUPPRIMER"
-                    className="form-control"
+                    className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey disabled:opacity-50"
                     disabled={loading}
                     autoComplete="off"
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="master-password">
+                <div>
+                  <label htmlFor="master-password" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                     Mot de passe maître:
                   </label>
                   <input
@@ -126,26 +146,27 @@ export function DeleteAccount({ user }) {
                     value={masterPassword}
                     onChange={(e) => setMasterPassword(e.target.value)}
                     placeholder="Votre mot de passe maître"
-                    className="form-control"
+                    className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey disabled:opacity-50"
                     disabled={loading}
                   />
                 </div>
 
-                <div className="modal-actions">
+                {/* Actions */}
+                <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end pt-4">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="btn btn-secondary"
+                    className="bg-grey/20 hover:bg-grey/30 text-grey hover:text-white border-2 border-grey/30 font-heading text-lg uppercase tracking-wider px-6 py-3 rounded transition-all disabled:opacity-50"
                     disabled={loading}
                   >
-                    Annuler
+                    [ Annuler ]
                   </button>
                   <button
                     type="submit"
                     disabled={loading || confirmText !== 'SUPPRIMER' || !masterPassword}
-                    className="btn btn-danger"
+                    className="bg-red-500 hover:bg-red-600 text-white font-heading text-lg uppercase tracking-wider px-6 py-3 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]"
                   >
-                    {loading ? 'Suppression en cours...' : 'Supprimer définitivement'}
+                    {loading ? '[ SUPPRESSION... ]' : '[ Supprimer définitivement ]'}
                   </button>
                 </div>
               </form>
@@ -153,180 +174,6 @@ export function DeleteAccount({ user }) {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .delete-account-section {
-          margin-top: 3rem;
-        }
-
-        .danger-zone {
-          border: 2px solid #dc3545;
-          border-radius: 8px;
-          padding: 1.5rem;
-          background: #fff5f5;
-        }
-
-        .danger-zone h2 {
-          color: #dc3545;
-          margin-top: 0;
-        }
-
-        .warning-text {
-          color: #721c24;
-          margin-bottom: 1rem;
-        }
-
-        .btn {
-          padding: 0.75rem 1.5rem;
-          border: none;
-          border-radius: 4px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-
-        .btn-danger {
-          background: #dc3545;
-          color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-          background: #c82333;
-        }
-
-        .btn-danger:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #5a6268;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-        }
-
-        .modal-content {
-          background: white;
-          border-radius: 8px;
-          max-width: 600px;
-          width: 90%;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem;
-          border-bottom: 1px solid #dee2e6;
-        }
-
-        .modal-header h3 {
-          margin: 0;
-          color: #dc3545;
-        }
-
-        .modal-close {
-          background: none;
-          border: none;
-          font-size: 2rem;
-          cursor: pointer;
-          color: #6c757d;
-          padding: 0;
-          width: 2rem;
-          height: 2rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .modal-close:hover {
-          color: #dc3545;
-        }
-
-        .modal-body {
-          padding: 1.5rem;
-        }
-
-        .warning-box {
-          background: #fff3cd;
-          border: 1px solid #ffc107;
-          border-radius: 4px;
-          padding: 1rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .warning-box ul {
-          margin: 0.5rem 0;
-          padding-left: 1.5rem;
-        }
-
-        .text-muted {
-          color: #6c757d;
-          font-size: 0.9rem;
-        }
-
-        .alert {
-          padding: 0.75rem 1rem;
-          border-radius: 4px;
-          margin-bottom: 1rem;
-        }
-
-        .alert-error {
-          background: #f8d7da;
-          border: 1px solid #f5c6cb;
-          color: #721c24;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 500;
-        }
-
-        .form-control {
-          width: 100%;
-          padding: 0.75rem;
-          border: 1px solid #ced4da;
-          border-radius: 4px;
-          font-size: 1rem;
-        }
-
-        .form-control:focus {
-          outline: none;
-          border-color: #80bdff;
-          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .modal-actions {
-          display: flex;
-          gap: 1rem;
-          justify-content: flex-end;
-          margin-top: 1.5rem;
-        }
-      `}</style>
     </div>
   );
 }

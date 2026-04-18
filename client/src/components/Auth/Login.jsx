@@ -25,25 +25,33 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-dark-navy px-4 py-12">
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-800">Vault</h1>
-          <p className="text-slate-500 mt-2">Gestionnaire de mots de passe sécurisé</p>
+        {/* Logo/Titre */}
+        <div className="text-center mb-12">
+          <h1 className="font-display text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+            VERROUPASS
+          </h1>
+          <p className="font-mono text-cyan text-sm tracking-widest uppercase">
+            // Zero-Knowledge Password Manager
+          </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-          <h2 className="text-xl font-semibold text-slate-800 mb-6">Connexion</h2>
+        {/* Formulaire */}
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 shadow-glow-lg backdrop-blur-sm">
+          <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
+            Connexion
+          </h2>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
-              {error}
+            <div className="bg-red-900/30 border border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">
+              <span className="text-red-500">ERROR:</span> {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="email" className="block text-cyan font-mono text-xs uppercase tracking-wider mb-2">
                 Email
               </label>
               <input
@@ -51,14 +59,14 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="votre@email.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="password" className="block text-cyan font-mono text-xs uppercase tracking-wider mb-2">
                 Mot de passe maître
               </label>
               <input
@@ -67,9 +75,9 @@ export default function Login() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  if (error) setError(''); // Clear error when user starts typing
+                  if (error) setError('');
                 }}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="••••••••••••"
                 required
               />
@@ -78,27 +86,32 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-lime hover:bg-lime-dim text-dark-navy font-heading text-xl uppercase tracking-wider py-3 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(194,254,11,0.4)] hover:shadow-[0_0_30px_rgba(194,254,11,0.6)]"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? '[ CONNEXION... ]' : '[ SE CONNECTER ]'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-slate-500">
+          <div className="mt-8 text-center">
+            <p className="text-grey font-mono text-sm">
               Pas encore de compte ?{' '}
-              <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+              <Link to="/register" className="text-cyan hover:text-lime transition-colors underline">
                 Créer un compte
               </Link>
             </p>
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Vos données sont chiffrées localement.
-          <br />
-          Nous ne pouvons pas voir vos mots de passe.
-        </p>
+        {/* Footer info */}
+        <div className="mt-8 text-center">
+          <p className="font-mono text-xs text-grey/70 leading-relaxed">
+            <span className="text-lime">▸</span> Chiffrement local AES-256
+            <br />
+            <span className="text-lime">▸</span> PBKDF2 600,000 iterations
+            <br />
+            <span className="text-cyan">▸</span> Vos mots de passe restent secrets
+          </p>
+        </div>
       </div>
     </div>
   );

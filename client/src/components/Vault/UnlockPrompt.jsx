@@ -22,30 +22,32 @@ export default function UnlockPrompt() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-dark-navy px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-20 h-20 bg-mid-navy border-2 border-lime/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
+            <svg className="w-10 h-10 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">Coffre verrouillé</h1>
-          <p className="text-slate-500 mt-2">
-            Entrez votre mot de passe maître pour déverrouiller
+          <h1 className="font-display text-4xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+            [ COFFRE VERROUILLÉ ]
+          </h1>
+          <p className="font-mono text-cyan text-sm uppercase tracking-wide">
+            // Entrez votre mot de passe maître pour déverrouiller
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 shadow-glow-lg">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
-              {error}
+            <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">
+              <span className="text-red-500 font-bold">ERROR:</span> {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="password" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Mot de passe maître
               </label>
               <input
@@ -53,7 +55,7 @@ export default function UnlockPrompt() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="••••••••••••"
                 autoFocus
                 required
@@ -63,21 +65,21 @@ export default function UnlockPrompt() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-lime hover:bg-lime-dim text-dark-navy font-heading text-xl uppercase tracking-wider py-3 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(194,254,11,0.4)] hover:shadow-[0_0_30px_rgba(194,254,11,0.6)]"
             >
-              {loading ? 'Déverrouillage...' : 'Déverrouiller'}
+              {loading ? '[ DÉVERROUILLAGE... ]' : '[ DÉVERROUILLER ]'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500">
-              Connecté en tant que {user?.email}
+          <div className="mt-8 text-center border-t border-cyan/10 pt-6">
+            <p className="font-mono text-grey text-sm mb-3">
+              <span className="text-cyan">▸</span> Connecté en tant que <span className="text-white">{user?.email}</span>
             </p>
             <button
               onClick={logout}
-              className="text-sm text-primary-600 hover:text-primary-700 mt-2"
+              className="font-mono text-red-400 hover:text-red-300 text-sm uppercase tracking-wide transition-colors"
             >
-              Se déconnecter
+              [ Se déconnecter ]
             </button>
           </div>
         </div>

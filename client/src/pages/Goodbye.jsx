@@ -14,49 +14,48 @@ export function Goodbye() {
   }, [navigate]);
 
   return (
-    <div className="goodbye-page">
-      <div className="goodbye-container">
-        <div className="icon">✓</div>
-        <h1>Compte supprimé</h1>
-        <p className="message">
-          Votre compte et toutes vos données ont été définitivement supprimés.
-        </p>
-        <p className="sub-message">
-          Merci d'avoir utilisé VerrouPass.
-        </p>
-        <p className="redirect-message">
-          Vous allez être redirigé vers la page d'accueil...
-        </p>
-        <button onClick={() => navigate('/')} className="btn btn-primary">
-          Retour à l'accueil
-        </button>
+    <div className="min-h-screen bg-dark-navy flex items-center justify-center px-4">
+      <div className="max-w-2xl w-full">
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 sm:p-12 text-center shadow-glow-lg">
+          {/* Icon */}
+          <div className="mb-6 animate-[scaleIn_0.5s_ease-out]">
+            <div className="w-24 h-24 bg-lime/10 border-2 border-lime rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-12 h-12 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h1 className="font-display text-4xl sm:text-5xl font-bold text-lime tracking-wider mb-6 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+            [ COMPTE SUPPRIMÉ ]
+          </h1>
+
+          {/* Message */}
+          <p className="font-mono text-grey text-base sm:text-lg mb-4 leading-relaxed">
+            <span className="text-cyan">▸</span> Votre compte et toutes vos données ont été définitivement supprimés.
+          </p>
+
+          <p className="font-mono text-grey/70 text-sm sm:text-base mb-8">
+            Merci d'avoir utilisé <span className="text-lime font-bold">VerrouPass</span>.
+          </p>
+
+          {/* Redirect Message */}
+          <p className="font-mono text-cyan text-sm mb-8 italic animate-pulse">
+            // Redirection automatique vers la page d'accueil...
+          </p>
+
+          {/* Button */}
+          <button
+            onClick={() => navigate('/')}
+            className="bg-lime hover:bg-lime-dim text-dark-navy font-heading text-xl uppercase tracking-wider px-8 py-3 rounded transition-all shadow-[0_0_20px_rgba(194,254,11,0.4)] hover:shadow-[0_0_30px_rgba(194,254,11,0.6)]"
+          >
+            [ Retour à l'accueil ]
+          </button>
+        </div>
       </div>
 
       <style jsx>{`
-        .goodbye-page {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .goodbye-container {
-          background: white;
-          border-radius: 12px;
-          padding: 3rem;
-          max-width: 500px;
-          text-align: center;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .icon {
-          font-size: 4rem;
-          color: #28a745;
-          margin-bottom: 1rem;
-          animation: scaleIn 0.5s ease-out;
-        }
-
         @keyframes scaleIn {
           from {
             transform: scale(0);
@@ -64,50 +63,6 @@ export function Goodbye() {
           to {
             transform: scale(1);
           }
-        }
-
-        h1 {
-          color: #333;
-          margin-bottom: 1rem;
-          font-size: 2rem;
-        }
-
-        .message {
-          color: #666;
-          font-size: 1.1rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .sub-message {
-          color: #999;
-          margin-bottom: 2rem;
-        }
-
-        .redirect-message {
-          color: #999;
-          font-size: 0.9rem;
-          margin-bottom: 1.5rem;
-          font-style: italic;
-        }
-
-        .btn {
-          padding: 0.75rem 2rem;
-          border: none;
-          border-radius: 6px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s;
-        }
-
-        .btn-primary {
-          background: #667eea;
-          color: white;
-        }
-
-        .btn-primary:hover {
-          background: #5568d3;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
       `}</style>
     </div>

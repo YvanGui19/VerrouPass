@@ -59,50 +59,59 @@ export default function VaultList() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-dark-navy">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800">Vault</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-500">{user?.email}</span>
+      <header className="bg-mid-navy border-b-2 border-lime/20 shadow-glow">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h1 className="font-display text-3xl font-bold text-lime tracking-wider drop-shadow-[0_0_10px_rgba(194,254,11,0.5)]">
+            VERROUPASS
+          </h1>
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm">
+            <span className="font-mono text-grey">{user?.email}</span>
+            <span className="text-lime/30">|</span>
+            <Link
+              to="/generator"
+              className="font-mono text-lime hover:text-lime-dim transition-colors uppercase tracking-wide"
+            >
+              [ Générateur ]
+            </Link>
             <Link
               to="/cli"
-              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+              className="font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide"
             >
-              Télécharger CLI
+              [ CLI ]
             </Link>
             <Link
               to="/settings"
-              className="text-sm text-slate-600 hover:text-slate-800 font-medium"
+              className="font-mono text-grey hover:text-cyan transition-colors uppercase tracking-wide"
             >
-              Paramètres
+              [ Paramètres ]
             </Link>
             <button
               onClick={logout}
-              className="text-sm text-slate-500 hover:text-slate-700"
+              className="font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wide"
             >
-              Déconnexion
+              [ Déconnexion ]
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="flex-1">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher..."
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              placeholder="RECHERCHER..."
+              className="w-full px-4 py-3 bg-mid-navy border-2 border-cyan/30 rounded text-white font-mono placeholder-grey focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all"
             />
           </div>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+            className="bg-lime hover:bg-lime-dim text-dark-navy font-heading text-lg uppercase tracking-wider px-6 py-3 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)] hover:shadow-[0_0_25px_rgba(194,254,11,0.6)] flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -113,40 +122,44 @@ export default function VaultList() {
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
-            {error}
+          <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">
+            <span className="text-red-500 font-bold">ERROR:</span> {error}
           </div>
         )}
 
         {/* Loading */}
         {loading && items.length === 0 && (
-          <div className="text-center py-12 text-slate-500">
-            Chargement...
+          <div className="text-center py-20">
+            <div className="inline-block animate-pulse">
+              <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+            </div>
           </div>
         )}
 
         {/* Empty state */}
         {!loading && items.length === 0 && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-20">
+            <div className="w-20 h-20 bg-mid-navy border-2 border-lime/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
+              <svg className="w-10 h-10 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-slate-800 mb-1">Votre coffre est vide</h3>
-            <p className="text-slate-500 mb-4">Ajoutez votre premier mot de passe</p>
+            <h3 className="font-heading text-2xl text-lime uppercase tracking-wider mb-2">
+              Base de données vide
+            </h3>
+            <p className="font-mono text-grey mb-8">// Ajoutez votre premier mot de passe sécurisé</p>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition"
+              className="bg-lime hover:bg-lime-dim text-dark-navy font-heading text-lg uppercase tracking-wider px-8 py-3 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)]"
             >
-              Ajouter une entrée
+              [ Nouvelle Entrée ]
             </button>
           </div>
         )}
 
         {/* Items list */}
         {filteredItems.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {filteredItems.map(item => (
               <VaultItem
                 key={item.id}
@@ -160,8 +173,21 @@ export default function VaultList() {
 
         {/* No results */}
         {searchQuery && filteredItems.length === 0 && items.length > 0 && (
-          <div className="text-center py-12 text-slate-500">
-            Aucun résultat pour "{searchQuery}"
+          <div className="text-center py-20">
+            <p className="font-mono text-grey text-lg">
+              <span className="text-red-400">[ 0 RÉSULTATS ]</span><br />
+              <span className="text-sm">// Aucune correspondance pour "{searchQuery}"</span>
+            </p>
+          </div>
+        )}
+
+        {/* Stats footer */}
+        {items.length > 0 && (
+          <div className="mt-8 pt-4 border-t border-lime/10">
+            <p className="font-mono text-xs text-grey/70 text-center">
+              <span className="text-cyan">{items.length}</span> entrée{items.length > 1 ? 's' : ''} •
+              <span className="text-lime"> {filteredItems.length}</span> affichée{filteredItems.length > 1 ? 's' : ''}
+            </p>
           </div>
         )}
       </main>

@@ -27,14 +27,14 @@ export default function VaultItem({ item, onEdit, onDelete }) {
   const favicon = getFaviconUrl(item.url);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition">
+    <div className="bg-mid-navy border-2 border-cyan/20 rounded-lg p-4 hover:border-cyan/40 hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all">
       <div className="flex items-start gap-3">
         {/* Favicon */}
-        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 bg-dark-navy border border-lime/20 rounded-lg flex items-center justify-center flex-shrink-0">
           {favicon ? (
             <img src={favicon} alt="" className="w-5 h-5" />
           ) : (
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           )}
@@ -43,11 +43,11 @@ export default function VaultItem({ item, onEdit, onDelete }) {
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="font-medium text-slate-800 truncate">{item.name}</h3>
+            <h3 className="font-heading text-lg text-lime uppercase tracking-wider truncate">{item.name}</h3>
             <div className="flex items-center gap-1">
               <button
                 onClick={onEdit}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1.5 text-cyan hover:text-lime rounded transition-colors"
                 title="Modifier"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@ export default function VaultItem({ item, onEdit, onDelete }) {
               </button>
               <button
                 onClick={onDelete}
-                className="p-1.5 text-slate-400 hover:text-red-500 rounded"
+                className="p-1.5 text-grey hover:text-red-400 rounded transition-colors"
                 title="Supprimer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,14 +68,16 @@ export default function VaultItem({ item, onEdit, onDelete }) {
 
           {item.username && (
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-sm text-slate-500 truncate flex-1">{item.username}</span>
+              <span className="text-sm text-grey font-mono truncate flex-1">
+                <span className="text-cyan">▸</span> {item.username}
+              </span>
               <button
                 onClick={() => copyToClipboard(item.username, 'username')}
-                className="p-1 text-slate-400 hover:text-primary-600 rounded"
+                className="p-1 text-cyan hover:text-lime rounded transition-colors"
                 title="Copier l'identifiant"
               >
                 {copied === 'username' ? (
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -89,12 +91,12 @@ export default function VaultItem({ item, onEdit, onDelete }) {
 
           {item.password && (
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-slate-500 font-mono flex-1">
+              <span className="text-sm text-white font-mono flex-1">
                 {showPassword ? item.password : '••••••••••••'}
               </span>
               <button
                 onClick={() => setShowPassword(!showPassword)}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded"
+                className="p-1 text-cyan hover:text-lime rounded transition-colors"
                 title={showPassword ? 'Masquer' : 'Afficher'}
               >
                 {showPassword ? (
@@ -110,11 +112,11 @@ export default function VaultItem({ item, onEdit, onDelete }) {
               </button>
               <button
                 onClick={() => copyToClipboard(item.password, 'password')}
-                className="p-1 text-slate-400 hover:text-primary-600 rounded"
+                className="p-1 text-cyan hover:text-lime rounded transition-colors"
                 title="Copier le mot de passe"
               >
                 {copied === 'password' ? (
-                  <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -131,7 +133,7 @@ export default function VaultItem({ item, onEdit, onDelete }) {
               href={item.url.includes('://') ? item.url : `https://${item.url}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-primary-600 hover:text-primary-700 mt-1 inline-block"
+              className="text-xs text-cyan hover:text-lime mt-2 inline-block font-mono transition-colors"
             >
               {item.url}
             </a>

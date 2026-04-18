@@ -37,16 +37,16 @@ export default function VaultForm({ item, onSubmit, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-slate-800">
-              {item ? 'Modifier l\'entrée' : 'Nouvelle entrée'}
+            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider">
+              [ {item ? 'Modifier l\'entrée' : 'Nouvelle entrée'} ]
             </h2>
             <button
               onClick={onClose}
-              className="p-1 text-slate-400 hover:text-slate-600 rounded"
+              className="p-1 text-grey hover:text-red-400 rounded transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -54,9 +54,9 @@ export default function VaultForm({ item, onSubmit, onClose }) {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="name" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Nom *
               </label>
               <input
@@ -65,14 +65,14 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                 type="text"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="ex: GitHub"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="username" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Identifiant / Email
               </label>
               <input
@@ -81,13 +81,13 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                 type="text"
                 value={formData.username}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="ex: john@email.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="password" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Mot de passe
               </label>
               <div className="relative">
@@ -97,14 +97,15 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 pr-20 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none font-mono"
+                  className="w-full px-4 py-3 pr-24 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                   placeholder="••••••••••••"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded"
+                    className="p-1.5 text-cyan hover:text-lime rounded transition-colors"
+                    title={showPassword ? 'Masquer' : 'Afficher'}
                   >
                     {showPassword ? (
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +121,7 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                   <button
                     type="button"
                     onClick={() => setShowGenerator(true)}
-                    className="p-1.5 text-slate-400 hover:text-primary-600 rounded"
+                    className="p-1.5 text-cyan hover:text-lime rounded transition-colors"
                     title="Générer un mot de passe"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +133,7 @@ export default function VaultForm({ item, onSubmit, onClose }) {
             </div>
 
             <div>
-              <label htmlFor="url" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="url" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 URL
               </label>
               <input
@@ -141,13 +142,13 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                 type="text"
                 value={formData.url}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="ex: github.com"
               />
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-slate-700 mb-1">
+              <label htmlFor="notes" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Notes
               </label>
               <textarea
@@ -156,25 +157,25 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none"
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all resize-none placeholder-grey"
                 placeholder="Notes supplémentaires..."
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-2.5 px-4 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition"
+                className="flex-1 py-3 px-4 bg-grey/20 hover:bg-grey/30 text-grey hover:text-white border-2 border-grey/30 font-heading uppercase tracking-wider rounded transition-all"
               >
-                Annuler
+                [ Annuler ]
               </button>
               <button
                 type="submit"
                 disabled={loading || !formData.name}
-                className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider py-3 px-4 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(194,254,11,0.4)] hover:shadow-[0_0_25px_rgba(194,254,11,0.6)]"
               >
-                {loading ? 'Enregistrement...' : (item ? 'Modifier' : 'Ajouter')}
+                {loading ? '[ Enregistrement... ]' : (item ? '[ Modifier ]' : '[ Ajouter ]')}
               </button>
             </div>
           </form>

@@ -6,158 +6,104 @@ export function Settings() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="loading">Chargement...</div>;
+    return (
+      <div className="min-h-screen bg-dark-navy flex items-center justify-center">
+        <div className="inline-block animate-pulse">
+          <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
-    return <div className="error">Vous devez être connecté pour accéder aux paramètres.</div>;
+    return (
+      <div className="min-h-screen bg-dark-navy flex items-center justify-center">
+        <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-6 py-4 rounded font-mono text-sm">
+          <span className="text-red-500 font-bold">ERROR:</span> Vous devez être connecté pour accéder aux paramètres.
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="settings-page">
-      <div className="settings-container">
-        <div className="flex items-center justify-between mb-6">
-          <h1 style={{ margin: 0, paddingBottom: 0, border: 'none' }}>Paramètres</h1>
-          <Link to="/vault" className="back-link">← Retour au Vault</Link>
+    <div className="min-h-screen bg-dark-navy px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <h1 className="font-display text-4xl font-bold text-lime tracking-wider drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] m-0">
+            [ PARAMÈTRES ]
+          </h1>
+          <Link
+            to="/vault"
+            className="font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide text-sm"
+          >
+            ← Retour à VerrouPass
+          </Link>
         </div>
 
-        <section className="settings-section">
-          <h2>Informations du compte</h2>
-          <div className="info-group">
-            <label>Email:</label>
-            <p>{user.email}</p>
-          </div>
-          <div className="info-group">
-            <label>Compte créé le:</label>
-            <p>{new Date(user.createdAt).toLocaleDateString('fr-FR')}</p>
-          </div>
-        </section>
+        {/* Main container */}
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg">
 
-        <section className="settings-section">
-          <h2>Sécurité</h2>
-          <div className="info-group">
-            <label>Mot de passe maître:</label>
-            <p className="text-muted">
-              Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.
-              Si vous l'oubliez, vous devrez créer un nouveau compte.
-            </p>
-          </div>
-        </section>
+          {/* Informations du compte */}
+          <section className="mb-8">
+            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-4 border-b border-lime/30 pb-2">
+              Informations du compte
+            </h2>
+            <div className="space-y-4">
+              <div className="bg-dark-navy border border-cyan/20 rounded p-4">
+                <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
+                  Email:
+                </label>
+                <p className="font-mono text-white text-sm break-all">{user.email}</p>
+              </div>
+              <div className="bg-dark-navy border border-cyan/20 rounded p-4">
+                <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
+                  Compte créé le:
+                </label>
+                <p className="font-mono text-white text-sm">
+                  {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                </p>
+              </div>
+            </div>
+          </section>
 
-        <section className="settings-section">
-          <h2>Données</h2>
-          <div className="info-group">
-            <p className="text-muted">
-              Toutes vos données sont chiffrées localement avant d'être envoyées au serveur.
-              Le serveur ne peut jamais déchiffrer vos mots de passe (zero-knowledge).
-            </p>
-          </div>
-        </section>
+          {/* Sécurité */}
+          <section className="mb-8">
+            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-4 border-b border-lime/30 pb-2">
+              Sécurité
+            </h2>
+            <div className="bg-dark-navy border border-cyan/20 rounded p-4">
+              <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-3">
+                Mot de passe maître:
+              </label>
+              <p className="font-mono text-grey text-sm leading-relaxed">
+                <span className="text-lime">▸</span> Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.<br />
+                <span className="text-cyan">▸</span> Si vous l'oubliez, vous devrez créer un nouveau compte.
+              </p>
+            </div>
+          </section>
 
-        <hr className="section-divider" />
+          {/* Données */}
+          <section className="mb-8">
+            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-4 border-b border-lime/30 pb-2">
+              Chiffrement des données
+            </h2>
+            <div className="bg-dark-navy border border-cyan/20 rounded p-4">
+              <p className="font-mono text-grey text-sm leading-relaxed">
+                <span className="text-lime">▸</span> Toutes vos données sont chiffrées localement avant d'être envoyées au serveur.<br />
+                <span className="text-cyan">▸</span> Chiffrement AES-256 avec PBKDF2 (600,000 itérations).<br />
+                <span className="text-lime">▸</span> Le serveur ne peut jamais déchiffrer vos mots de passe (zero-knowledge).
+              </p>
+            </div>
+          </section>
 
-        <DeleteAccount user={user} />
+          {/* Divider */}
+          <div className="border-t-2 border-red-500/20 my-8"></div>
+
+          {/* Delete Account */}
+          <DeleteAccount user={user} />
+        </div>
       </div>
-
-      <style jsx>{`
-        .settings-page {
-          min-height: 100vh;
-          background: #f5f7fa;
-          padding: 2rem;
-        }
-
-        .settings-container {
-          max-width: 800px;
-          margin: 0 auto;
-          background: white;
-          border-radius: 12px;
-          padding: 2rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .flex {
-          display: flex;
-        }
-
-        .items-center {
-          align-items: center;
-        }
-
-        .justify-between {
-          justify-content: space-between;
-        }
-
-        .mb-6 {
-          margin-bottom: 1.5rem;
-        }
-
-        h1 {
-          color: #333;
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 2px solid #667eea;
-        }
-
-        .back-link {
-          color: #667eea;
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 500;
-        }
-
-        .back-link:hover {
-          color: #5568d3;
-          text-decoration: underline;
-        }
-
-        .settings-section {
-          margin-bottom: 2rem;
-        }
-
-        .settings-section h2 {
-          color: #555;
-          font-size: 1.3rem;
-          margin-bottom: 1rem;
-        }
-
-        .info-group {
-          margin-bottom: 1rem;
-        }
-
-        .info-group label {
-          display: block;
-          font-weight: 600;
-          color: #333;
-          margin-bottom: 0.25rem;
-        }
-
-        .info-group p {
-          color: #666;
-          margin: 0;
-        }
-
-        .text-muted {
-          color: #999 !important;
-          font-size: 0.9rem;
-        }
-
-        .section-divider {
-          border: none;
-          border-top: 2px solid #e9ecef;
-          margin: 3rem 0;
-        }
-
-        .loading,
-        .error {
-          text-align: center;
-          padding: 3rem;
-          color: #666;
-        }
-
-        .error {
-          color: #dc3545;
-        }
-      `}</style>
     </div>
   );
 }
