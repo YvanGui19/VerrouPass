@@ -202,5 +202,6 @@ export function CliDownload() {
         </div>
       </div>
     </div>
+    </div>
   );
 }
