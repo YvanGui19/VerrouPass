@@ -26,9 +26,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Rediriger vers login seulement si:
+    // - On a une erreur 401
+    // - Ce n'est PAS une requête de login/register (sinon ça reload la page)
+    // - On n'est PAS déjà sur la page de login
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      const isAuthRequest = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+      const isOnLoginPage = window.location.pathname === '/login';
+
+      if (!isAuthRequest && !isOnLoginPage) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
