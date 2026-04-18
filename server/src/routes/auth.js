@@ -3,6 +3,7 @@ import express from 'express';
   import { generateToken, authenticateToken } from '../middleware/auth.js';
   import { loginLimiter, registerLimiter } from '../middleware/rateLimiter.js';
   import pool from '../db.js';
+  import bcrypt from 'bcrypt';
 
   const router = express.Router();
 
@@ -150,10 +151,13 @@ import express from 'express';
       try {
         await client.query('BEGIN');
 
+        // Hash le nouveau mot de passe avec bcrypt (comme à l'inscription)
+        const hashedNewPassword = await bcrypt.hash(newPasswordHash, 12);
+
         // Mettre à jour le mot de passe de l'utilisateur
         await client.query(
           'UPDATE users SET password_hash = $1 WHERE id = $2',
-          [newPasswordHash, userId]
+          [hashedNewPassword, userId]
         );
 
         // Mettre à jour toutes les entrées re-chiffrées
