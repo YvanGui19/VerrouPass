@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { DeleteAccount } from '../components/DeleteAccount';
+import { ChangePassword } from '../components/ChangePassword';
 import { useAuth } from '../hooks/useAuth';
 import Header from '../components/Header';
 
 export function Settings() {
   const { user, loading } = useAuth();
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   if (loading) {
     return (
@@ -74,14 +77,22 @@ export function Settings() {
             <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-4 border-b border-lime/30 pb-2">
               Sécurité
             </h2>
-            <div className="bg-dark-navy border border-cyan/20 rounded p-4">
-              <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-3">
-                Mot de passe maître:
-              </label>
-              <p className="font-mono text-grey text-sm leading-relaxed">
-                <span className="text-lime">▸</span> Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.<br />
-                <span className="text-cyan">▸</span> Si vous l'oubliez, vous devrez créer un nouveau compte.
-              </p>
+            <div className="space-y-4">
+              <div className="bg-dark-navy border border-cyan/20 rounded p-4">
+                <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-3">
+                  Mot de passe maître:
+                </label>
+                <p className="font-mono text-grey text-sm leading-relaxed mb-4">
+                  <span className="text-lime">▸</span> Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.<br />
+                  <span className="text-cyan">▸</span> Si vous l'oubliez, vous devrez créer un nouveau compte.
+                </p>
+                <button
+                  onClick={() => setShowChangePassword(true)}
+                  className="bg-cyan/20 hover:bg-cyan/30 text-cyan border-2 border-cyan/30 hover:border-cyan font-heading uppercase tracking-wider px-4 py-2 rounded transition-all text-sm"
+                >
+                  [ Changer le mot de passe maître ]
+                </button>
+              </div>
             </div>
           </section>
 
@@ -106,6 +117,14 @@ export function Settings() {
           <DeleteAccount user={user} />
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <ChangePassword
+          user={user}
+          onClose={() => setShowChangePassword(false)}
+        />
+      )}
     </div>
     </div>
   );

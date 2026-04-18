@@ -118,6 +118,67 @@ import express from 'express';
     }
   });
 
+  // PUT /api/auth/change-password - Changer le mot de passe maître
+  router.put('/change-password', authenticateToken, async (req, res) => {
+    try {
+      const { oldPasswordHash, newPasswordHash, reencryptedItems } = req.body;
+      const userId = req.user.userId;
+
+      // Validation
+      if (!oldPasswordHash || !newPasswordHash) {
+        return res.status(400).json({ error: 'Ancien et nouveau mot de passe requis' });
+      }
+
+      if (!Array.isArray(reencryptedItems)) {
+        return res.status(400).json({ error: 'reencryptedItems doit être un tableau' });
+      }
+
+      // Récupérer l'utilisateur pour vérification
+      const user = await User.findByEmail(req.user.email);
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+
+      // Vérifier l'ancien mot de passe
+      const isValid = await User.verifyPassword(user, oldPasswordHash);
+      if (!isValid) {
+        return res.status(401).json({ error: 'Ancien mot de passe incorrect' });
+      }
+
+      // Démarrer une transaction
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+
+        // Mettre à jour le mot de passe de l'utilisateur
+        await client.query(
+          'UPDATE users SET password_hash = $1 WHERE id = $2',
+          [newPasswordHash, userId]
+        );
+
+        // Mettre à jour toutes les entrées re-chiffrées
+        for (const item of reencryptedItems) {
+          await client.query(
+            'UPDATE vault_items SET encrypted_data = $1, iv = $2 WHERE id = $3 AND user_id = $4',
+            [item.encryptedData, item.iv, item.id, userId]
+          );
+        }
+
+        await client.query('COMMIT');
+
+        res.json({ message: 'Mot de passe maître changé avec succès' });
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.error('Erreur changement mot de passe:', err);
+      res.status(500).json({ error: 'Erreur lors du changement de mot de passe' });
+    }
+  });
+
   // DELETE /api/auth/account - Supprimer définitivement le compte
   router.delete('/account', authenticateToken, async (req, res) => {
     try {
