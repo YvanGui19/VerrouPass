@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useVault } from '../../hooks/useVault';
 import { useAuth } from '../../hooks/useAuth';
 import VaultItem from './VaultItem';
@@ -65,6 +66,19 @@ export default function VaultList() {
           <h1 className="text-xl font-bold text-slate-800">Vault</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-500">{user?.email}</span>
+            <a
+              href="/downloads/verroupass-cli.zip"
+              download
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+            >
+              Télécharger CLI
+            </a>
+            <Link
+              to="/settings"
+              className="text-sm text-slate-600 hover:text-slate-800 font-medium"
+            >
+              Paramètres
+            </Link>
             <button
               onClick={logout}
               className="text-sm text-slate-500 hover:text-slate-700"
