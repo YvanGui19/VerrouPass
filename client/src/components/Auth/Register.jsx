@@ -40,17 +40,17 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-12">
-      <div className="max-w-md w-full my-auto">
-        {/* Logo/Titre */}
-        <div className="text-center mb-12">
-          <h1 className="font-display text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
-            VERROUPASS
-          </h1>
-          <p className="font-mono text-cyan text-sm tracking-widest uppercase">
-            // Zero-Knowledge Password Manager
-          </p>
-        </div>
+      {/* Logo/Titre - centré */}
+      <div className="text-center mb-12 w-full">
+        <h1 className="font-display text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+          VERROUPASS
+        </h1>
+        <p className="font-mono text-cyan text-sm tracking-widest uppercase">
+          // Zero-Knowledge Password Manager
+        </p>
+      </div>
 
+      <div className="max-w-md w-full">
         {/* Formulaire */}
         <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 shadow-glow-lg backdrop-blur-sm">
           <h2 className="font-heading text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
