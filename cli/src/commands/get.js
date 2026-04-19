@@ -12,7 +12,7 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function getCommand(name, options) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
@@ -43,12 +43,12 @@ export async function getCommand(name, options) {
     }
 
     if (!foundItem) {
-      spinner.fail(chalk.red(`✗ Aucune entrée trouvée pour "${name}"`));
-      console.log(chalk.gray('\nUtilisez'), chalk.cyan('vpass list'), chalk.gray('pour voir toutes les entrées'));
+      spinner.fail(chalk.red(`Aucune entrée trouvée pour "${name}"`));
+      console.log(chalk.gray('\nUtilisez'), chalk.cyan('v-ls'), chalk.gray('pour voir toutes les entrées'));
       process.exit(1);
     }
 
-    spinner.succeed(chalk.green('✓ Entrée trouvée'));
+    spinner.succeed(chalk.green('Entrée trouvée'));
 
     // Afficher les détails
     console.log('\n' + chalk.blue.bold('═'.repeat(60)));
@@ -84,7 +84,7 @@ export async function getCommand(name, options) {
     if (options.copy && decryptedData.password) {
       try {
         await clipboard.write(decryptedData.password);
-        console.log(chalk.green('✓ Mot de passe copié dans le presse-papiers'));
+        console.log(chalk.green('Mot de passe copié dans le presse-papiers'));
         console.log(chalk.yellow('  Il sera automatiquement effacé après 30 secondes'));
 
         // Effacer le presse-papiers après 30 secondes
@@ -99,11 +99,11 @@ export async function getCommand(name, options) {
           }
         }, 30000);
       } catch (error) {
-        console.log(chalk.red('✗ Impossible de copier dans le presse-papiers'));
+        console.log(chalk.red('Impossible de copier dans le presse-papiers'));
       }
     }
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

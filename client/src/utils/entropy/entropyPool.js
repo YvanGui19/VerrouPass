@@ -212,8 +212,38 @@ class EntropyPool {
     if (/[0-9]/.test(password)) charsetSize += 10;
     if (/[^a-zA-Z0-9]/.test(password)) charsetSize += 32;
 
-    const entropy = password.length * Math.log2(charsetSize);
+    const entropy = password.length * Math.log2(charsetSize || 1);
     return Math.round(entropy);
+  }
+
+  /**
+   * Alias pour compatibilité avec l'ancienne API
+   */
+  calculateEntropy(password) {
+    return this.calculatePasswordEntropy(password);
+  }
+
+  /**
+   * Ajoute l'entropie depuis un mouvement de souris
+   */
+  addMouseEntropy(x, y) {
+    const timestamp = performance.now();
+    // Utiliser les coordonnées comme source d'entropie
+    this.addEntropy(x & 0xFF, (x >> 8) & 0xFF, timestamp);
+    this.addEntropy(y & 0xFF, (y >> 8) & 0xFF, timestamp + 0.1);
+  }
+
+  /**
+   * Évalue la force d'un mot de passe
+   */
+  evaluateStrength(password) {
+    const entropy = this.calculateEntropy(password);
+
+    if (entropy >= 80) return { level: 'excellent', label: 'Excellent', color: '#22c55e' };
+    if (entropy >= 60) return { level: 'strong', label: 'Fort', color: '#84cc16' };
+    if (entropy >= 40) return { level: 'medium', label: 'Moyen', color: '#eab308' };
+    if (entropy >= 20) return { level: 'weak', label: 'Faible', color: '#f97316' };
+    return { level: 'very-weak', label: 'Très faible', color: '#ef4444' };
   }
 }
 

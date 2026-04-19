@@ -9,25 +9,18 @@ export function AuthProvider({ children }) {
   const [encKey, setEncKey] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Vérifier le token au chargement
+  // Vérifier le token au chargement (via cookie HttpOnly)
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      authApi.verify()
-        .then(data => {
-          if (data.valid) {
-            setUser(data.user);
-          } else {
-            localStorage.removeItem('token');
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    authApi.verify()
+      .then(data => {
+        if (data.valid) {
+          setUser(data.user);
+        }
+      })
+      .catch(() => {
+        // Cookie invalide ou absent, pas connecté
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const register = async (email, masterPassword) => {
@@ -37,11 +30,9 @@ export function AuthProvider({ children }) {
     // Hasher la clé d'authentification pour l'envoi
     const passwordHash = await hashForServer(authKey);
 
-    // Envoyer au serveur
+    // Envoyer au serveur (le token est maintenant dans un cookie HttpOnly)
     const data = await authApi.register(email, passwordHash);
 
-    // Stocker le token et la clé de chiffrement
-    localStorage.setItem('token', data.token);
     setUser(data.user);
     setEncKey(derivedEncKey);
 
@@ -55,19 +46,21 @@ export function AuthProvider({ children }) {
     // Hasher la clé d'authentification pour l'envoi
     const passwordHash = await hashForServer(authKey);
 
-    // Envoyer au serveur
+    // Envoyer au serveur (le token est maintenant dans un cookie HttpOnly)
     const data = await authApi.login(email, passwordHash);
 
-    // Stocker le token et la clé de chiffrement
-    localStorage.setItem('token', data.token);
     setUser(data.user);
     setEncKey(derivedEncKey);
 
     return data;
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch (err) {
+      // Ignorer les erreurs de déconnexion
+    }
     setUser(null);
     setEncKey(null);
   };

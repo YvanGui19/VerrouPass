@@ -6,7 +6,7 @@ Guide rapide pour installer et utiliser la CLI VerrouPass en 5 minutes.
 
 ```bash
 # 1. Aller dans le dossier CLI
-cd D:\Code\VerrouPass\cli
+cd cli
 
 # 2. Installer les dépendances
 npm install
@@ -15,7 +15,7 @@ npm install
 npm run install-global
 
 # 4. Vérifier l'installation
-vpass --version
+v-man
 ```
 
 ## Première utilisation (3 min)
@@ -23,15 +23,15 @@ vpass --version
 ### 1. Démarrer le serveur (si pas déjà fait)
 
 ```bash
-# Dans un autre terminal
-cd D:\Code\VerrouPass\server
+# Dans un autre terminal, depuis la racine du projet
+cd server
 npm run dev
 ```
 
 ### 2. Se connecter
 
 ```bash
-vpass login
+v-login
 ```
 
 Entrez votre email et mot de passe maître (le même que pour l'interface web).
@@ -40,28 +40,28 @@ Entrez votre email et mot de passe maître (le même que pour l'interface web).
 
 ```bash
 # Lister toutes vos entrées
-vpass list
+v-ls
 
 # Voir une entrée spécifique et copier le mot de passe
-vpass get GitHub -c
+v-cat GitHub -c
 
 # Ajouter une nouvelle entrée
-vpass add
+v-touch
 
 # Rechercher
-vpass search google
+v-grep google
 
 # Générer un mot de passe
-vpass generate -l 20 -c
+v-gen -l 20 -c
 
 # Modifier une entrée
-vpass edit Gmail
+v-nano Gmail
 
 # Supprimer une entrée
-vpass delete "Old Account"
+v-rm "Old Account"
 
 # Se déconnecter
-vpass logout
+v-exit
 ```
 
 ## Exemples pratiques
@@ -70,7 +70,7 @@ vpass logout
 
 ```bash
 # Copie automatique dans le presse-papiers
-vpass get GitHub -c
+v-cat GitHub -c
 
 # Maintenant collez (Ctrl+V) où vous voulez !
 ```
@@ -79,10 +79,10 @@ vpass get GitHub -c
 
 ```bash
 # Générer un mot de passe et le copier
-vpass generate -l 20 -c
+v-gen -l 20 -c
 
 # Ajouter l'entrée (le mot de passe est déjà dans le presse-papiers)
-vpass add -n "NewService" -u "john@example.com"
+v-touch -n "NewService" -u "john@example.com"
 # Puis collez le mot de passe quand demandé
 ```
 
@@ -90,20 +90,20 @@ vpass add -n "NewService" -u "john@example.com"
 
 ```bash
 # 1. Se connecter le matin
-vpass login -e john@example.com
+v-login -e john@example.com
 
 # 2. Voir ce que vous avez
-vpass list --short
+v-ls --short
 
 # 3. Récupérer des mots de passe au besoin
-vpass get Gmail -c
-vpass get GitHub -c
+v-cat Gmail -c
+v-cat GitHub -c
 
 # 4. Ajouter de nouveaux comptes
-vpass add
+v-touch
 
 # 5. Se déconnecter le soir
-vpass logout
+v-exit
 ```
 
 ## Astuces
@@ -114,11 +114,11 @@ Ajoutez ces alias à votre `.bashrc` ou `.zshrc` :
 
 ```bash
 # Alias pour les commandes fréquentes
-alias vpl='vpass list'
-alias vpg='vpass get'
-alias vpa='vpass add'
-alias vps='vpass search'
-alias vpgen='vpass generate -c'
+alias vpl='v-ls'
+alias vpg='v-cat'
+alias vpa='v-touch'
+alias vps='v-grep'
+alias vpgen='v-gen -c'
 ```
 
 Ensuite :
@@ -133,41 +133,41 @@ vpgen                  # Génère et copie un mot de passe
 
 ```bash
 # Trouver toutes les entrées Google
-vpass search google
+v-grep google
 
 # Trouver par identifiant
-vpass search john@gmail.com
+v-grep john@gmail.com
 ```
 
 ### Copie automatique
 
 ```bash
 # Toujours avec -c pour copier automatiquement
-vpass get GitHub -c
-vpass generate -c
+v-cat GitHub -c
+v-gen -c
 ```
 
 ## Commandes essentielles
 
 ```bash
-vpass login              # Se connecter
-vpass list              # Lister
-vpass get <nom> -c      # Récupérer et copier
-vpass add               # Ajouter
-vpass search <query>    # Rechercher
-vpass generate -c       # Générer un mot de passe
-vpass logout            # Se déconnecter
+v-login              # Se connecter
+v-ls                 # Lister
+v-cat <nom> -c       # Récupérer et copier
+v-touch              # Ajouter
+v-grep <query>       # Rechercher
+v-gen -c             # Générer un mot de passe
+v-exit               # Se déconnecter
 ```
 
 ## Aide
 
 ```bash
 # Aide générale
-vpass --help
+v-man
 
 # Aide sur une commande spécifique
-vpass get --help
-vpass generate --help
+v-cat --help
+v-gen --help
 ```
 
 ## Support

@@ -15,8 +15,7 @@ npm run install-global
 ### Vérifier l'installation
 
 ```bash
-vpass --version
-vpass --help
+v-man
 ```
 
 ## Configuration
@@ -25,7 +24,7 @@ vpass --help
 
 Avant d'utiliser la CLI, assurez-vous que :
 1. Le serveur VerrouPass est démarré et accessible
-2. Vous avez créé un compte (via l'interface web ou `vpass register`)
+2. Vous avez créé un compte (via l'interface web ou `v register`)
 
 Par défaut, la CLI se connecte à `http://localhost:3001/api`. Pour changer l'URL du serveur :
 
@@ -38,17 +37,17 @@ Par défaut, la CLI se connecte à `http://localhost:3001/api`. Pour changer l'U
 
 ### Authentification
 
-#### `vpass login`
+#### `v-login`
 
 Se connecter à votre compte VerrouPass.
 
 ```bash
 # Mode interactif
-vpass login
+v-login
 
 # Avec email pré-rempli
-vpass login --email john@example.com
-vpass login -e john@example.com
+v-login --email john@example.com
+v-login -e john@example.com
 ```
 
 **Options :**
@@ -56,7 +55,7 @@ vpass login -e john@example.com
 
 **Exemple :**
 ```bash
-$ vpass login
+$ v-login
 🔐 Connexion à VerrouPass
 
 ? Email: john@example.com
@@ -64,30 +63,30 @@ $ vpass login
 ✓ Connexion réussie !
 
 Connecté en tant que: john@example.com
-Utilisez vpass list pour voir vos entrées
+Utilisez v-ls pour voir vos entrées
 ```
 
-#### `vpass logout`
+#### `v-exit`
 
 Se déconnecter de votre compte.
 
 ```bash
-vpass logout
+v-exit
 ```
 
 ### Gestion des entrées
 
-#### `vpass list` / `vpass ls`
+#### `v-ls`
 
 Lister toutes les entrées de votre coffre.
 
 ```bash
 # Affichage détaillé (tableau)
-vpass list
+v-ls
 
 # Affichage court (noms uniquement)
-vpass list --short
-vpass ls -s
+v-ls --short
+v-ls -s
 ```
 
 **Options :**
@@ -95,7 +94,7 @@ vpass ls -s
 
 **Exemple :**
 ```bash
-$ vpass list
+$ v-ls
 ✓ 5 entrée(s) trouvée(s)
 
 ┌───────────┬──────────────────┬───────────────────┬────────────┐
@@ -106,24 +105,24 @@ $ vpass list
 │ Netflix   │ john@example.com │ netflix.com       │ 12/04/2026 │
 └───────────┴──────────────────┴───────────────────┴────────────┘
 
-Utilisez vpass get <nom> pour voir les détails
+Utilisez v-cat <nom> pour voir les détails
 ```
 
-#### `vpass get <name>`
+#### `v-cat <name>`
 
 Récupérer et afficher une entrée spécifique.
 
 ```bash
 # Afficher l'entrée
-vpass get GitHub
+v-cat GitHub
 
 # Afficher l'entrée avec le mot de passe en clair
-vpass get GitHub --show-password
-vpass get GitHub -p
+v-cat GitHub --show-password
+v-cat GitHub -p
 
 # Afficher l'entrée et copier le mot de passe
-vpass get GitHub --copy
-vpass get GitHub -c
+v-cat GitHub --copy
+v-cat GitHub -c
 ```
 
 **Arguments :**
@@ -135,7 +134,7 @@ vpass get GitHub -c
 
 **Exemple :**
 ```bash
-$ vpass get GitHub --copy
+$ v-cat GitHub --copy
 ✓ Entrée trouvée
 
 ════════════════════════════════════════════════════════════
@@ -154,13 +153,13 @@ Modifié le:     15/04/2026 14:30:00
   Il sera automatiquement effacé après 30 secondes
 ```
 
-#### `vpass search <query>` / `vpass find <query>`
+#### `v-grep <query>`
 
 Rechercher dans vos entrées.
 
 ```bash
-vpass search github
-vpass find gmail
+v-grep github
+v-grep gmail
 ```
 
 **Arguments :**
@@ -168,7 +167,7 @@ vpass find gmail
 
 **Exemple :**
 ```bash
-$ vpass search google
+$ v-grep google
 ✓ 2 résultat(s) trouvé(s)
 
 ┌────────────┬──────────────────┬─────────────────┬────────────┐
@@ -179,17 +178,17 @@ $ vpass search google
 └────────────┴──────────────────┴─────────────────┴────────────┘
 ```
 
-#### `vpass add`
+#### `v-touch`
 
 Ajouter une nouvelle entrée au coffre.
 
 ```bash
 # Mode interactif complet
-vpass add
+v-touch
 
 # Avec des options pré-remplies
-vpass add --name GitHub --username john@example.com
-vpass add -n GitHub -u john@example.com -p MyPassword123
+v-touch --name GitHub --username john@example.com
+v-touch -n GitHub -u john@example.com -p MyPassword123
 ```
 
 **Options :**
@@ -201,7 +200,7 @@ vpass add -n GitHub -u john@example.com -p MyPassword123
 
 **Exemple :**
 ```bash
-$ vpass add
+$ v-touch
 
 ➕ Ajouter une nouvelle entrée
 
@@ -214,15 +213,15 @@ $ vpass add
 
 ✓ Entrée ajoutée avec succès !
 
-Utilisez vpass list pour voir toutes vos entrées
+Utilisez v-ls pour voir toutes vos entrées
 ```
 
-#### `vpass edit <name>`
+#### `v-nano <name>`
 
 Modifier une entrée existante.
 
 ```bash
-vpass edit GitHub
+v-nano GitHub
 ```
 
 **Arguments :**
@@ -230,7 +229,7 @@ vpass edit GitHub
 
 **Exemple :**
 ```bash
-$ vpass edit GitHub
+$ v-nano GitHub
 ✓ Entrée trouvée
 
 ✏️  Modifier: GitHub
@@ -247,17 +246,17 @@ Laissez vide pour conserver la valeur actuelle
 ✓ Entrée modifiée avec succès !
 ```
 
-#### `vpass delete <name>` / `vpass rm <name>`
+#### `v-rm <name>`
 
 Supprimer une entrée du coffre.
 
 ```bash
 # Avec confirmation
-vpass delete GitHub
+v-rm GitHub
 
 # Sans confirmation (force)
-vpass delete GitHub --force
-vpass rm GitHub -f
+v-rm GitHub --force
+v-rm GitHub -f
 ```
 
 **Arguments :**
@@ -268,7 +267,7 @@ vpass rm GitHub -f
 
 **Exemple :**
 ```bash
-$ vpass delete OldAccount
+$ v-rm OldAccount
 ✓ Entrée trouvée
 
 ⚠️  ATTENTION: Cette action est irréversible !
@@ -284,27 +283,27 @@ Entrée à supprimer:
 
 ### Générateur de mots de passe
 
-#### `vpass generate` / `vpass gen`
+#### `v-gen`
 
 Générer un mot de passe sécurisé.
 
 ```bash
 # Mot de passe par défaut (16 caractères, tous types)
-vpass generate
+v-gen
 
 # Personnalisé
-vpass generate --length 32
-vpass gen -l 20
+v-gen --length 32
+v-gen -l 20
 
 # Sans symboles
-vpass generate --no-symbols
+v-gen --no-symbols
 
 # Sans majuscules
-vpass generate --no-upper
+v-gen --no-upper
 
 # Avec copie automatique
-vpass generate --copy
-vpass gen -c
+v-gen --copy
+v-gen -c
 ```
 
 **Options :**
@@ -317,7 +316,7 @@ vpass gen -c
 
 **Exemple :**
 ```bash
-$ vpass generate --length 20 --copy
+$ v-gen --length 20 --copy
 
 🔑 Mot de passe généré
 
@@ -336,29 +335,29 @@ Force: Très fort
 
 ```bash
 # 1. Se connecter
-vpass login -e john@example.com
+v-login -e john@example.com
 
 # 2. Voir toutes les entrées
-vpass list
+v-ls
 
 # 3. Récupérer un mot de passe (copie automatique)
-vpass get GitHub -c
+v-cat GitHub -c
 
 # 4. Ajouter une nouvelle entrée avec mot de passe généré
-vpass generate -l 20 -c
-vpass add -n "New Service" -u john@example.com
+v-gen -l 20 -c
+v-touch -n "New Service" -u john@example.com
 
 # 5. Rechercher dans les entrées
-vpass search google
+v-grep google
 
 # 6. Modifier une entrée
-vpass edit Gmail
+v-nano Gmail
 
 # 7. Supprimer une entrée
-vpass delete "Old Account"
+v-rm "Old Account"
 
 # 8. Se déconnecter
-vpass logout
+v-exit
 ```
 
 ### Utilisation avec scripts
@@ -367,11 +366,11 @@ vpass logout
 #!/bin/bash
 
 # Générer et copier un mot de passe
-PASSWORD=$(vpass generate -l 32 --silent)
+PASSWORD=$(v-gen -l 32 --silent)
 echo "$PASSWORD"
 
 # Ajouter directement une entrée
-vpass add \
+v-touch \
   --name "API Key" \
   --username "myapp" \
   --password "$PASSWORD" \
@@ -427,7 +426,7 @@ config.saveServerUrl('https://verroupass.votredomaine.com/api');
 ### Recommandations
 
 - ✅ Utilisez un mot de passe maître fort et unique
-- ✅ Déconnectez-vous après utilisation (`vpass logout`)
+- ✅ Déconnectez-vous après utilisation (`v-exit`)
 - ✅ Ne stockez jamais votre mot de passe maître
 - ✅ Protégez votre machine avec un mot de passe
 - ⚠️ La clé de chiffrement est stockée localement (risque si accès physique à votre machine)
@@ -436,7 +435,7 @@ config.saveServerUrl('https://verroupass.votredomaine.com/api');
 
 - La clé de chiffrement est stockée localement pour éviter de redemander le mot de passe maître à chaque commande
 - Si quelqu'un a accès à votre machine et au fichier de config, il peut déchiffrer vos mots de passe
-- Pour une sécurité maximale, utilisez `vpass logout` après chaque session
+- Pour une sécurité maximale, utilisez `v-exit` après chaque session
 
 ## Dépannage
 
@@ -454,8 +453,8 @@ cat ~/.config/verroupass-cli/config.json
 
 ```bash
 # Supprimer la session et réessayer
-vpass logout
-vpass login
+v-exit
+v-login
 ```
 
 ### Erreur de déchiffrement

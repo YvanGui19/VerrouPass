@@ -7,13 +7,12 @@ import chalk from 'chalk';
 import { saveServerUrl, getServerUrl } from '../utils/config.js';
 
 export async function configCommand(options) {
-  console.log(chalk.blue.bold('\n⚙️  Configuration de VerrouPass CLI\n'));
+  console.log(chalk.blue.bold('\nConfiguration de VerrouPass CLI\n'));
 
   if (options.show) {
     // Afficher la configuration actuelle
     const currentUrl = getServerUrl();
-    console.log(chalk.gray('URL du serveur actuelle:'));
-    console.log(chalk.white(currentUrl));
+    console.log(chalk.gray('URL du serveur:'), chalk.white(currentUrl));
     console.log();
     return;
   }
@@ -21,7 +20,7 @@ export async function configCommand(options) {
   if (options.url) {
     // Définir l'URL directement via option
     saveServerUrl(options.url);
-    console.log(chalk.green('✓ URL du serveur mise à jour'));
+    console.log(chalk.green('URL du serveur mise à jour'));
     console.log(chalk.gray('Nouvelle URL:'), chalk.white(options.url));
     return;
   }
@@ -59,7 +58,7 @@ export async function configCommand(options) {
 
   if (confirm) {
     saveServerUrl(newUrl);
-    console.log(chalk.green('\n✓ Configuration mise à jour avec succès'));
+    console.log(chalk.green('\nConfiguration mise à jour avec succès'));
     console.log(chalk.gray('Nouvelle URL:'), chalk.white(newUrl));
   } else {
     console.log(chalk.gray('Changement annulé'));

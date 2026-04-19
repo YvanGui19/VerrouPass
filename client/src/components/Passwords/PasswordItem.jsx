@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function VaultItem({ item, onEdit, onDelete }) {
+export default function PasswordItem({ item, onEdit, onDelete }) {
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(null);
 

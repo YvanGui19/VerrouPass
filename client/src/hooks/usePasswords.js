@@ -3,16 +3,16 @@ import { vaultApi } from '../utils/api';
 import { encrypt, decrypt } from '../utils/crypto';
 import { useAuth } from './useAuth';
 
-export function useVault() {
+export function usePasswords() {
   const { encKey } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Récupérer et déchiffrer toutes les entrées
+  // Recuperer et dechiffrer toutes les entrees
   const fetchItems = useCallback(async () => {
     if (!encKey) {
-      setError('Coffre verrouillé');
+      setError('Coffre verrouille');
       return;
     }
 
@@ -22,7 +22,7 @@ export function useVault() {
     try {
       const data = await vaultApi.getAll();
 
-      // Déchiffrer chaque entrée
+      // Dechiffrer chaque entree
       const decryptedItems = await Promise.all(
         data.items.map(async (item) => {
           try {
@@ -34,10 +34,10 @@ export function useVault() {
               updatedAt: item.updated_at
             };
           } catch (err) {
-            console.error('Erreur déchiffrement:', err);
+            console.error('Erreur dechiffrement:', err);
             return {
               id: item.id,
-              name: '[Erreur de déchiffrement]',
+              name: '[Erreur de dechiffrement]',
               error: true
             };
           }
@@ -52,23 +52,23 @@ export function useVault() {
     }
   }, [encKey]);
 
-  // Ajouter une nouvelle entrée
+  // Ajouter une nouvelle entree
   const addItem = useCallback(async (itemData) => {
     if (!encKey) {
-      throw new Error('Coffre verrouillé');
+      throw new Error('Coffre verrouille');
     }
 
     setLoading(true);
     setError(null);
 
     try {
-      // Chiffrer les données
+      // Chiffrer les donnees
       const { encryptedData, iv } = await encrypt(itemData, encKey);
 
       // Envoyer au serveur
       const data = await vaultApi.create(encryptedData, iv);
 
-      // Ajouter à la liste locale
+      // Ajouter a la liste locale
       const newItem = {
         id: data.item.id,
         ...itemData,
@@ -86,23 +86,23 @@ export function useVault() {
     }
   }, [encKey]);
 
-  // Modifier une entrée
+  // Modifier une entree
   const updateItem = useCallback(async (id, itemData) => {
     if (!encKey) {
-      throw new Error('Coffre verrouillé');
+      throw new Error('Coffre verrouille');
     }
 
     setLoading(true);
     setError(null);
 
     try {
-      // Chiffrer les données
+      // Chiffrer les donnees
       const { encryptedData, iv } = await encrypt(itemData, encKey);
 
       // Envoyer au serveur
       const data = await vaultApi.update(id, encryptedData, iv);
 
-      // Mettre à jour la liste locale
+      // Mettre a jour la liste locale
       setItems(prev => prev.map(item =>
         item.id === id
           ? { ...item, ...itemData, updatedAt: data.item.updated_at }
@@ -118,7 +118,7 @@ export function useVault() {
     }
   }, [encKey]);
 
-  // Supprimer une entrée
+  // Supprimer une entree
   const deleteItem = useCallback(async (id) => {
     setLoading(true);
     setError(null);
@@ -145,4 +145,4 @@ export function useVault() {
   };
 }
 
-export default useVault;
+export default usePasswords;

@@ -15,7 +15,7 @@
 # IMPORTANT: Lisez ce script avant de l'exécuter !
 ###############################################################################
 
-set -e  # Arrêter en cas d'erreur
+set -euo pipefail  # Arrêter en cas d'erreur, variable non définie, ou échec dans un pipe
 
 # Couleurs pour les messages
 RED='\033[0;31m'

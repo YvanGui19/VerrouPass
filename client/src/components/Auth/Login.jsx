@@ -25,8 +25,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-navy px-4 py-12">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-12">
+      <div className="max-w-md w-full my-auto">
         {/* Logo/Titre */}
         <div className="text-center mb-12">
           <h1 className="font-display text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">

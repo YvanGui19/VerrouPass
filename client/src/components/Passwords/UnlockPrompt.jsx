@@ -31,10 +31,10 @@ export default function UnlockPrompt() {
             </svg>
           </div>
           <h1 className="font-display text-4xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
-            [ COFFRE VERROUILLÉ ]
+            [ COFFRE VERROUILLE ]
           </h1>
           <p className="font-mono text-cyan text-sm uppercase tracking-wide">
-            // Entrez votre mot de passe maître pour déverrouiller
+            // Entrez votre mot de passe maitre pour deverrouiller
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export default function UnlockPrompt() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="password" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
-                Mot de passe maître
+                Mot de passe maitre
               </label>
               <input
                 id="password"
@@ -67,19 +67,19 @@ export default function UnlockPrompt() {
               disabled={loading}
               className="w-full bg-lime hover:bg-lime-dim text-dark-navy font-heading text-xl uppercase tracking-wider py-3 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(194,254,11,0.4)] hover:shadow-[0_0_30px_rgba(194,254,11,0.6)]"
             >
-              {loading ? '[ DÉVERROUILLAGE... ]' : '[ DÉVERROUILLER ]'}
+              {loading ? '[ DEVERROUILLAGE... ]' : '[ DEVERROUILLER ]'}
             </button>
           </form>
 
           <div className="mt-8 text-center border-t border-cyan/10 pt-6">
             <p className="font-mono text-grey text-sm mb-3">
-              <span className="text-cyan">▸</span> Connecté en tant que <span className="text-white">{user?.email}</span>
+              <span className="text-cyan">▸</span> Connecte en tant que <span className="text-white">{user?.email}</span>
             </p>
             <button
               onClick={logout}
               className="font-mono text-red-400 hover:text-red-300 text-sm uppercase tracking-wide transition-colors"
             >
-              [ Se déconnecter ]
+              [ Se deconnecter ]
             </button>
           </div>
         </div>

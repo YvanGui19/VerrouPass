@@ -36,14 +36,14 @@ export async function updateCommand() {
       console.log('');
     } else {
       // Déjà à jour
-      console.log(c.success('✓ Vous utilisez la dernière version'));
+      console.log(c.success('Vous utilisez la dernière version'));
       console.log('');
       console.log(`  Version actuelle : ${c.highlight(CLI_VERSION)}`);
       console.log('');
     }
   } catch (error) {
     spinner.stop();
-    console.log(c.error('✗ Erreur lors de la vérification des mises à jour'));
+    console.log(c.error('Erreur lors de la vérification des mises à jour'));
     console.log('');
     console.log(c.muted('Vérifiez votre connexion internet ou réessayez plus tard.'));
     console.log('');

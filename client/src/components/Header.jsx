@@ -15,13 +15,13 @@ export default function Header() {
           {user && <span className="text-lime/30">|</span>}
           <Link
             to="/generator"
-            className="font-mono text-lime hover:text-lime-dim transition-colors uppercase tracking-wide"
+            className="font-mono text-grey hover:text-cyan transition-colors uppercase tracking-wide"
           >
             [ Générateur ]
           </Link>
           <Link
             to="/cli"
-            className="font-mono text-cyan hover:text-lime transition-colors uppercase tracking-wide"
+            className="font-mono text-grey hover:text-cyan transition-colors uppercase tracking-wide"
           >
             [ CLI ]
           </Link>

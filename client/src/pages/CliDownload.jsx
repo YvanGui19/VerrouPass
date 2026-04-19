@@ -165,7 +165,7 @@ export function CliDownload() {
                   Tester l'installation
                 </h3>
                 <div className="bg-dark-navy border-l-4 border-lime rounded p-3">
-                  <code className="font-mono text-white text-sm">vpass --version</code>
+                  <code className="font-mono text-white text-sm">v-man</code>
                 </div>
               </div>
             </div>
@@ -179,19 +179,19 @@ export function CliDownload() {
           </h2>
           <div className="space-y-3">
             <div className="bg-dark-navy border-l-4 border-cyan rounded p-3">
-              <code className="font-mono text-white text-sm">vpass login</code>
+              <code className="font-mono text-white text-sm">v-login</code>
               <span className="font-mono text-grey text-xs ml-4 italic"># Se connecter</span>
             </div>
             <div className="bg-dark-navy border-l-4 border-lime rounded p-3">
-              <code className="font-mono text-white text-sm">v-list</code>
+              <code className="font-mono text-white text-sm">v-ls</code>
               <span className="font-mono text-grey text-xs ml-4 italic"># Lister vos mots de passe</span>
             </div>
             <div className="bg-dark-navy border-l-4 border-cyan rounded p-3">
-              <code className="font-mono text-white text-sm">v-get &lt;nom&gt;</code>
+              <code className="font-mono text-white text-sm">v-cat &lt;nom&gt;</code>
               <span className="font-mono text-grey text-xs ml-4 italic"># Récupérer un mot de passe</span>
             </div>
             <div className="bg-dark-navy border-l-4 border-lime rounded p-3">
-              <code className="font-mono text-white text-sm">v-add</code>
+              <code className="font-mono text-white text-sm">v-touch</code>
               <span className="font-mono text-grey text-xs ml-4 italic"># Ajouter un nouveau mot de passe</span>
             </div>
             <div className="bg-dark-navy border-l-4 border-cyan rounded p-3">

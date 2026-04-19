@@ -69,31 +69,31 @@ Votre application VerrouPass est maintenant **complète et prête pour le déplo
 
 ```bash
 # Connexion
-vpass login -e john@example.com
+v-login -e john@example.com
 
 # Lister les entrées
-vpass list
+v-ls
 
 # Récupérer un mot de passe (copie auto)
-vpass get GitHub -c
+v-cat GitHub -c
 
 # Rechercher
-vpass search google
+v-grep google
 
 # Ajouter une entrée
-vpass add -n GitHub -u john@example.com
+v-touch -n GitHub -u john@example.com
 
 # Modifier
-vpass edit GitHub
+v-nano GitHub
 
 # Supprimer
-vpass delete OldAccount
+v-rm OldAccount
 
 # Générer un mot de passe
-vpass generate -l 20 -c
+v-gen -l 20 -c
 
 # Déconnexion
-vpass logout
+v-exit
 ```
 
 ## Prochaines étapes
@@ -103,14 +103,13 @@ vpass logout
 #### 1. Installer et tester la CLI
 
 ```bash
-# Dans D:\Code\VerrouPass\cli
+# Depuis la racine du projet
 cd cli
 npm install
 npm run install-global
 
 # Tester
-vpass --version
-vpass --help
+v-man
 ```
 
 #### 2. Démarrer le serveur (si pas déjà fait)
@@ -125,13 +124,13 @@ npm run dev
 
 ```bash
 # Se connecter
-vpass login
+v-login
 
 # Lister vos entrées
-vpass list
+v-ls
 
 # Récupérer un mot de passe
-vpass get GitHub -c
+v-cat GitHub -c
 ```
 
 ### Option 2 : Déployer sur VPS
@@ -210,13 +209,13 @@ VerrouPass/
 cd cli && npm install && npm run install-global
 
 # Utilisation
-vpass login                 # Se connecter
-vpass list                  # Lister
-vpass get <nom> -c          # Récupérer et copier
-vpass add                   # Ajouter
-vpass search <query>        # Rechercher
-vpass generate -c           # Générer mot de passe
-vpass logout                # Se déconnecter
+v-login                 # Se connecter
+v-ls                    # Lister
+v-cat <nom> -c          # Récupérer et copier
+v-touch                 # Ajouter
+v-grep <query>          # Rechercher
+v-gen -c                # Générer mot de passe
+v-exit                  # Se déconnecter
 ```
 
 ### Serveur (développement)

@@ -103,7 +103,7 @@ export async function generateCommand(options) {
 
     // Afficher le mot de passe
     if (!options.silent) {
-      console.log('\n' + chalk.blue.bold('🔑 Mot de passe généré\n'));
+      console.log('\n' + chalk.blue.bold('Mot de passe généré\n'));
       console.log(chalk.white.bold(password));
       console.log();
       console.log(chalk.gray(`Longueur: ${password.length} caractères`));
@@ -115,16 +115,16 @@ export async function generateCommand(options) {
       if (options.copy) {
         try {
           await clipboard.write(password);
-          console.log(chalk.green('✓ Copié dans le presse-papiers'));
+          console.log(chalk.green('Copié dans le presse-papiers'));
         } catch (error) {
-          console.log(chalk.red('✗ Impossible de copier dans le presse-papiers'));
+          console.log(chalk.red('Impossible de copier dans le presse-papiers'));
         }
       }
     }
 
     return password;
   } catch (error) {
-    console.error(chalk.red(`✗ ${error.message}`));
+    console.error(chalk.red(error.message));
     process.exit(1);
   }
 }

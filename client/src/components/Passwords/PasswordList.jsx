@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useVault } from '../../hooks/useVault';
+import { usePasswords } from '../../hooks/usePasswords';
 import { useAuth } from '../../hooks/useAuth';
 import Header from '../Header';
-import VaultItem from './VaultItem';
-import VaultForm from './VaultForm';
+import PasswordItem from './PasswordItem';
+import PasswordForm from './PasswordForm';
 import UnlockPrompt from './UnlockPrompt';
 
-export default function VaultList() {
+export default function PasswordList() {
   const { user, isUnlocked, logout } = useAuth();
-  const { items, loading, error, fetchItems, addItem, updateItem, deleteItem } = useVault();
+  const { items, loading, error, fetchItems, addItem, updateItem, deleteItem } = usePasswords();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,7 +48,7 @@ export default function VaultList() {
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Supprimer cette entrée ?')) {
+    if (confirm('Supprimer cette entree ?')) {
       await deleteItem(id);
     }
   };
@@ -110,14 +110,14 @@ export default function VaultList() {
               </svg>
             </div>
             <h3 className="font-heading text-2xl text-lime uppercase tracking-wider mb-2">
-              Base de données vide
+              Base de donnees vide
             </h3>
-            <p className="font-mono text-grey mb-8">// Ajoutez votre premier mot de passe sécurisé</p>
+            <p className="font-mono text-grey mb-8">// Ajoutez votre premier mot de passe securise</p>
             <button
               onClick={() => setShowForm(true)}
               className="bg-lime hover:bg-lime-dim text-dark-navy font-heading text-lg uppercase tracking-wider px-8 py-3 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)]"
             >
-              [ Nouvelle Entrée ]
+              [ Nouvelle Entree ]
             </button>
           </div>
         )}
@@ -126,7 +126,7 @@ export default function VaultList() {
         {filteredItems.length > 0 && (
           <div className="space-y-3">
             {filteredItems.map(item => (
-              <VaultItem
+              <PasswordItem
                 key={item.id}
                 item={item}
                 onEdit={() => handleEdit(item)}
@@ -140,7 +140,7 @@ export default function VaultList() {
         {searchQuery && filteredItems.length === 0 && items.length > 0 && (
           <div className="text-center py-20">
             <p className="font-mono text-grey text-lg">
-              <span className="text-red-400">[ 0 RÉSULTATS ]</span><br />
+              <span className="text-red-400">[ 0 RESULTATS ]</span><br />
               <span className="text-sm">// Aucune correspondance pour "{searchQuery}"</span>
             </p>
           </div>
@@ -150,8 +150,8 @@ export default function VaultList() {
         {items.length > 0 && (
           <div className="mt-8 pt-4 border-t border-lime/10">
             <p className="font-mono text-xs text-grey/70 text-center">
-              <span className="text-cyan">{items.length}</span> entrée{items.length > 1 ? 's' : ''} •
-              <span className="text-lime"> {filteredItems.length}</span> affichée{filteredItems.length > 1 ? 's' : ''}
+              <span className="text-cyan">{items.length}</span> entree{items.length > 1 ? 's' : ''} •
+              <span className="text-lime"> {filteredItems.length}</span> affichee{filteredItems.length > 1 ? 's' : ''}
             </p>
           </div>
         )}
@@ -159,7 +159,7 @@ export default function VaultList() {
 
       {/* Form Modal */}
       {showForm && (
-        <VaultForm
+        <PasswordForm
           item={editingItem}
           onSubmit={editingItem ? handleUpdate : handleAdd}
           onClose={handleCloseForm}

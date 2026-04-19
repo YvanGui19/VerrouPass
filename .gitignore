@@ -41,6 +41,7 @@ backup/
 backup_*/
 *.bak
 *.backup
+.old
 
 # Temporary files
 tmp/

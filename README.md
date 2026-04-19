@@ -102,9 +102,9 @@ npm install
 npm run install-global
 
 # Utiliser la CLI
-vpass login
-vpass list
-vpass get GitHub -c
+v-login
+v-ls
+v-cat GitHub -c
 ```
 
 Voir [cli/QUICK_START.md](./cli/QUICK_START.md) pour plus de détails.
@@ -323,14 +323,6 @@ Oui ! Tant que vous connaissez votre email et votre mot de passe maître, vous p
 ### L'application est-elle compatible mobile ?
 
 L'interface web est responsive et fonctionne sur mobile. Pour une expérience optimale, vous pouvez l'ajouter à l'écran d'accueil (PWA).
-
-## Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à :
-- Signaler des bugs
-- Proposer de nouvelles fonctionnalités
-- Améliorer la documentation
-- Soumettre des pull requests
 
 ## Licence
 

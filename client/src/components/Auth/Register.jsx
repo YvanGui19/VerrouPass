@@ -15,9 +15,9 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
-    // Validation
-    if (password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
+    // Validation - OWASP recommande 12 caracteres minimum
+    if (password.length < 12) {
+      setError('Le mot de passe doit contenir au moins 12 caractères');
       return;
     }
 
@@ -39,8 +39,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-navy px-4 py-12">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-12">
+      <div className="max-w-md w-full my-auto">
         {/* Logo/Titre */}
         <div className="text-center mb-12">
           <h1 className="font-display text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
@@ -91,10 +91,10 @@ export default function Register() {
                 className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="••••••••••••"
                 required
-                minLength={8}
+                minLength={12}
               />
               <p className="text-grey/70 font-mono text-xs mt-2">
-                <span className="text-lime">▸</span> Minimum 8 caractères
+                <span className="text-lime">▸</span> Minimum 12 caractères (recommandation OWASP)
               </p>
             </div>
 

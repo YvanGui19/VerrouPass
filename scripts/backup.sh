@@ -8,7 +8,7 @@
 # Crée une sauvegarde complète de la base de données PostgreSQL
 ###############################################################################
 
-set -e
+set -euo pipefail
 
 # Couleurs pour les messages
 GREEN='\033[0;32m'

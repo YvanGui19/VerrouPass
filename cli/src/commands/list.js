@@ -12,7 +12,7 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function listCommand(options) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
@@ -24,7 +24,7 @@ export async function listCommand(options) {
 
     if (items.length === 0) {
       spinner.info(chalk.yellow('Votre coffre est vide'));
-      console.log(chalk.gray('Utilisez'), chalk.cyan('vpass add'), chalk.gray('pour ajouter une entrée'));
+      console.log(chalk.gray('Utilisez'), chalk.cyan('v-touch'), chalk.gray('pour ajouter une entrée'));
       return;
     }
 
@@ -55,7 +55,7 @@ export async function listCommand(options) {
       })
     );
 
-    spinner.succeed(chalk.green(`✓ ${decryptedItems.length} entrée(s) trouvée(s)`));
+    spinner.succeed(chalk.green(`${decryptedItems.length} entrée(s) trouvée(s)`));
 
     // Affichage
     if (options.short) {
@@ -104,9 +104,9 @@ export async function listCommand(options) {
       }));
     }
 
-    console.log(chalk.gray(`\nUtilisez`), chalk.cyan('vpass get <nom>'), chalk.gray('pour voir les détails'));
+    console.log(chalk.gray(`\nUtilisez`), chalk.cyan('v-cat <nom>'), chalk.gray('pour voir les détails'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

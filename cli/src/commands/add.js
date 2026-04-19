@@ -12,11 +12,11 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function addCommand(options) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
-  console.log(chalk.blue.bold('\n➕ Ajouter une nouvelle entrée\n'));
+  console.log(chalk.blue.bold('\nAjouter une nouvelle entrée\n'));
 
   // Collecter les informations
   const questions = [];
@@ -83,7 +83,7 @@ export async function addCommand(options) {
   if (answers.generatePassword) {
     const { generatePassword } = await import('./generate.js');
     password = await generatePassword({ length: 16, upper: true, lower: true, numbers: true, symbols: true, copy: false, silent: true });
-    console.log(chalk.green(`✓ Mot de passe généré: ${chalk.white(password)}`));
+    console.log(chalk.green(`Mot de passe généré: ${chalk.white(password)}`));
 
     const { useGenerated } = await inquirer.prompt([
       {
@@ -128,10 +128,10 @@ export async function addCommand(options) {
     // Envoyer au serveur
     await createVaultItem(encryptedData, iv);
 
-    spinner.succeed(chalk.green('✓ Entrée ajoutée avec succès !'));
-    console.log(chalk.gray('\nUtilisez'), chalk.cyan('vpass list'), chalk.gray('pour voir toutes vos entrées'));
+    spinner.succeed(chalk.green('Entrée ajoutée avec succès !'));
+    console.log(chalk.gray('\nUtilisez'), chalk.cyan('v-ls'), chalk.gray('pour voir toutes vos entrées'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

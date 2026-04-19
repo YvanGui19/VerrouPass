@@ -6,7 +6,7 @@
 import { webcrypto } from 'crypto';
 const crypto = webcrypto;
 
-const PBKDF2_ITERATIONS = 100000;
+const PBKDF2_ITERATIONS = 600000; // OWASP recommande 600k+ pour PBKDF2-SHA256
 const KEY_LENGTH = 256;
 
 function stringToBuffer(str) {

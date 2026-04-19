@@ -70,6 +70,9 @@ export async function hashForServer(authKey) {
   const encoder = new TextEncoder();
   const salt = encoder.encode('verroupass-server-auth');
 
+  // Note: 1 itération est acceptable ici car la clé d'entrée (authKey) est déjà
+  // dérivée avec PBKDF2 600k itérations. Ce hash final est juste une transformation
+  // pour éviter d'envoyer la clé brute au serveur, pas une protection contre brute-force.
   const bits = await window.crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',

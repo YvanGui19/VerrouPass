@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import VaultList from './components/Vault/VaultList';
+import PasswordList from './components/Passwords/PasswordList';
 import { Settings } from './pages/Settings';
 import { Goodbye } from './pages/Goodbye';
 import PasswordGenerator from './pages/PasswordGenerator';
@@ -61,7 +61,7 @@ function AppRoutes() {
         path="/vault"
         element={
           <PrivateRoute>
-            <VaultList />
+            <PasswordList />
           </PrivateRoute>
         }
       />

@@ -12,7 +12,7 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function editCommand(name) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
@@ -43,13 +43,13 @@ export async function editCommand(name) {
     }
 
     if (!foundItem) {
-      spinner.fail(chalk.red(`✗ Aucune entrée trouvée pour "${name}"`));
+      spinner.fail(chalk.red(`Aucune entrée trouvée pour "${name}"`));
       process.exit(1);
     }
 
-    spinner.succeed(chalk.green('✓ Entrée trouvée'));
+    spinner.succeed(chalk.green('Entrée trouvée'));
 
-    console.log(chalk.blue.bold(`\n✏️  Modifier: ${decryptedData.name}\n`));
+    console.log(chalk.blue.bold(`\nModifier: ${decryptedData.name}\n`));
     console.log(chalk.gray('Laissez vide pour conserver la valeur actuelle\n'));
 
     // Demander les nouvelles valeurs
@@ -111,9 +111,9 @@ export async function editCommand(name) {
     // Envoyer la mise à jour
     await updateVaultItem(foundItem.id, encryptedData, iv);
 
-    updateSpinner.succeed(chalk.green('✓ Entrée modifiée avec succès !'));
+    updateSpinner.succeed(chalk.green('Entrée modifiée avec succès !'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

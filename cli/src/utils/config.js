@@ -4,10 +4,21 @@
  */
 
 import Conf from 'conf';
+import { createHash } from 'crypto';
+import { hostname, userInfo } from 'os';
+
+/**
+ * Génère une clé de chiffrement unique par machine
+ * Basée sur des identifiants système (non réversible)
+ */
+function generateMachineKey() {
+  const machineId = `${hostname()}-${userInfo().username}-verroupass-cli-v2`;
+  return createHash('sha256').update(machineId).digest('hex').slice(0, 32);
+}
 
 const config = new Conf({
   projectName: 'verroupass-cli',
-  encryptionKey: 'verroupass-secure-storage' // En production, utiliser une clé plus sécurisée
+  encryptionKey: generateMachineKey() // Clé unique par machine
 });
 
 export function saveToken(token) {
@@ -55,6 +66,19 @@ export function isAuthenticated() {
   return !!getToken() && !!getEncryptionKey();
 }
 
+export function saveConfig(settings) {
+  const currentConfig = config.get('settings', {});
+  config.set('settings', { ...currentConfig, ...settings });
+}
+
+export function getConfig() {
+  return config.get('settings', {});
+}
+
+export function resetConfig() {
+  config.delete('settings');
+}
+
 export default {
   saveToken,
   getToken,
@@ -65,5 +89,8 @@ export default {
   saveServerUrl,
   getServerUrl,
   clearSession,
-  isAuthenticated
+  isAuthenticated,
+  saveConfig,
+  getConfig,
+  resetConfig
 };

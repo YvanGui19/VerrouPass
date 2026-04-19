@@ -17,12 +17,12 @@ import {
 } from '../utils/config.js';
 
 export async function loginCommand(options) {
-  console.log(chalk.blue.bold('\n🔐 Connexion à VerrouPass\n'));
+  console.log(chalk.blue.bold('\nConnexion à VerrouPass\n'));
 
   // Vérifier si déjà connecté
   if (isAuthenticated()) {
     const currentUser = getUser();
-    console.log(chalk.yellow(`⚠️  Vous êtes déjà connecté en tant que ${currentUser.email}`));
+    console.log(chalk.yellow(`Vous êtes déjà connecté en tant que ${currentUser.email}`));
     const { confirm } = await inquirer.prompt([
       {
         type: 'confirm',
@@ -65,8 +65,8 @@ export async function loginCommand(options) {
     message: 'Mot de passe maître:',
     mask: '*',
     validate: (input) => {
-      if (!input || input.length < 8) {
-        return 'Le mot de passe doit contenir au moins 8 caractères';
+      if (!input || input.length < 12) {
+        return 'Le mot de passe doit contenir au moins 12 caractères (recommandation OWASP)';
       }
       return true;
     }
@@ -96,11 +96,11 @@ export async function loginCommand(options) {
     const exportedKey = await exportKey(encKey);
     saveEncryptionKey(exportedKey);
 
-    spinner.succeed(chalk.green('✓ Connexion réussie !'));
+    spinner.succeed(chalk.green('Connexion réussie !'));
     console.log(chalk.gray(`\nConnecté en tant que: ${chalk.white(response.user.email)}`));
-    console.log(chalk.gray('Utilisez'), chalk.cyan('vpass list'), chalk.gray('pour voir vos entrées'));
+    console.log(chalk.gray('Utilisez'), chalk.cyan('v-ls'), chalk.gray('pour voir vos entrées'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur de connexion'));
+    spinner.fail(chalk.red('Erreur de connexion'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }
@@ -108,7 +108,7 @@ export async function loginCommand(options) {
 
 export async function logoutCommand() {
   if (!isAuthenticated()) {
-    console.log(chalk.yellow('⚠️  Vous n\'êtes pas connecté'));
+    console.log(chalk.yellow('Vous n\'êtes pas connecté'));
     return;
   }
 
@@ -125,6 +125,6 @@ export async function logoutCommand() {
 
   if (confirm) {
     clearSession();
-    console.log(chalk.green('✓ Déconnexion réussie'));
+    console.log(chalk.green('Déconnexion réussie'));
   }
 }

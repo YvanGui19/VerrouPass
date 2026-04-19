@@ -8,7 +8,7 @@
 # ATTENTION: Cette opération écrase toutes les données actuelles !
 ###############################################################################
 
-set -e
+set -euo pipefail
 
 # Couleurs pour les messages
 GREEN='\033[0;32m'

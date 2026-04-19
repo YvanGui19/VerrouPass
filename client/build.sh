@@ -15,7 +15,7 @@
 # 4. Crée le dossier dist/ prêt pour le déploiement
 ###############################################################################
 
-set -e  # Arrêter en cas d'erreur
+set -euo pipefail  # Arrêter en cas d'erreur, variable non définie, ou échec dans un pipe
 
 # Couleurs pour les messages
 GREEN='\033[0;32m'

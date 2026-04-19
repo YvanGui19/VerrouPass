@@ -44,7 +44,7 @@ Suivez les instructions pour configurer PostgreSQL et notez le mot de passe gén
 Depuis votre machine locale :
 
 ```bash
-cd D:\Code\VerrouPass
+# Depuis le dossier du projet
 scp -r * root@votre-ip:/var/www/verroupass/
 ```
 

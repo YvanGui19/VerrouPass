@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PasswordGenerator from '../Generator/PasswordGenerator';
 
-export default function VaultForm({ item, onSubmit, onClose }) {
+export default function PasswordForm({ item, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
     name: item?.name || '',
     username: item?.username || '',
@@ -42,7 +42,7 @@ export default function VaultForm({ item, onSubmit, onClose }) {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-heading text-2xl text-lime uppercase tracking-wider">
-              [ {item ? 'Modifier l\'entrée' : 'Nouvelle entrée'} ]
+              [ {item ? 'Modifier l\'entree' : 'Nouvelle entree'} ]
             </h2>
             <button
               onClick={onClose}
@@ -122,7 +122,7 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                     type="button"
                     onClick={() => setShowGenerator(true)}
                     className="p-1.5 text-cyan hover:text-lime rounded transition-colors"
-                    title="Générer un mot de passe"
+                    title="Generer un mot de passe"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -158,7 +158,7 @@ export default function VaultForm({ item, onSubmit, onClose }) {
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all resize-none placeholder-grey"
-                placeholder="Notes supplémentaires..."
+                placeholder="Notes supplementaires..."
               />
             </div>
 

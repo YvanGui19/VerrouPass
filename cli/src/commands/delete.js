@@ -12,7 +12,7 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function deleteCommand(name, options) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
@@ -43,15 +43,15 @@ export async function deleteCommand(name, options) {
     }
 
     if (!foundItem) {
-      spinner.fail(chalk.red(`✗ Aucune entrée trouvée pour "${name}"`));
+      spinner.fail(chalk.red(`Aucune entrée trouvée pour "${name}"`));
       process.exit(1);
     }
 
-    spinner.succeed(chalk.green('✓ Entrée trouvée'));
+    spinner.succeed(chalk.green('Entrée trouvée'));
 
     // Confirmer la suppression (sauf si --force)
     if (!options.force) {
-      console.log(chalk.yellow.bold('\n⚠️  ATTENTION: Cette action est irréversible !\n'));
+      console.log(chalk.yellow.bold('\nATTENTION: Cette action est irréversible !\n'));
       console.log(chalk.gray('Entrée à supprimer:'));
       console.log(chalk.white(`  Nom: ${decryptedData.name}`));
       console.log(chalk.white(`  Identifiant: ${decryptedData.username || '-'}`));
@@ -77,9 +77,9 @@ export async function deleteCommand(name, options) {
     // Supprimer l'entrée
     await deleteVaultItem(foundItem.id);
 
-    deleteSpinner.succeed(chalk.green('✓ Entrée supprimée avec succès'));
+    deleteSpinner.succeed(chalk.green('Entrée supprimée avec succès'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

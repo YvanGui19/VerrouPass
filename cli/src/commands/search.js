@@ -12,7 +12,7 @@ import { isAuthenticated, getEncryptionKey } from '../utils/config.js';
 export async function searchCommand(query) {
   // Vérifier l'authentification
   if (!isAuthenticated()) {
-    console.log(chalk.red('✗ Vous devez être connecté. Utilisez: vpass login'));
+    console.log(chalk.red('Vous devez être connecté. Utilisez: v-login'));
     process.exit(1);
   }
 
@@ -56,7 +56,7 @@ export async function searchCommand(query) {
       return;
     }
 
-    spinner.succeed(chalk.green(`✓ ${results.length} résultat(s) trouvé(s)`));
+    spinner.succeed(chalk.green(`${results.length} résultat(s) trouvé(s)`));
 
     // Afficher les résultats
     const data = [
@@ -94,9 +94,9 @@ export async function searchCommand(query) {
       }
     }));
 
-    console.log(chalk.gray(`Utilisez`), chalk.cyan('vpass get <nom>'), chalk.gray('pour voir les détails'));
+    console.log(chalk.gray(`Utilisez`), chalk.cyan('v-cat <nom>'), chalk.gray('pour voir les détails'));
   } catch (error) {
-    spinner.fail(chalk.red('✗ Erreur'));
+    spinner.fail(chalk.red('Erreur'));
     console.error(chalk.red(`\n${error.message}`));
     process.exit(1);
   }

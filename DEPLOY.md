@@ -158,8 +158,7 @@ git clone https://github.com/votre-repo/verroupass.git .
 
 **Option B : Avec SCP (depuis votre machine locale)**
 ```bash
-# Sur votre machine locale:
-cd D:\Code\VerrouPass
+# Sur votre machine locale (depuis le dossier du projet):
 scp -r * verroupass@votre-ip:/var/www/verroupass/
 ```
 
