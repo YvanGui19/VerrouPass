@@ -1,11 +1,13 @@
 import express from 'express';
 import { VaultItem } from '../models/VaultItem.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { vaultLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
-// Toutes les routes du vault nécessitent une authentification
+// Toutes les routes du vault nécessitent une authentification et rate limiting
 router.use(authenticateToken);
+router.use(vaultLimiter);
 
 // GET /api/vault - Récupérer toutes les entrées du coffre
 router.get('/', async (req, res) => {
