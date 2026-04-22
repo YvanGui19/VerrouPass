@@ -69,13 +69,13 @@ export default function PasswordGenerator({ onSelect, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
       <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider">[ Générateur ]</h2>
+            <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider">[ Generateur ]</h2>
             <button
               onClick={onClose}
-              className="p-1 text-grey hover:text-red-400 rounded transition-colors"
+              className="p-2 sm:p-1 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -116,7 +116,7 @@ export default function PasswordGenerator({ onSelect, onClose }) {
               <div className="flex gap-1">
                 <button
                   onClick={copyToClipboard}
-                  className="p-2 text-cyan hover:text-lime rounded transition-colors"
+                  className="p-2 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                   title="Copier"
                 >
                   {copied ? (
@@ -131,8 +131,8 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                 </button>
                 <button
                   onClick={generate}
-                  className="p-2 text-cyan hover:text-lime rounded transition-colors"
-                  title="Régénérer"
+                  className="p-2 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  title="Regenerer"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -187,33 +187,33 @@ export default function PasswordGenerator({ onSelect, onClose }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {[
                   { key: 'uppercase', label: 'Majuscules (A-Z)' },
                   { key: 'lowercase', label: 'Minuscules (a-z)' },
                   { key: 'numbers', label: 'Chiffres (0-9)' },
                   { key: 'symbols', label: 'Symboles (!@#...)' }
                 ].map(({ key, label }) => (
-                  <label key={key} className="flex items-center gap-2 cursor-pointer">
+                  <label key={key} className="flex items-center gap-2 cursor-pointer py-2 sm:py-0 min-h-[44px] sm:min-h-0">
                     <input
                       type="checkbox"
                       checked={options[key]}
                       onChange={() => handleOptionChange(key)}
-                      className="w-4 h-4 accent-lime rounded border-cyan/30"
+                      className="w-5 h-5 sm:w-4 sm:h-4 accent-lime rounded border-cyan/30"
                     />
                     <span className="text-sm text-grey font-mono">{label}</span>
                   </label>
                 ))}
               </div>
 
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer py-2 sm:py-0 min-h-[44px] sm:min-h-0">
                 <input
                   type="checkbox"
                   checked={options.excludeAmbiguous}
                   onChange={() => handleOptionChange('excludeAmbiguous')}
-                  className="w-4 h-4 accent-lime rounded border-cyan/30"
+                  className="w-5 h-5 sm:w-4 sm:h-4 accent-lime rounded border-cyan/30"
                 />
-                <span className="text-sm text-grey font-mono">Exclure les caractères ambigus (0, O, l, 1, I)</span>
+                <span className="text-sm text-grey font-mono">Exclure caracteres ambigus (0, O, l, 1, I)</span>
               </label>
             </div>
           ) : (

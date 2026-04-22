@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PasswordGenerator from '../Generator/PasswordGenerator';
+import TOTPInput from '../TOTP/TOTPInput';
 
 export default function PasswordForm({ item, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
@@ -7,11 +8,13 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
     username: item?.username || '',
     password: item?.password || '',
     url: item?.url || '',
-    notes: item?.notes || ''
+    notes: item?.notes || '',
+    totpSecret: item?.totpSecret || ''
   });
   const [loading, setLoading] = useState(false);
   const [showGenerator, setShowGenerator] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showTOTP, setShowTOTP] = useState(!!item?.totpSecret);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,14 +42,14 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="font-heading text-2xl text-lime uppercase tracking-wider">
+            <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider">
               [ {item ? 'Modifier l\'entree' : 'Nouvelle entree'} ]
             </h2>
             <button
               onClick={onClose}
-              className="p-1 text-grey hover:text-red-400 rounded transition-colors"
+              className="p-2 sm:p-1 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -145,6 +148,34 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
                 className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="ex: github.com"
               />
+            </div>
+
+            {/* TOTP Section */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowTOTP(!showTOTP)}
+                className="flex items-center gap-2 font-mono text-xs text-cyan uppercase tracking-wider mb-2 hover:text-lime transition-colors py-1"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${showTOTP ? 'rotate-90' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                2FA / TOTP (optionnel)
+              </button>
+
+              {showTOTP && (
+                <div className="mt-2 p-3 bg-dark-navy/50 border border-cyan/20 rounded">
+                  <TOTPInput
+                    value={formData.totpSecret}
+                    onChange={(secret) => setFormData(prev => ({ ...prev, totpSecret: secret }))}
+                  />
+                </div>
+              )}
             </div>
 
             <div>

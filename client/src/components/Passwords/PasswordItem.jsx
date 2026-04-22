@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import TOTPDisplay from '../TOTP/TOTPDisplay';
 
 export default function PasswordItem({ item, onEdit, onDelete }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,30 +15,15 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
     }
   };
 
-  const getFaviconUrl = (url) => {
-    if (!url) return null;
-    try {
-      const domain = url.includes('://') ? new URL(url).hostname : url.split('/')[0];
-      return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
-    } catch {
-      return null;
-    }
-  };
-
-  const favicon = getFaviconUrl(item.url);
+  // Get first letter of name for avatar (no external service dependency)
+  const initial = item.name ? item.name.charAt(0).toUpperCase() : '?';
 
   return (
     <div className="bg-mid-navy border-2 border-cyan/20 rounded-lg p-4 hover:border-cyan/40 hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all">
       <div className="flex items-start gap-3">
-        {/* Favicon */}
+        {/* Initial Avatar */}
         <div className="w-10 h-10 bg-dark-navy border border-lime/20 rounded-lg flex items-center justify-center flex-shrink-0">
-          {favicon ? (
-            <img src={favicon} alt="" className="w-5 h-5" />
-          ) : (
-            <svg className="w-5 h-5 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          )}
+          <span className="text-lime font-heading text-lg">{initial}</span>
         </div>
 
         {/* Content */}
@@ -47,7 +33,7 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
             <div className="flex items-center gap-1">
               <button
                 onClick={onEdit}
-                className="p-1.5 text-cyan hover:text-lime rounded transition-colors"
+                className="p-2 sm:p-1.5 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 title="Modifier"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +42,7 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
               </button>
               <button
                 onClick={onDelete}
-                className="p-1.5 text-grey hover:text-red-400 rounded transition-colors"
+                className="p-2 sm:p-1.5 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 title="Supprimer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +59,7 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
               </span>
               <button
                 onClick={() => copyToClipboard(item.username, 'username')}
-                className="p-1 text-cyan hover:text-lime rounded transition-colors"
+                className="p-2 sm:p-1 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 title="Copier l'identifiant"
               >
                 {copied === 'username' ? (
@@ -96,7 +82,7 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
               </span>
               <button
                 onClick={() => setShowPassword(!showPassword)}
-                className="p-1 text-cyan hover:text-lime rounded transition-colors"
+                className="p-2 sm:p-1 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 title={showPassword ? 'Masquer' : 'Afficher'}
               >
                 {showPassword ? (
@@ -112,7 +98,7 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
               </button>
               <button
                 onClick={() => copyToClipboard(item.password, 'password')}
-                className="p-1 text-cyan hover:text-lime rounded transition-colors"
+                className="p-2 sm:p-1 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
                 title="Copier le mot de passe"
               >
                 {copied === 'password' ? (
@@ -126,6 +112,17 @@ export default function PasswordItem({ item, onEdit, onDelete }) {
                 )}
               </button>
             </div>
+          )}
+
+          {/* TOTP Display */}
+          {item.totpSecret && (
+            <TOTPDisplay
+              secret={item.totpSecret}
+              onCopy={() => {
+                setCopied('totp');
+                setTimeout(() => setCopied(null), 2000);
+              }}
+            />
           )}
 
           {item.url && (
