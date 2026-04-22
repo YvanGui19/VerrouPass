@@ -1,22 +1,22 @@
-# VerrouPass 🔐
+# VerrouPass
 
-Un gestionnaire de mots de passe **zero-knowledge** sécurisé, open-source, et auto-hébergé.
+Un gestionnaire de mots de passe **zero-knowledge** securise, open-source, et auto-heberge.
 
 ## Qu'est-ce que VerrouPass ?
 
-VerrouPass est une application web qui vous permet de stocker tous vos mots de passe en toute sécurité. L'architecture **zero-knowledge** garantit que personne, pas même le serveur, ne peut lire vos mots de passe.
+VerrouPass est une application web qui vous permet de stocker tous vos mots de passe en toute securite. L'architecture **zero-knowledge** garantit que personne, pas meme le serveur, ne peut lire vos mots de passe.
 
-### Caractéristiques principales
+### Caracteristiques principales
 
-- 🔒 **Zero-knowledge** : Le serveur ne peut jamais lire vos mots de passe
-- 🔐 **Chiffrement AES-256-GCM** : Standard militaire de chiffrement
-- 🛡️ **PBKDF2** : 600 000 iterations pour la derivation de cles
-- 🌐 **Auto-hébergé** : Vos données restent sur votre serveur
-- 📱 **Interface moderne** : Design épuré avec Tailwind CSS
-- 💻 **CLI disponible** : Interface en ligne de commande pour terminaux
-- 🔑 **Générateur de mots de passe** : Créez des mots de passe sécurisés
-- 🔍 **Recherche rapide** : Trouvez vos entrées instantanément
-- 🚀 **Open-source** : Code transparent et auditable
+- **Zero-knowledge** : Le serveur ne peut jamais lire vos mots de passe
+- **Chiffrement AES-256-GCM** : Standard militaire de chiffrement
+- **PBKDF2** : 600 000 iterations pour la derivation de cles
+- **Auto-heberge** : Vos donnees restent sur votre serveur
+- **Interface moderne** : Design epure avec Tailwind CSS
+- **CLI disponible** : Interface en ligne de commande pour terminaux
+- **Generateur de mots de passe** : Creez des mots de passe securises
+- **Recherche rapide** : Trouvez vos entrees instantanement
+- **Open-source** : Code transparent et auditable
 
 ## Architecture
 
@@ -43,55 +43,55 @@ VerrouPass est une application web qui vous permet de stocker tous vos mots de p
 ### Comment fonctionne le zero-knowledge ?
 
 1. **Inscription/Connexion** :
-   - Vous créez un mot de passe maître
-   - Deux clés sont dérivées : une pour l'authentification, une pour le chiffrement
-   - Seule la clé d'authentification (hashée) est envoyée au serveur
-   - La clé de chiffrement reste dans votre navigateur
+   - Vous creez un mot de passe maitre
+   - Deux cles sont derivees : une pour l'authentification, une pour le chiffrement
+   - Seule la cle d'authentification (hashee) est envoyee au serveur
+   - La cle de chiffrement reste dans votre navigateur
 
 2. **Stockage des mots de passe** :
-   - Vos mots de passe sont chiffrés dans votre navigateur (AES-256-GCM)
-   - Le serveur stocke uniquement les données chiffrées
-   - Même l'administrateur du serveur ne peut pas les lire
+   - Vos mots de passe sont chiffres dans votre navigateur (AES-256-GCM)
+   - Le serveur stocke uniquement les donnees chiffrees
+   - Meme l'administrateur du serveur ne peut pas les lire
 
-3. **Récupération** :
-   - Vous vous reconnectez avec votre mot de passe maître
-   - La clé de chiffrement est re-dérivée localement
-   - Vos données sont déchiffrées dans votre navigateur
+3. **Recuperation** :
+   - Vous vous reconnectez avec votre mot de passe maitre
+   - La cle de chiffrement est re-derivee localement
+   - Vos donnees sont dechiffrees dans votre navigateur
 
-## Démarrage rapide
+## Demarrage rapide
 
-### Prérequis
+### Prerequis
 
 - Node.js 20+
 - PostgreSQL 13+
-- Un VPS Ubuntu/Debian (pour le déploiement)
-- Un nom de domaine (optionnel mais recommandé)
+- Un VPS Ubuntu/Debian (pour le deploiement)
+- Un nom de domaine (optionnel mais recommande)
 
-### Installation en local (développement)
+### Installation en local (developpement)
 
 1. **Cloner le projet** :
 ```bash
-git clone https://github.com/votre-repo/verroupass.git
+git clone https://github.com/YvanGui19/VerrouPass.git
 cd verroupass
 ```
 
-2. **Configurer et démarrer le serveur** :
+2. **Configurer et demarrer le serveur** :
 ```bash
 cd server
 npm install
 cp .env.example .env
-# Éditer .env avec vos paramètres PostgreSQL
+# Editer .env avec vos parametres PostgreSQL
 npm run dev
 ```
 
-3. **Configurer et démarrer le client** :
+3. **Configurer et demarrer le client** :
 ```bash
 cd client
 npm install
 npm run dev
 ```
 
-4. **Accéder à l'application** :
+4. **Acceder a l'application** :
 Ouvrir http://localhost:5173
 
 ### Utilisation avec la CLI
@@ -107,27 +107,27 @@ v-ls
 v-cat GitHub -c
 ```
 
-Voir [cli/QUICK_START.md](./cli/QUICK_START.md) pour plus de détails.
+Voir [cli/QUICK_START.md](./cli/QUICK_START.md) pour plus de details.
 
-### Déploiement sur VPS
+### Deploiement sur VPS
 
-Consultez le guide complet de déploiement : **[DEPLOY.md](./DEPLOY.md)**
+Consultez le guide complet de deploiement : **[DEPLOY.md](./DEPLOY.md)**
 
-**Résumé rapide** :
+**Resume rapide** :
 ```bash
-# Sur votre VPS, exécuter le script d'installation
+# Sur votre VPS, executer le script d'installation
 sudo bash install.sh
 
-# Transférer votre code
+# Transferer votre code
 scp -r * user@vps:/var/www/verroupass/
 
 # Installer et builder
 cd /var/www/verroupass/server && npm install --production
 cd /var/www/verroupass/client && npm install && npm run build
 
-# Configurer et démarrer
+# Configurer et demarrer
 cp server/.env.production server/.env
-# Éditer server/.env avec vos valeurs
+# Editer server/.env avec vos valeurs
 pm2 start ecosystem.config.js
 ```
 
@@ -138,14 +138,14 @@ verroupass/
 ├── client/                  # Application React (frontend)
 │   ├── src/
 │   │   ├── components/      # Composants React
-│   │   ├── hooks/           # Hooks personnalisés
+│   │   ├── hooks/           # Hooks personnalises
 │   │   └── utils/           # Utilitaires (crypto, api)
 │   ├── build.sh             # Script de build
 │   └── README.md
 │
 ├── server/                  # API Node.js (backend)
 │   ├── src/
-│   │   ├── models/          # Modèles de données
+│   │   ├── models/          # Modeles de donnees
 │   │   ├── routes/          # Routes API
 │   │   └── middleware/      # Middleware Express
 │   └── README.md
@@ -154,7 +154,7 @@ verroupass/
 │   ├── src/
 │   │   ├── commands/        # Commandes CLI
 │   │   └── utils/           # Utilitaires (crypto, api, config)
-│   ├── QUICK_START.md       # Démarrage rapide
+│   ├── QUICK_START.md       # Demarrage rapide
 │   └── README.md
 │
 ├── scripts/                 # Scripts de gestion
@@ -166,108 +166,108 @@ verroupass/
 ├── nginx.conf               # Configuration Nginx
 ├── ecosystem.config.js      # Configuration PM2
 ├── install.sh               # Script d'installation VPS
-├── DEPLOY.md                # Guide de déploiement complet
+├── DEPLOY.md                # Guide de deploiement complet
 └── README.md                # Ce fichier
 ```
 
 ## Documentation
 
-- **[Guide de déploiement](./DEPLOY.md)** : Déploiement complet sur VPS
+- **[Guide de deploiement](./DEPLOY.md)** : Deploiement complet sur VPS
 - **[README Serveur](./server/README.md)** : Documentation de l'API backend
 - **[README Client](./client/README.md)** : Documentation du frontend React
 - **[README CLI](./cli/README.md)** : Documentation de l'interface en ligne de commande
 - **[Scripts](./scripts/README.md)** : Documentation des scripts de gestion
 
-## Fonctionnalités
+## Fonctionnalites
 
 ### Pour les utilisateurs
 
 **Interface web :**
-- ✅ Créer un compte sécurisé
-- ✅ Ajouter des mots de passe avec :
+- Creer un compte securise
+- Ajouter des mots de passe avec :
   - Nom de l'application/service
   - Identifiant ou email
   - Mot de passe
   - URL du site
-  - Notes supplémentaires
-- ✅ Modifier les entrées existantes
-- ✅ Supprimer des entrées
-- ✅ Rechercher dans le coffre
-- ✅ Générer des mots de passe sécurisés
-- ✅ Copier les mots de passe dans le presse-papiers
-- ✅ Afficher/masquer les mots de passe
+  - Notes supplementaires
+- Modifier les entrees existantes
+- Supprimer des entrees
+- Rechercher dans le coffre
+- Generer des mots de passe securises
+- Copier les mots de passe dans le presse-papiers
+- Afficher/masquer les mots de passe
 
 **Interface CLI (ligne de commande) :**
-- ✅ Toutes les fonctionnalités de l'interface web
-- ✅ Copie automatique dans le presse-papiers
-- ✅ Interface interactive ou avec options
-- ✅ Scriptable pour l'automatisation
-- ✅ Rapide et légère
+- Toutes les fonctionnalites de l'interface web
+- Copie automatique dans le presse-papiers
+- Interface interactive ou avec options
+- Scriptable pour l'automatisation
+- Rapide et legere
 
 ### Pour les administrateurs
 
-- ✅ Installation automatisée (script `install.sh`)
-- ✅ Gestion avec PM2 (redémarrage automatique)
-- ✅ Sauvegardes automatiques de la base de données
-- ✅ Logs centralisés
-- ✅ Statistiques de la base de données
-- ✅ Configuration SSL avec Let's Encrypt
-- ✅ Reverse proxy avec Nginx
+- Installation automatisee (script `install.sh`)
+- Gestion avec PM2 (redemarrage automatique)
+- Sauvegardes automatiques de la base de donnees
+- Logs centralises
+- Statistiques de la base de donnees
+- Configuration SSL avec Let's Encrypt
+- Reverse proxy avec Nginx
 
-## Sécurité
+## Securite
 
-### Mesures de sécurité implémentées
+### Mesures de securite implementees
 
-- 🔐 **Chiffrement zero-knowledge** : AES-256-GCM côté client
-- 🔑 **Derivation de cles** : PBKDF2 avec 600 000 iterations
-- 🛡️ **Hash des mots de passe** : bcrypt avec 10 rounds
-- 🔒 **HTTPS obligatoire** : Certificat Let's Encrypt gratuit
-- 🌐 **Headers de sécurité** : Helmet.js
-- 🚫 **CORS configuré** : Accès restreint au client
-- 📝 **JWT sécurisés** : Tokens signés avec expiration
-- 🔥 **Pare-feu** : UFW configuré
+- **Chiffrement zero-knowledge** : AES-256-GCM cote client
+- **Derivation de cles** : PBKDF2 avec 600 000 iterations
+- **Hash des mots de passe** : bcrypt avec 12 rounds
+- **HTTPS obligatoire** : Certificat Let's Encrypt gratuit
+- **Headers de securite** : Helmet.js
+- **CORS configure** : Acces restreint au client
+- **JWT securises** : Tokens signes avec expiration
+- **Pare-feu** : UFW configure
 
-### Bonnes pratiques recommandées
+### Bonnes pratiques recommandees
 
-1. **Utilisez un mot de passe maître très fort**
-   - Au moins 16 caractères
-   - Mélange de lettres, chiffres, et symboles
-   - Unique à VerrouPass
+1. **Utilisez un mot de passe maitre tres fort**
+   - Au moins 16 caracteres
+   - Melange de lettres, chiffres, et symboles
+   - Unique a VerrouPass
 
-2. **Sauvegardes régulières**
+2. **Sauvegardes regulieres**
    - Configurez des sauvegardes automatiques quotidiennes
    - Stockez les sauvegardes sur un serveur externe
 
-3. **Mises à jour**
-   - Gardez Node.js, PostgreSQL, et Nginx à jour
-   - Surveillez les vulnérabilités npm : `npm audit`
+3. **Mises a jour**
+   - Gardez Node.js, PostgreSQL, et Nginx a jour
+   - Surveillez les vulnerabilites npm : `npm audit`
 
 4. **Monitoring**
    - Surveillez les logs : `pm2 logs verroupass`
-   - Vérifiez l'utilisation des ressources : `pm2 monit`
+   - Verifiez l'utilisation des ressources : `pm2 monit`
 
 ## Scripts utiles
 
 ### Gestion de l'application
 
 ```bash
-# Démarrer l'application
+# Demarrer l'application
 pm2 start ecosystem.config.js
 
-# Voir les logs en temps réel
+# Voir les logs en temps reel
 pm2 logs verroupass
 
-# Redémarrer l'application
+# Redemarrer l'application
 pm2 restart verroupass
 
 # Statut de l'application
 pm2 status
 ```
 
-### Gestion de la base de données
+### Gestion de la base de donnees
 
 ```bash
-# Sauvegarder la base de données
+# Sauvegarder la base de donnees
 ./scripts/backup.sh
 
 # Restaurer depuis une sauvegarde
@@ -277,7 +277,7 @@ pm2 status
 ./scripts/db-stats.sh
 ```
 
-### Mise à jour de l'application
+### Mise a jour de l'application
 
 ```bash
 cd /var/www/verroupass
@@ -285,64 +285,64 @@ cd /var/www/verroupass
 # Sauvegarder d'abord !
 ./scripts/backup.sh
 
-# Mettre à jour le code
+# Mettre a jour le code
 git pull
 
-# Mettre à jour le serveur
+# Mettre a jour le serveur
 cd server && npm install --production
 
 # Rebuild le client
 cd ../client && npm install && npm run build
 
-# Redémarrer
+# Redemarrer
 pm2 restart verroupass
 ```
 
 ## FAQ
 
-### Que se passe-t-il si j'oublie mon mot de passe maître ?
+### Que se passe-t-il si j'oublie mon mot de passe maitre ?
 
-Malheureusement, **il n'y a aucun moyen de récupérer vos données**. C'est le prix de la sécurité zero-knowledge : même l'administrateur ne peut pas réinitialiser votre mot de passe. Vous devrez créer un nouveau compte.
+Malheureusement, **il n'y a aucun moyen de recuperer vos donnees**. C'est le prix de la securite zero-knowledge : meme l'administrateur ne peut pas reinitialiser votre mot de passe. Vous devrez creer un nouveau compte.
 
-### Mes mots de passe sont-ils vraiment sécurisés ?
+### Mes mots de passe sont-ils vraiment securises ?
 
-Oui ! Vos mots de passe sont chiffrés avec AES-256-GCM (standard militaire) avant d'être envoyés au serveur. La clé de chiffrement ne quitte jamais votre navigateur. Le serveur ne stocke que des données illisibles.
+Oui ! Vos mots de passe sont chiffres avec AES-256-GCM (standard militaire) avant d'etre envoyes au serveur. La cle de chiffrement ne quitte jamais votre navigateur. Le serveur ne stocke que des donnees illisibles.
 
-### Puis-je accéder à mes mots de passe depuis plusieurs appareils ?
+### Puis-je acceder a mes mots de passe depuis plusieurs appareils ?
 
-Oui ! Tant que vous connaissez votre email et votre mot de passe maître, vous pouvez vous connecter depuis n'importe quel appareil.
+Oui ! Tant que vous connaissez votre email et votre mot de passe maitre, vous pouvez vous connecter depuis n'importe quel appareil.
 
-### Pourquoi auto-héberger au lieu d'utiliser LastPass/1Password ?
+### Pourquoi auto-heberger au lieu d'utiliser LastPass/1Password ?
 
-- ✅ **Contrôle total** : Vos données sont sur votre serveur
-- ✅ **Transparence** : Code open-source auditable
-- ✅ **Pas d'abonnement** : Coût unique du VPS
-- ✅ **Confidentialité** : Aucun tiers n'accède à vos données
-- ✅ **Personnalisable** : Vous pouvez modifier le code
+- **Controle total** : Vos donnees sont sur votre serveur
+- **Transparence** : Code open-source auditable
+- **Pas d'abonnement** : Cout unique du VPS
+- **Confidentialite** : Aucun tiers n'accede a vos donnees
+- **Personnalisable** : Vous pouvez modifier le code
 
 ### L'application est-elle compatible mobile ?
 
-L'interface web est responsive et fonctionne sur mobile. Pour une expérience optimale, vous pouvez l'ajouter à l'écran d'accueil (PWA).
+L'interface web est responsive et fonctionne sur mobile. Pour une experience optimale, vous pouvez l'ajouter a l'ecran d'accueil (PWA).
 
 ## Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](./LICENSE) pour plus de details.
 
 ## Support
 
-Pour toute question ou problème :
+Pour toute question ou probleme :
 1. Consultez la documentation dans les fichiers README
-2. Vérifiez les logs : `pm2 logs verroupass`
+2. Verifiez les logs : `pm2 logs verroupass`
 3. Ouvrez une issue sur GitHub
 
 ## Avertissement
 
-⚠️ **Important** :
-- Utilisez cette application à vos propres risques
-- Faites des sauvegardes régulières de votre base de données
-- Utilisez un mot de passe maître très fort
-- Ne partagez jamais votre mot de passe maître
-- Gardez votre VPS à jour et sécurisé
+**Important** :
+- Utilisez cette application a vos propres risques
+- Faites des sauvegardes regulieres de votre base de donnees
+- Utilisez un mot de passe maitre tres fort
+- Ne partagez jamais votre mot de passe maitre
+- Gardez votre VPS a jour et securise
 
 ## Remerciements
 
@@ -356,4 +356,4 @@ Construit avec :
 
 ---
 
-**VerrouPass** - Gardez vos mots de passe en sécurité 🔐
+**VerrouPass** - Gardez vos mots de passe en securite
