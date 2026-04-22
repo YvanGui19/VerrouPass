@@ -14,7 +14,7 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
   const [loading, setLoading] = useState(false);
   const [showGenerator, setShowGenerator] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showTOTP, setShowTOTP] = useState(!!item?.totpSecret);
+  const [showTOTP, setShowTOTP] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
