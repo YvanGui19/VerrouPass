@@ -8,6 +8,8 @@ import { initDatabase } from './db.js';
 import authRoutes from './routes/auth.js';
 import vaultRoutes from './routes/vault.js';
 import cliRoutes from './routes/cli.js';
+import adminRoutes from './routes/admin.js';
+import { startInvitationCleanup } from './services/invitations.js';
 import logger from './utils/logger.js';
 
 // Charger les variables d'environnement
@@ -38,6 +40,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/vault', vaultRoutes);
 app.use('/api/cli', cliRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Route de santé
 app.get('/api/health', (req, res) => {
@@ -60,6 +63,9 @@ async function start() {
   try {
     // Initialiser la base de données
     await initDatabase();
+
+    // Cleanup periodique des codes d'invitation expires (en memoire)
+    startInvitationCleanup();
 
     app.listen(PORT, () => {
       logger.info(`Serveur VerrouPass demarré`, {

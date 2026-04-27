@@ -60,30 +60,12 @@ export async function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
   `;
 
-  const createInvitationsTable = `
-    CREATE TABLE IF NOT EXISTS invitations (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      code_hash VARCHAR(64) NOT NULL UNIQUE,
-      note TEXT,
-      expires_at TIMESTAMP,
-      used_at TIMESTAMP,
-      used_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-  `;
-
-  const createInvitationsIndex = `
-    CREATE INDEX IF NOT EXISTS idx_invitations_code_hash ON invitations(code_hash);
-  `;
-
   try {
     await pool.query(createUsersTable);
     await pool.query(createVaultItemsTable);
     await pool.query(createIndex);
     await pool.query(createRefreshTokensTable);
     await pool.query(createRefreshTokenIndex);
-    await pool.query(createInvitationsTable);
-    await pool.query(createInvitationsIndex);
     console.log('Database tables initialized');
   } catch (err) {
     console.error('Error initializing database:', err.message);

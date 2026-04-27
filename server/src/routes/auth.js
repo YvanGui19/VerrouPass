@@ -1,6 +1,6 @@
 import express from 'express';
   import { User } from '../models/User.js';
-  import { Invitation } from '../models/Invitation.js';
+  import { consumeInvitationCode } from '../services/invitations.js';
   import {
     generateAccessToken,
     generateRefreshToken,
@@ -27,9 +27,9 @@ import express from 'express';
   // POST /api/auth/register - avec rate limiting strict
   //
   // Inscription par invitation uniquement. L utilisateur doit fournir un code
-  // d invitation valide genere par l admin via le script CLI
-  // server/scripts/generate-invitation.js. Le code est consomme a la creation
-  // du compte (transaction PostgreSQL atomique).
+  // d invitation valide genere par l admin via POST /api/admin/invitation.
+  // Les codes vivent uniquement en RAM serveur, expirent au bout de 15 min,
+  // et sont consommes a la premiere reussite d inscription.
   //
   // Anti-enumeration preservee : meme reponse 200 generique pour code invalide,
   // email deja existant et succes. Bcrypt fictif pour egaliser le timing.
@@ -60,51 +60,30 @@ import express from 'express';
         return res.status(400).json({ error: 'Format de mot de passe invalide' });
       }
 
-      // Verifier la validite de l invitation (existe, non expiree, non utilisee)
-      const invitation = await Invitation.findValidByCode(invitationCode);
-      if (!invitation) {
+      // Verifier d abord si l email est deja utilise. Si oui, on ne consomme
+      // PAS le code d invitation, sinon un attaquant qui a un code pourrait
+      // le bruler en testant des emails. Bcrypt fictif pour egaliser le timing.
+      const existingUser = await User.findByEmail(email);
+      if (existingUser) {
+        await bcrypt.hash(passwordHash, SALT_ROUNDS);
+        securityLogger.registerAttempt(req, email, false, 'email_already_exists');
+        return res.status(200).json(GENERIC_RESPONSE);
+      }
+
+      // Tenter de consommer l invitation. Le service consomme atomiquement
+      // (Node mono-thread) : un code n est utilisable qu une seule fois.
+      const invitationConsumed = consumeInvitationCode(invitationCode);
+      if (!invitationConsumed) {
         // Bcrypt fictif pour egaliser le timing avec une creation reelle
         await bcrypt.hash(passwordHash, SALT_ROUNDS);
         securityLogger.registerAttempt(req, email, false, 'invalid_invitation_code');
         return res.status(200).json(GENERIC_RESPONSE);
       }
 
-      // Verifier si l email est deja utilise
-      const existingUser = await User.findByEmail(email);
-      if (existingUser) {
-        // Bcrypt fictif pour egaliser le timing. Le code d invitation N EST PAS
-        // consomme dans ce cas, sinon un attaquant qui a un code pourrait le
-        // bruler en testant des emails.
-        await bcrypt.hash(passwordHash, SALT_ROUNDS);
-        securityLogger.registerAttempt(req, email, false, 'email_already_exists');
-        return res.status(200).json(GENERIC_RESPONSE);
-      }
+      // Code valide consomme : creer le compte
+      await User.create(email, passwordHash);
+      securityLogger.registerAttempt(req, email, true);
 
-      // Creation transactionnelle : utilisateur + consommation de l invitation
-      const client = await pool.connect();
-      try {
-        await client.query('BEGIN');
-
-        const hashedPassword = await bcrypt.hash(passwordHash, SALT_ROUNDS);
-        const userResult = await client.query(
-          'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
-          [email.toLowerCase(), hashedPassword]
-        );
-        const newUser = userResult.rows[0];
-
-        await Invitation.markUsed(client, invitation.id, newUser.id);
-
-        await client.query('COMMIT');
-
-        securityLogger.registerAttempt(req, email, true);
-      } catch (err) {
-        await client.query('ROLLBACK');
-        throw err;
-      } finally {
-        client.release();
-      }
-
-      // Reponse generique identique a tous les cas precedents
       res.status(200).json(GENERIC_RESPONSE);
     } catch (err) {
       securityLogger.registerAttempt(req, req.body?.email, false, 'server_error');
