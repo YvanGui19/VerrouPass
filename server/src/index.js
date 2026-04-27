@@ -19,8 +19,10 @@ const PORT = process.env.PORT || 3001;
 // Middleware de sécurité
 app.use(helmet());
 
-// Trust proxy - nécessaire pour Nginx reverse proxy
-app.set('trust proxy', true);
+// Trust proxy - exactement 1 hop (Nginx reverse proxy local)
+// "true" ferait confiance à toute la chaîne X-Forwarded-For et permettrait de spoofer
+// l'IP cliente pour contourner le rate limiting.
+app.set('trust proxy', 1);
 
 // CORS - autoriser le client
 app.use(cors({

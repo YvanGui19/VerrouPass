@@ -29,8 +29,14 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await register(email, password);
-      navigate('/vault');
+      const data = await register(email, password);
+      // Anti-énumération : la réponse du serveur est identique que l'email soit déjà
+      // utilisé ou non. On redirige vers /login avec le message générique.
+      navigate('/login', {
+        state: {
+          info: data?.message || 'Si cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
+        }
+      });
     } catch (err) {
       setError(err.response?.data?.error || 'Erreur lors de la création du compte');
     } finally {

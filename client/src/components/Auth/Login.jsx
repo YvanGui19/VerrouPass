@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function Login() {
@@ -9,6 +9,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const infoMessage = location.state?.info;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,6 +45,12 @@ export default function Login() {
           <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
             Connexion
           </h2>
+
+          {infoMessage && !error && (
+            <div className="bg-cyan-900/20 border border-cyan/40 text-cyan-200 px-4 py-3 rounded mb-6 font-mono text-sm">
+              <span className="text-cyan">INFO:</span> {infoMessage}
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-900/30 border border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">

@@ -24,17 +24,15 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (email, masterPassword) => {
-    // Dériver les clés
-    const { authKey, encKey: derivedEncKey } = await deriveKeys(masterPassword, email);
+    // Dériver les clés (validation que la dérivation fonctionne avant d'appeler l'API)
+    const { authKey } = await deriveKeys(masterPassword, email);
 
     // Hasher la clé d'authentification pour l'envoi
     const passwordHash = await hashForServer(authKey);
 
-    // Envoyer au serveur (le token est maintenant dans un cookie HttpOnly)
+    // Le serveur renvoie une réponse générique (anti-énumération) sans cookies ni tokens.
+    // L'utilisateur doit se connecter explicitement après l'inscription.
     const data = await authApi.register(email, passwordHash);
-
-    setUser(data.user);
-    setEncKey(derivedEncKey);
 
     return data;
   };

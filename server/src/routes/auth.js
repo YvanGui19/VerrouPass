@@ -22,7 +22,14 @@ import express from 'express';
   const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 jours
 
   // POST /api/auth/register - avec rate limiting strict
+  // Réponse normalisée pour empêcher l'énumération d'emails : même status, même message,
+  // même temps de réponse (bcrypt simulé quand l'email existe déjà).
+  // Pas d'auto-login après inscription : l'utilisateur doit se connecter explicitement.
   router.post('/register', registerLimiter, async (req, res) => {
+    const GENERIC_RESPONSE = {
+      message: 'Si cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
+    };
+
     try {
       const { email, passwordHash } = req.body;
 
@@ -38,7 +45,7 @@ import express from 'express';
         return res.status(400).json({ error: 'Format d\'email invalide' });
       }
 
-      // Validation du hash de mot de passe (doit avoir min 12 caractères cote client)
+      // Validation du hash de mot de passe (SHA-256 hex, 64 caractères)
       if (!passwordHash || passwordHash.length < 64) {
         securityLogger.registerAttempt(req, email, false, 'invalid_password_hash');
         return res.status(400).json({ error: 'Format de mot de passe invalide' });
@@ -47,41 +54,19 @@ import express from 'express';
       // Vérifier si l'utilisateur existe déjà
       const existingUser = await User.findByEmail(email);
       if (existingUser) {
+        // Bcrypt fictif pour égaliser le temps de réponse avec une création réelle
+        await bcrypt.hash(passwordHash, 12);
         securityLogger.registerAttempt(req, email, false, 'email_already_exists');
-        return res.status(409).json({ error: 'Un compte avec cet email existe déjà' });
+        return res.status(200).json(GENERIC_RESPONSE);
       }
 
-      // Créer l'utilisateur
-      const user = await User.create(email, passwordHash);
-
-      // Générer les tokens
-      const accessToken = generateAccessToken(user.id, user.email);
-      const { token: refreshToken, expiresAt } = await generateRefreshToken(user.id);
-
-      // Définir les cookies HttpOnly
-      const cookieOptions = getCookieOptions();
-      res.cookie('accessToken', accessToken, {
-        ...cookieOptions,
-        maxAge: ACCESS_TOKEN_MAX_AGE
-      });
-      res.cookie('refreshToken', refreshToken, {
-        ...cookieOptions,
-        maxAge: REFRESH_TOKEN_MAX_AGE,
-        path: '/api/auth' // Refresh token uniquement pour les routes auth
-      });
+      // Créer l'utilisateur (sans générer de tokens, l'utilisateur devra se connecter)
+      await User.create(email, passwordHash);
 
       securityLogger.registerAttempt(req, email, true);
 
-      res.status(201).json({
-        message: 'Compte créé avec succès',
-        user: {
-          id: user.id,
-          email: user.email,
-          createdAt: user.created_at
-        },
-        // Token aussi dans le body pour le CLI
-        token: accessToken
-      });
+      // Réponse identique au cas "email déjà existant" pour empêcher l'énumération
+      res.status(200).json(GENERIC_RESPONSE);
     } catch (err) {
       securityLogger.registerAttempt(req, req.body?.email, false, 'server_error');
       res.status(500).json({ error: 'Erreur lors de la création du compte' });
