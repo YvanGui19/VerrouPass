@@ -4,17 +4,18 @@
  * Le code est imprime sur stdout, a transmettre au destinataire par un canal
  * sur (SMS, Signal, en main propre).
  *
+ * A executer SUR LE VPS qui heberge le backend : par defaut, le script tape
+ * directement sur http://localhost:3001 (port d ecoute Node), bypassant
+ * Cloudflare et nginx. C est plus simple et plus rapide qu un appel public,
+ * et ca evite les challenges anti-bot de Cloudflare.
+ *
  * Pre-requis :
- *   - Variable ADMIN_INVITATION_TOKEN definie dans server/.env (ce script la lit)
- *   - Le serveur doit etre joignable a CLIENT_URL (qui sert de base par defaut)
+ *   - ADMIN_INVITATION_TOKEN defini dans server/.env (ce script le lit)
+ *   - Le backend Node ecoute sur le port indique (PORT du .env, defaut 3001)
  *
  * Usage :
  *   node server/scripts/request-invitation.js
  *   node server/scripts/request-invitation.js --url=https://verroupass.example.com
- *
- * Equivalent curl :
- *   curl -X POST https://verroupass.yvangui.fr/api/admin/invitation \
- *        -H "X-Admin-Token: <ADMIN_INVITATION_TOKEN>"
  */
 
 import dotenv from 'dotenv';
@@ -26,10 +27,10 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
+const port = process.env.PORT || 3001;
 const baseUrl =
   process.argv.find((a) => a.startsWith('--url='))?.split('=')[1] ||
-  process.env.CLIENT_URL ||
-  'http://localhost:3001';
+  `http://localhost:${port}`;
 
 const token = process.env.ADMIN_INVITATION_TOKEN;
 if (!token || token.length < 32) {
