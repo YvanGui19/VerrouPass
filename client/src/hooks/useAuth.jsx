@@ -23,7 +23,7 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const register = async (email, masterPassword) => {
+  const register = async (email, masterPassword, invitationCode) => {
     // Dériver les clés (validation que la dérivation fonctionne avant d'appeler l'API)
     const { authKey } = await deriveKeys(masterPassword, email);
 
@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
 
     // Le serveur renvoie une réponse générique (anti-énumération) sans cookies ni tokens.
     // L'utilisateur doit se connecter explicitement après l'inscription.
-    const data = await authApi.register(email, passwordHash);
+    const data = await authApi.register(email, passwordHash, invitationCode);
 
     return data;
   };

@@ -1,5 +1,6 @@
 import express from 'express';
   import { User } from '../models/User.js';
+  import { Invitation } from '../models/Invitation.js';
   import {
     generateAccessToken,
     generateRefreshToken,
@@ -15,6 +16,8 @@ import express from 'express';
   import { securityLogger } from '../utils/logger.js';
   import { isValidEmail } from '../utils/validators.js';
 
+  const SALT_ROUNDS = 12;
+
   const router = express.Router();
 
   // Constantes pour les durées des cookies
@@ -22,21 +25,27 @@ import express from 'express';
   const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 jours
 
   // POST /api/auth/register - avec rate limiting strict
-  // Réponse normalisée pour empêcher l'énumération d'emails : même status, même message,
-  // même temps de réponse (bcrypt simulé quand l'email existe déjà).
-  // Pas d'auto-login après inscription : l'utilisateur doit se connecter explicitement.
+  //
+  // Inscription par invitation uniquement. L utilisateur doit fournir un code
+  // d invitation valide genere par l admin via le script CLI
+  // server/scripts/generate-invitation.js. Le code est consomme a la creation
+  // du compte (transaction PostgreSQL atomique).
+  //
+  // Anti-enumeration preservee : meme reponse 200 generique pour code invalide,
+  // email deja existant et succes. Bcrypt fictif pour egaliser le timing.
+  // Pas d auto-login : l utilisateur doit se connecter explicitement.
   router.post('/register', registerLimiter, async (req, res) => {
     const GENERIC_RESPONSE = {
-      message: 'Si cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
+      message: 'Si votre code d\'invitation est valide et que cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
     };
 
     try {
-      const { email, passwordHash } = req.body;
+      const { email, passwordHash, invitationCode } = req.body;
 
-      // Validation
-      if (!email || !passwordHash) {
+      // Validation des entrees obligatoires
+      if (!email || !passwordHash || !invitationCode) {
         securityLogger.registerAttempt(req, email, false, 'missing_credentials');
-        return res.status(400).json({ error: 'Email et mot de passe requis' });
+        return res.status(400).json({ error: 'Email, mot de passe et code d\'invitation requis' });
       }
 
       // Validation email RFC 5322
@@ -45,27 +54,57 @@ import express from 'express';
         return res.status(400).json({ error: 'Format d\'email invalide' });
       }
 
-      // Validation du hash de mot de passe (SHA-256 hex, 64 caractères)
-      if (!passwordHash || passwordHash.length < 64) {
+      // Validation du hash de mot de passe (SHA-256 hex, 64 caracteres)
+      if (passwordHash.length < 64) {
         securityLogger.registerAttempt(req, email, false, 'invalid_password_hash');
         return res.status(400).json({ error: 'Format de mot de passe invalide' });
       }
 
-      // Vérifier si l'utilisateur existe déjà
+      // Verifier la validite de l invitation (existe, non expiree, non utilisee)
+      const invitation = await Invitation.findValidByCode(invitationCode);
+      if (!invitation) {
+        // Bcrypt fictif pour egaliser le timing avec une creation reelle
+        await bcrypt.hash(passwordHash, SALT_ROUNDS);
+        securityLogger.registerAttempt(req, email, false, 'invalid_invitation_code');
+        return res.status(200).json(GENERIC_RESPONSE);
+      }
+
+      // Verifier si l email est deja utilise
       const existingUser = await User.findByEmail(email);
       if (existingUser) {
-        // Bcrypt fictif pour égaliser le temps de réponse avec une création réelle
-        await bcrypt.hash(passwordHash, 12);
+        // Bcrypt fictif pour egaliser le timing. Le code d invitation N EST PAS
+        // consomme dans ce cas, sinon un attaquant qui a un code pourrait le
+        // bruler en testant des emails.
+        await bcrypt.hash(passwordHash, SALT_ROUNDS);
         securityLogger.registerAttempt(req, email, false, 'email_already_exists');
         return res.status(200).json(GENERIC_RESPONSE);
       }
 
-      // Créer l'utilisateur (sans générer de tokens, l'utilisateur devra se connecter)
-      await User.create(email, passwordHash);
+      // Creation transactionnelle : utilisateur + consommation de l invitation
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
 
-      securityLogger.registerAttempt(req, email, true);
+        const hashedPassword = await bcrypt.hash(passwordHash, SALT_ROUNDS);
+        const userResult = await client.query(
+          'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
+          [email.toLowerCase(), hashedPassword]
+        );
+        const newUser = userResult.rows[0];
 
-      // Réponse identique au cas "email déjà existant" pour empêcher l'énumération
+        await Invitation.markUsed(client, invitation.id, newUser.id);
+
+        await client.query('COMMIT');
+
+        securityLogger.registerAttempt(req, email, true);
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
+
+      // Reponse generique identique a tous les cas precedents
       res.status(200).json(GENERIC_RESPONSE);
     } catch (err) {
       securityLogger.registerAttempt(req, req.body?.email, false, 'server_error');

@@ -6,6 +6,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [invitationCode, setInvitationCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -14,6 +15,11 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!invitationCode.trim()) {
+      setError('Code d\'invitation requis');
+      return;
+    }
 
     // Validation - OWASP recommande 12 caracteres minimum
     if (password.length < 12) {
@@ -29,12 +35,13 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const data = await register(email, password);
-      // Anti-énumération : la réponse du serveur est identique que l'email soit déjà
-      // utilisé ou non. On redirige vers /login avec le message générique.
+      const data = await register(email, password, invitationCode.trim());
+      // Anti-énumération : la réponse du serveur est identique que le code soit
+      // valide ou non, et que l'email existe ou non. On redirige vers /login
+      // avec le message générique.
       navigate('/login', {
         state: {
-          info: data?.message || 'Si cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
+          info: data?.message || 'Si votre code d\'invitation est valide et que cet email n\'est pas déjà utilisé, votre compte a été créé. Connectez-vous pour accéder à votre coffre.'
         }
       });
     } catch (err) {
@@ -70,6 +77,26 @@ export default function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="invitationCode" className="block text-cyan font-mono text-xs uppercase tracking-wider mb-2">
+                Code d'invitation
+              </label>
+              <input
+                id="invitationCode"
+                type="text"
+                value={invitationCode}
+                onChange={(e) => setInvitationCode(e.target.value)}
+                className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
+                placeholder="Votre code d'invitation"
+                autoComplete="off"
+                spellCheck={false}
+                required
+              />
+              <p className="text-grey/70 font-mono text-xs mt-2">
+                <span className="text-lime">▸</span> Inscription sur invitation uniquement
+              </p>
+            </div>
+
             <div>
               <label htmlFor="email" className="block text-cyan font-mono text-xs uppercase tracking-wider mb-2">
                 Email
