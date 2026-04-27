@@ -47,8 +47,8 @@ export default function Login() {
           </h2>
 
           {infoMessage && !error && (
-            <div className="bg-cyan-900/20 border border-cyan/40 text-cyan-200 px-4 py-3 rounded mb-6 font-mono text-sm">
-              <span className="text-cyan">INFO:</span> {infoMessage}
+            <div className="bg-mid-navy border-2 border-cyan/50 text-white px-4 py-3 rounded mb-6 font-mono text-sm leading-relaxed">
+              <span className="text-cyan font-bold">INFO :</span> {infoMessage}
             </div>
           )}
 
