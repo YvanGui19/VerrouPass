@@ -60,3 +60,7 @@ coverage/
 *.sqlite
 *.sqlite3
 *.db
+
+# Local-only working notes (handoff, drafts, etc.)
+SECURITY-WIP.md
+*.local.md
