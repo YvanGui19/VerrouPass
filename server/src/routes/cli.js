@@ -8,9 +8,9 @@ import express from 'express';
 const router = express.Router();
 
 // Version actuelle du CLI
-const CURRENT_CLI_VERSION = '2.0.0'; // Version avec couleurs portfolio + générateur
+const CURRENT_CLI_VERSION = '2.1.0'; // Fix login + support 2FA TOTP
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
-const CLI_SHA256 = '488967f977e899a2c64721b7b91836db1f1709ab498e433fcc206d381a952345';
+const CLI_SHA256 = 'f5f7b0dc917e1df278869d0f87c80af2958b9ab5ce72ac967f1b42b477dc580b';
 
 /**
  * GET /api/cli/version
@@ -20,17 +20,15 @@ router.get('/version', (req, res) => {
   res.json({
     version: CURRENT_CLI_VERSION,
     downloadUrl: DOWNLOAD_URL,
-    releaseDate: '2024-04-18',
+    releaseDate: '2026-04-29',
     sha256: CLI_SHA256,
     changelog: [
-      'Nouvelles couleurs du portfolio (vert lime + cyan)',
-      'Suppression du système de 10 thèmes',
-      'Taille optimisée (32.7 KB)',
-      'Système de vérification automatique des mises à jour',
-      'Compatibilité avec le générateur Chaos Engine'
+      'Fix critique : alignement crypto avec le client web (PBKDF2 600k + hash PBKDF2 1 iter au lieu de SHA-256 simple). Les comptes créés via le web sont désormais accessibles via la CLI.',
+      'Fix critique : login envoie maintenant le bon champ passwordHash (au lieu de password en clair non lu par le serveur).',
+      'Nouveau : support de la 2FA TOTP. Si le compte a la 2FA activée, prompt interactif pour code à 6 chiffres ou code de secours après login.'
     ],
-    breaking: false, // Pas de changements cassants
-    minVersion: '1.0.0' // Version minimum requise
+    breaking: true, // Anciens comptes CLI-only inutilisables (algo crypto changé)
+    minVersion: '2.1.0' // Version minimum requise (anciennes versions ne peuvent plus se connecter)
   });
 });
 
