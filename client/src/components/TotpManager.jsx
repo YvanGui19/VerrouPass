@@ -265,20 +265,21 @@ function TotpSetupWizard({ email, onClose, onActivated }) {
             </div>
           )}
 
-          <div className="flex gap-3 justify-end">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-grey hover:text-white font-mono text-sm transition-colors"
+              disabled={submitting}
+              className="flex-1 py-3 px-4 bg-grey/20 hover:bg-grey/30 text-grey hover:text-white border-2 border-grey/30 font-heading uppercase tracking-wider rounded transition-all disabled:opacity-50"
             >
-              Annuler
+              [ Annuler ]
             </button>
             <button
               type="submit"
               disabled={submitting || code.length !== 6}
-              className="bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider px-4 py-2 rounded transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider py-3 px-4 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(194,254,11,0.4)] hover:shadow-[0_0_25px_rgba(194,254,11,0.6)]"
             >
-              {submitting ? 'Vérification...' : 'Confirmer'}
+              {submitting ? '[ Vérification... ]' : '[ Confirmer ]'}
             </button>
           </div>
         </form>
@@ -311,26 +312,26 @@ function TotpSetupWizard({ email, onClose, onActivated }) {
             <button
               type="button"
               onClick={copyAll}
-              className="px-3 py-2 bg-cyan/20 hover:bg-cyan/30 text-cyan border border-cyan/30 rounded font-mono text-sm transition-all"
+              className="px-3 py-2 bg-cyan/20 hover:bg-cyan/30 text-cyan border-2 border-cyan/30 hover:border-cyan rounded font-heading uppercase tracking-wider text-sm transition-all"
             >
-              Copier tous
+              [ Copier tous ]
             </button>
             <button
               type="button"
               onClick={downloadAll}
-              className="px-3 py-2 bg-cyan/20 hover:bg-cyan/30 text-cyan border border-cyan/30 rounded font-mono text-sm transition-all"
+              className="px-3 py-2 bg-cyan/20 hover:bg-cyan/30 text-cyan border-2 border-cyan/30 hover:border-cyan rounded font-heading uppercase tracking-wider text-sm transition-all"
             >
-              Télécharger en .txt
+              [ Télécharger en .txt ]
             </button>
           </div>
 
-          <div className="flex justify-end pt-2">
+          <div className="pt-2">
             <button
               type="button"
               onClick={onActivated}
-              className="bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider px-4 py-2 rounded transition-all text-sm"
+              className="w-full bg-lime hover:bg-lime-dim text-dark-navy font-heading uppercase tracking-wider py-3 px-4 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)] hover:shadow-[0_0_25px_rgba(194,254,11,0.6)]"
             >
-              J'ai sauvegardé les codes
+              [ J'ai sauvegardé les codes ]
             </button>
           </div>
         </div>
@@ -429,20 +430,21 @@ function TotpDisableModal({ email, onClose, onDisabled }) {
           </div>
         )}
 
-        <div className="flex gap-3 justify-end">
+        <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-grey hover:text-white font-mono text-sm transition-colors"
+            disabled={submitting}
+            className="flex-1 py-3 px-4 bg-grey/20 hover:bg-grey/30 text-grey hover:text-white border-2 border-grey/30 font-heading uppercase tracking-wider rounded transition-all disabled:opacity-50"
           >
-            Annuler
+            [ Annuler ]
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="bg-red-900/40 hover:bg-red-900/60 text-red-200 border border-red-500/40 font-heading uppercase tracking-wider px-4 py-2 rounded transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-red-900/40 hover:bg-red-900/60 text-red-200 border-2 border-red-500/40 hover:border-red-500 font-heading uppercase tracking-wider py-3 px-4 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? 'Désactivation...' : 'Désactiver'}
+            {submitting ? '[ Désactivation... ]' : '[ Désactiver ]'}
           </button>
         </div>
       </form>
