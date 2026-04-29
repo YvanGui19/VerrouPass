@@ -6,14 +6,20 @@ import dotenv from 'dotenv';
 
 import { initDatabase } from './db.js';
 import authRoutes from './routes/auth.js';
+import totpRoutes from './routes/totp.js';
 import vaultRoutes from './routes/vault.js';
 import cliRoutes from './routes/cli.js';
 import adminRoutes from './routes/admin.js';
 import { startInvitationCleanup } from './services/invitations.js';
+import { assertTotpKeyConfigured } from './utils/secretCrypto.js';
 import logger from './utils/logger.js';
 
 // Charger les variables d'environnement
 dotenv.config();
+
+// Fail-fast si TOTP_ENCRYPTION_KEY manquante / mal formée. Empeche un demarrage
+// silencieux qui crasherait au premier setup TOTP en production.
+assertTotpKeyConfigured();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +44,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/auth/totp', totpRoutes);
 app.use('/api/vault', vaultRoutes);
 app.use('/api/cli', cliRoutes);
 app.use('/api/admin', adminRoutes);

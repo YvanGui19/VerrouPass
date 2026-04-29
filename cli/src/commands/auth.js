@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
 import { deriveKeys, hashForServer, exportKey } from '../utils/crypto.js';
-import { login as apiLogin } from '../utils/api.js';
+import { login as apiLogin, loginTotp as apiLoginTotp } from '../utils/api.js';
 import {
   saveToken,
   saveUser,
@@ -15,6 +15,54 @@ import {
   isAuthenticated,
   getUser
 } from '../utils/config.js';
+
+// Prompt utilisateur pour la 2e etape 2FA. Demande d abord le mode (TOTP ou
+// code de secours), puis le code, avec validation de format. Renvoie un objet
+// { totpCode } OU { recoveryCode } pretes a etre passees a apiLoginTotp.
+async function promptTotpStep() {
+  const { method } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'method',
+      message: 'Methode de verification 2FA :',
+      choices: [
+        { name: 'Code a 6 chiffres (application authenticator)', value: 'totp' },
+        { name: 'Code de secours', value: 'recovery' }
+      ]
+    }
+  ]);
+
+  if (method === 'totp') {
+    const { code } = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'code',
+        message: 'Code a 6 chiffres :',
+        filter: (input) => (input || '').trim().replace(/\s/g, ''),
+        validate: (input) => /^\d{6}$/.test(input)
+          ? true
+          : 'Le code doit etre exactement 6 chiffres'
+      }
+    ]);
+    return { totpCode: code };
+  }
+
+  const { code } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'code',
+      message: 'Code de secours (XXXX-XXXX-XXXX-XXXX) :',
+      filter: (input) => (input || '').trim(),
+      validate: (input) => {
+        const cleaned = input.toUpperCase().replace(/[\s-]/g, '');
+        return /^[A-Z2-7]{16}$/.test(cleaned)
+          ? true
+          : 'Code de secours invalide (16 caracteres base32 attendus)';
+      }
+    }
+  ]);
+  return { recoveryCode: code };
+}
 
 export async function loginCommand(options) {
   console.log(chalk.blue.bold('\nConnexion à VerrouPass\n'));
@@ -81,12 +129,34 @@ export async function loginCommand(options) {
 
   try {
     const { authKey, encKey } = await deriveKeys(masterPassword, email);
-    const hashedPassword = await hashForServer(authKey);
+    const passwordHash = await hashForServer(authKey);
 
     spinner.text = 'Connexion au serveur...';
 
-    // Connexion au serveur
-    const response = await apiLogin(email, hashedPassword);
+    let response = await apiLogin(email, passwordHash);
+
+    // Si le compte a la 2FA active, le serveur retourne { totpRequired: true,
+    // challenge } sans poser de cookies ni renvoyer de token. Il faut une 2e
+    // etape avec un code TOTP ou un code de secours.
+    if (response.totpRequired) {
+      spinner.stop();
+      console.log(chalk.yellow('\n2FA activee sur ce compte.'));
+
+      const factor = await promptTotpStep();
+      spinner.start('Verification 2FA...');
+
+      response = await apiLoginTotp({
+        challenge: response.challenge,
+        ...factor
+      });
+
+      if (factor.recoveryCode) {
+        spinner.warn(chalk.yellow(
+          `Code de secours utilise. Codes restants : ${response.recoveryCodesRemaining ?? '?'}.`
+        ));
+        spinner.start();
+      }
+    }
 
     // Sauvegarder la session
     saveToken(response.token);

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DeleteAccount } from '../components/DeleteAccount';
 import { ChangePassword } from '../components/ChangePassword';
+import { TotpManager } from '../components/TotpManager';
 import { useAuth } from '../hooks/useAuth';
 import Header from '../components/Header';
 
@@ -95,6 +96,9 @@ export function Settings() {
               </div>
             </div>
           </section>
+
+          {/* 2FA TOTP */}
+          <TotpManager user={user} />
 
           {/* Données */}
           <section className="mb-8">

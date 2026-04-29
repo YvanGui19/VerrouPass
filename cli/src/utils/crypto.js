@@ -1,13 +1,25 @@
 /**
- * Fonctions de chiffrement - Identique au client web
- * Utilise la Web Crypto API de Node.js
+ * Fonctions cryptographiques pour le CLI VerrouPass
+ *
+ * IMPORTANT : doit rester strictement aligne avec client/src/utils/crypto.js.
+ * Tout drift entraine l incompatibilite des comptes entre CLI et web.
+ *
+ * Algo (identique au web) :
+ *  1. PBKDF2-SHA256, 600 000 iterations, salt = email lowercase, 512 bits
+ *  2. Split : authKeyBytes = derives[0..32], encKeyBytes = derives[32..64]
+ *  3. Pour passwordHash envoye au serveur : PBKDF2(authKey, salt='verroupass-server-auth',
+ *     1 iter, SHA-256, 256 bits) -> hex (64 chars)
+ *  4. encKey : import AES-GCM 256 bits depuis encKeyBytes
  */
 
 import { webcrypto } from 'crypto';
 const crypto = webcrypto;
 
-const PBKDF2_ITERATIONS = 600000; // OWASP recommande 600k+ pour PBKDF2-SHA256
-const KEY_LENGTH = 256;
+const PBKDF2_ITERATIONS = 600000;
+const PBKDF2_HASH = 'SHA-256';
+const AES_ALGORITHM = 'AES-GCM';
+const AES_LENGTH = 256;
+const SERVER_AUTH_SALT = 'verroupass-server-auth';
 
 function stringToBuffer(str) {
   return new TextEncoder().encode(str);
@@ -15,123 +27,122 @@ function stringToBuffer(str) {
 
 function bufferToHex(buffer) {
   return Array.from(new Uint8Array(buffer))
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 }
 
-function hexToBuffer(hex) {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-  }
-  return bytes.buffer;
-}
-
 function bufferToBase64(buffer) {
-  const bytes = new Uint8Array(buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return Buffer.from(binary, 'binary').toString('base64');
+  return Buffer.from(new Uint8Array(buffer)).toString('base64');
 }
 
 function base64ToBuffer(base64) {
-  const binary = Buffer.from(base64, 'base64').toString('binary');
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes.buffer;
+  return new Uint8Array(Buffer.from(base64, 'base64')).buffer;
 }
 
-async function deriveKey(password, salt) {
-  const passwordBuffer = stringToBuffer(password);
-  const saltBuffer = stringToBuffer(salt.toLowerCase());
+/**
+ * Derive authKey (CryptoKey PBKDF2) et encKey (CryptoKey AES-GCM) depuis le
+ * mot de passe maitre + email. Aligne sur client/src/utils/crypto.js.
+ */
+export async function deriveKeys(masterPassword, email) {
+  const salt = stringToBuffer(email.toLowerCase());
 
-  const baseKey = await crypto.subtle.importKey(
+  const masterKeyMaterial = await crypto.subtle.importKey(
     'raw',
-    passwordBuffer,
+    stringToBuffer(masterPassword),
     'PBKDF2',
     false,
-    ['deriveBits', 'deriveKey']
+    ['deriveBits']
   );
 
-  return crypto.subtle.deriveKey(
+  const derivedBits = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
-      salt: saltBuffer,
+      salt,
       iterations: PBKDF2_ITERATIONS,
-      hash: 'SHA-256'
+      hash: PBKDF2_HASH
     },
-    baseKey,
-    { name: 'AES-GCM', length: KEY_LENGTH },
+    masterKeyMaterial,
+    512
+  );
+
+  const derivedArray = new Uint8Array(derivedBits);
+  const authKeyBytes = derivedArray.slice(0, 32);
+  const encKeyBytes = derivedArray.slice(32, 64);
+
+  const authKey = await crypto.subtle.importKey(
+    'raw',
+    authKeyBytes,
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
+
+  const encKey = await crypto.subtle.importKey(
+    'raw',
+    encKeyBytes,
+    { name: AES_ALGORITHM, length: AES_LENGTH },
     true,
     ['encrypt', 'decrypt']
   );
-}
-
-export async function deriveKeys(masterPassword, email) {
-  // Clé d'authentification
-  const authCryptoKey = await deriveKey(masterPassword, email);
-  const authKeyRaw = await crypto.subtle.exportKey('raw', authCryptoKey);
-  const authKey = bufferToHex(authKeyRaw);
-
-  // Clé de chiffrement
-  const encKey = await deriveKey(masterPassword, email + 'enc');
 
   return { authKey, encKey };
 }
 
-export async function hashForServer(key) {
-  const keyBuffer = stringToBuffer(key);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', keyBuffer);
-  return bufferToHex(hashBuffer);
+/**
+ * Hash final transmis au serveur. PBKDF2 1 iteration sur authKey avec salt
+ * fixe (la protection contre brute-force est assuree par les 600k iterations
+ * initiales ; ce hash est juste une transformation pour eviter d envoyer la
+ * cle brute au serveur).
+ */
+export async function hashForServer(authKey) {
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: stringToBuffer(SERVER_AUTH_SALT),
+      iterations: 1,
+      hash: PBKDF2_HASH
+    },
+    authKey,
+    256
+  );
+  return bufferToHex(bits);
 }
 
-export async function encrypt(data, key) {
+export async function encrypt(data, cryptoKey) {
+  const plaintext = stringToBuffer(JSON.stringify(data));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const dataBuffer = stringToBuffer(JSON.stringify(data));
-
-  const encryptedBuffer = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv },
-    key,
-    dataBuffer
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: AES_ALGORITHM, iv },
+    cryptoKey,
+    plaintext
   );
-
   return {
-    encryptedData: bufferToBase64(encryptedBuffer),
+    encryptedData: bufferToBase64(ciphertext),
     iv: bufferToBase64(iv)
   };
 }
 
-export async function decrypt(encryptedData, iv, key) {
-  const encryptedBuffer = base64ToBuffer(encryptedData);
-  const ivBuffer = base64ToBuffer(iv);
-
-  const decryptedBuffer = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: ivBuffer },
-    key,
-    encryptedBuffer
+export async function decrypt(encryptedData, ivBase64, cryptoKey) {
+  const ciphertext = base64ToBuffer(encryptedData);
+  const iv = new Uint8Array(base64ToBuffer(ivBase64));
+  const plaintext = await crypto.subtle.decrypt(
+    { name: AES_ALGORITHM, iv },
+    cryptoKey,
+    ciphertext
   );
-
-  const decryptedText = new TextDecoder().decode(decryptedBuffer);
-  return JSON.parse(decryptedText);
+  return JSON.parse(new TextDecoder().decode(plaintext));
 }
 
-// Fonction pour exporter une clé en format stockable
-export async function exportKey(key) {
-  const exported = await crypto.subtle.exportKey('raw', key);
+export async function exportKey(cryptoKey) {
+  const exported = await crypto.subtle.exportKey('raw', cryptoKey);
   return bufferToBase64(exported);
 }
 
-// Fonction pour importer une clé depuis le format stocké
-export async function importKey(keyString) {
-  const keyBuffer = base64ToBuffer(keyString);
+export async function importKey(base64Key) {
   return crypto.subtle.importKey(
     'raw',
-    keyBuffer,
-    { name: 'AES-GCM', length: KEY_LENGTH },
+    base64ToBuffer(base64Key),
+    { name: AES_ALGORITHM, length: AES_LENGTH },
     true,
     ['encrypt', 'decrypt']
   );

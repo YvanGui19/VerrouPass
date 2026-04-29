@@ -42,3 +42,30 @@ import rateLimit from 'express-rate-limit';
     standardHeaders: true,
     legacyHeaders: false,
   });
+
+  // Rate limiter strict pour la 2e étape TOTP — anti-brute-force du code
+  // 6 chiffres (10^6 combinaisons). 5 tentatives par IP / 15 min, ne compte
+  // que les échecs (un succès n'incrémente pas le compteur).
+  export const totpLoginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: {
+      error: 'Trop de tentatives 2FA. Veuillez réessayer dans 15 minutes.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipSuccessfulRequests: true,
+  });
+
+  // Rate limiter pour les opérations TOTP authentifiées (setup/enable/disable).
+  // Évite qu'un attaquant ayant volé un access token ne spamme les setups
+  // et n'épuise l'entropie du serveur ou ne brute-force un disable.
+  export const totpManageLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: {
+      error: 'Trop d\'opérations 2FA. Veuillez réessayer plus tard.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });

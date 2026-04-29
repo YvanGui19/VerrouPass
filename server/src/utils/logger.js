@@ -208,6 +208,22 @@ const securityLogger = {
   },
 
   /**
+   * Log un évènement TOTP (setup, enable, disable, login_totp_*, recovery_used)
+   */
+  totp: (req, email, action, success, reason = null) => {
+    logger.log('security', 'TOTP', {
+      event: 'TOTP',
+      action,
+      email: maskEmail(email),
+      success,
+      reason,
+      ip: getClientIP(req),
+      userAgent: req.headers['user-agent'] || 'unknown',
+      timestamp: new Date().toISOString()
+    });
+  },
+
+  /**
    * Log un accès suspect ou une anomalie
    */
   suspiciousActivity: (req, description, details = {}) => {

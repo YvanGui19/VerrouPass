@@ -42,13 +42,33 @@ api.interceptors.response.use(
 
 // Fonctions de l'API
 
-export async function login(email, password) {
-  const response = await api.post('/auth/login', { email, password });
+// 1ere etape du login. Envoie le passwordHash (PBKDF2 + transformation,
+// jamais le password en clair) sous le nom de champ attendu par le serveur.
+// Retourne { token, user } pour un compte sans 2FA, ou { totpRequired: true,
+// challenge } si le compte a active la 2FA.
+export async function login(email, passwordHash) {
+  const response = await api.post('/auth/login', { email, passwordHash });
   return response.data;
 }
 
-export async function register(email, password) {
-  const response = await api.post('/auth/register', { email, password });
+// 2e etape du login pour les comptes avec 2FA active. Echange le challenge JWT
+// (recu en reponse a /login) contre des cookies de session, en fournissant
+// soit un code TOTP a 6 chiffres, soit un code de secours.
+// Body : { challenge, totpCode } ou { challenge, recoveryCode }.
+export async function loginTotp({ challenge, totpCode, recoveryCode }) {
+  const body = { challenge };
+  if (totpCode) body.totpCode = totpCode;
+  if (recoveryCode) body.recoveryCode = recoveryCode;
+  const response = await api.post('/auth/login/totp', body);
+  return response.data;
+}
+
+export async function register(email, passwordHash, invitationCode) {
+  const response = await api.post('/auth/register', {
+    email,
+    passwordHash,
+    invitationCode
+  });
   return response.data;
 }
 

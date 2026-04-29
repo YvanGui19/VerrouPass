@@ -22,6 +22,12 @@ export function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Un challenge TOTP intermédiaire (totpPending=true) ne doit JAMAIS être
+    // accepté comme access token sur les routes protégées : il sert
+    // exclusivement pour la 2e étape du login (POST /api/auth/login/totp).
+    if (decoded.totpPending === true) {
+      return res.status(403).json({ error: 'Token invalide (challenge 2FA non utilisable ici)' });
+    }
     req.user = decoded;
     next();
   } catch (err) {
@@ -29,6 +35,29 @@ export function authenticateToken(req, res, next) {
       return res.status(401).json({ error: 'Token expiré', code: 'TOKEN_EXPIRED' });
     }
     return res.status(403).json({ error: 'Token invalide' });
+  }
+}
+
+// Génère le challenge JWT court (5min) émis par /login quand 2FA est activée.
+// L'utilisateur doit le présenter à /login/totp avec un code valide pour
+// échanger ce challenge contre des cookies de session.
+export function generateTotpChallenge(userId, email) {
+  return jwt.sign(
+    { userId, email, totpPending: true },
+    process.env.JWT_SECRET,
+    { expiresIn: '5m' }
+  );
+}
+
+export function verifyTotpChallenge(token) {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.totpPending !== true) {
+      return null;
+    }
+    return decoded;
+  } catch {
+    return null;
   }
 }
 

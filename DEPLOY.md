@@ -206,6 +206,10 @@ DATABASE_URL=postgresql://verroupass_user:VOTRE_MOT_DE_PASSE_SECURISE@localhost:
 JWT_SECRET=CHANGEZ_CETTE_CLE_PAR_UNE_VALEUR_ALEATOIRE_TRES_LONGUE_ET_SECURISEE
 JWT_EXPIRES_IN=7d
 
+# 2FA / TOTP - clé maître AES-256-GCM pour chiffrer les secrets TOTP au repos
+# Le serveur refuse de démarrer si elle est absente ou mal formée (32 bytes hex).
+TOTP_ENCRYPTION_KEY=GENERER_AVEC_OPENSSL_RAND_HEX_32
+
 # CORS
 CLIENT_URL=https://verroupass.votredomaine.com
 ```
@@ -214,6 +218,15 @@ CLIENT_URL=https://verroupass.votredomaine.com
 ```bash
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
+
+**Pour générer TOTP_ENCRYPTION_KEY :**
+```bash
+openssl rand -hex 32
+```
+
+> ⚠️ **Ne jamais regénérer TOTP_ENCRYPTION_KEY après mise en service** : tous les
+> secrets TOTP enregistrés deviendraient indéchiffrables et les utilisateurs avec
+> 2FA active seraient bloqués. La sauvegarder dans un coffre.
 
 ### 6. Initialiser la base de données
 

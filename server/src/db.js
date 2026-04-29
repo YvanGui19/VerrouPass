@@ -25,9 +25,25 @@ export async function initDatabase() {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) UNIQUE NOT NULL,
       password_hash VARCHAR(255) NOT NULL,
+      totp_secret_enc TEXT,
+      totp_secret_iv TEXT,
+      totp_secret_tag TEXT,
+      totp_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+      totp_recovery_codes_hashed TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
+  `;
+
+  // Migration idempotente pour les bases existantes (CREATE TABLE IF NOT EXISTS
+  // ne touche pas une table déjà créée sans les colonnes TOTP).
+  const alterUsersAddTotp = `
+    ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS totp_secret_enc TEXT,
+      ADD COLUMN IF NOT EXISTS totp_secret_iv TEXT,
+      ADD COLUMN IF NOT EXISTS totp_secret_tag TEXT,
+      ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+      ADD COLUMN IF NOT EXISTS totp_recovery_codes_hashed TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
   `;
 
   const createVaultItemsTable = `
@@ -62,6 +78,7 @@ export async function initDatabase() {
 
   try {
     await pool.query(createUsersTable);
+    await pool.query(alterUsersAddTotp);
     await pool.query(createVaultItemsTable);
     await pool.query(createIndex);
     await pool.query(createRefreshTokensTable);

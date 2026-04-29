@@ -1,24 +1,35 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import TotpChallenge from './TotpChallenge';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, pendingTotp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const infoMessage = location.state?.info;
+
+  // Si une etape 2FA est en attente (apres un /login reussi sur compte 2FA),
+  // afficher TotpChallenge a la place du formulaire.
+  if (pendingTotp) {
+    return <TotpChallenge />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/vault');
+      const result = await login(email, password);
+      // Si totpRequired, le hook a stocke pendingTotp et le composant va se
+      // re-rendre en TotpChallenge au prochain tick. Sinon on navigue.
+      if (!result?.totpRequired) {
+        navigate('/vault');
+      }
     } catch (err) {
       setError(err.response?.data?.error || 'Erreur de connexion');
     } finally {

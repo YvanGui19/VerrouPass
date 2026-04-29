@@ -8,6 +8,10 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [encKey, setEncKey] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Etat intermediaire entre /login (etape 1 OK, 2FA requise) et /login/totp.
+  // Stocke la encKey deja derivee + le challenge JWT pour ne pas redemander
+  // le mot de passe a la 2e etape. Reset apres succes ou cancel.
+  const [pendingTotp, setPendingTotp] = useState(null);
 
   // Vérifier le token au chargement (via cookie HttpOnly)
   useEffect(() => {
@@ -47,11 +51,45 @@ export function AuthProvider({ children }) {
     // Envoyer au serveur (le token est maintenant dans un cookie HttpOnly)
     const data = await authApi.login(email, passwordHash);
 
+    // Si 2FA active : pas de session posee. On garde la encKey + challenge en
+    // memoire dans le state du hook pour la 2e etape (loginTotp), sans setUser
+    // ni setEncKey. Le passwordHash est aussi conserve : utile si besoin pour
+    // la fonction de disable depuis Settings, mais c'est ephemere et oublie
+    // au cancel ou au succes.
+    if (data.totpRequired) {
+      setPendingTotp({
+        challenge: data.challenge,
+        derivedEncKey,
+        passwordHash,
+        email
+      });
+      return { totpRequired: true };
+    }
+
     setUser(data.user);
     setEncKey(derivedEncKey);
 
     return data;
   };
+
+  // 2e etape du login quand 2FA est active. A appeler apres un login() qui a
+  // retourne { totpRequired: true }. Reutilise la encKey deja derivee.
+  const loginTotp = async ({ totpCode, recoveryCode }) => {
+    if (!pendingTotp) {
+      throw new Error('Aucune connexion 2FA en attente. Recommencez la connexion.');
+    }
+    const data = await authApi.loginTotp({
+      challenge: pendingTotp.challenge,
+      totpCode,
+      recoveryCode
+    });
+    setUser(data.user);
+    setEncKey(pendingTotp.derivedEncKey);
+    setPendingTotp(null);
+    return data;
+  };
+
+  const cancelTotpFlow = () => setPendingTotp(null);
 
   const logout = async () => {
     try {
@@ -61,6 +99,7 @@ export function AuthProvider({ children }) {
     }
     setUser(null);
     setEncKey(null);
+    setPendingTotp(null);
   };
 
   const unlockVault = async (masterPassword) => {
@@ -79,8 +118,12 @@ export function AuthProvider({ children }) {
     loading,
     isAuthenticated: !!user,
     isUnlocked: !!encKey,
+    pendingTotp: !!pendingTotp,
+    pendingTotpEmail: pendingTotp?.email || null,
     register,
     login,
+    loginTotp,
+    cancelTotpFlow,
     logout,
     unlockVault
   };

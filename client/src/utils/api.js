@@ -92,6 +92,16 @@ export const authApi = {
     return response.data;
   },
 
+  // 2e etape login pour les comptes 2FA. Body : { challenge, totpCode } OU
+  // { challenge, recoveryCode }.
+  async loginTotp({ challenge, totpCode, recoveryCode }) {
+    const body = { challenge };
+    if (totpCode) body.totpCode = totpCode;
+    if (recoveryCode) body.recoveryCode = recoveryCode;
+    const response = await api.post('/auth/login/totp', body);
+    return response.data;
+  },
+
   async verify() {
     const response = await api.post('/auth/verify');
     return response.data;
@@ -120,6 +130,33 @@ export const authApi = {
     const response = await api.delete('/auth/account', {
       data: { passwordHash }
     });
+    return response.data;
+  }
+};
+
+// TOTP / 2FA management API (toutes les routes exigent une session active)
+export const totpApi = {
+  async status() {
+    const response = await api.get('/auth/totp/status');
+    return response.data;
+  },
+
+  async setup() {
+    const response = await api.post('/auth/totp/setup');
+    return response.data;
+  },
+
+  async enable(totpCode) {
+    const response = await api.post('/auth/totp/enable', { totpCode });
+    return response.data;
+  },
+
+  // Disable necessite passwordHash + (totpCode OU recoveryCode).
+  async disable({ passwordHash, totpCode, recoveryCode }) {
+    const body = { passwordHash };
+    if (totpCode) body.totpCode = totpCode;
+    if (recoveryCode) body.recoveryCode = recoveryCode;
+    const response = await api.post('/auth/totp/disable', body);
     return response.data;
   }
 };

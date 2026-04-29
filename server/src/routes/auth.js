@@ -8,11 +8,19 @@ import express from 'express';
     revokeRefreshToken,
     revokeAllUserRefreshTokens,
     authenticateToken,
-    getCookieOptions
+    getCookieOptions,
+    generateTotpChallenge,
+    verifyTotpChallenge
   } from '../middleware/auth.js';
-  import { loginLimiter, registerLimiter } from '../middleware/rateLimiter.js';
+  import {
+    loginLimiter,
+    registerLimiter,
+    totpLoginLimiter
+  } from '../middleware/rateLimiter.js';
   import pool from '../db.js';
   import bcrypt from 'bcrypt';
+  import { verifyTOTP, normalizeRecoveryCode } from '../utils/totp.js';
+  import { decryptSecret } from '../utils/secretCrypto.js';
   import { securityLogger } from '../utils/logger.js';
   import { isValidEmail } from '../utils/validators.js';
 
@@ -116,6 +124,18 @@ import express from 'express';
         return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
       }
 
+      // Si 2FA active, ne PAS poser de cookies : retourner un challenge JWT
+      // 5min que l'utilisateur devra échanger contre des cookies via
+      // POST /api/auth/login/totp avec un code TOTP ou un recovery code.
+      if (user.totp_enabled) {
+        const challenge = generateTotpChallenge(user.id, user.email);
+        securityLogger.loginAttempt(req, email, true, 'totp_required');
+        return res.json({
+          totpRequired: true,
+          challenge
+        });
+      }
+
       // Générer les tokens
       const accessToken = generateAccessToken(user.id, user.email);
       const { token: refreshToken, expiresAt } = await generateRefreshToken(user.id);
@@ -147,6 +167,110 @@ import express from 'express';
     } catch (err) {
       securityLogger.loginAttempt(req, req.body?.email, false, 'server_error');
       res.status(500).json({ error: 'Erreur lors de la connexion' });
+    }
+  });
+
+  // POST /api/auth/login/totp - 2e etape du login quand 2FA est activee.
+  // Body : { challenge, totpCode } OU { challenge, recoveryCode }.
+  // Le challenge est le JWT court emis par /login. Code TOTP verifie avec
+  // window +/-1 ; recovery code compare bcrypt sur la liste, marque single-use.
+  router.post('/login/totp', totpLoginLimiter, async (req, res) => {
+    try {
+      const { challenge, totpCode, recoveryCode } = req.body;
+
+      if (!challenge) {
+        return res.status(400).json({ error: 'Challenge requis' });
+      }
+      if (!totpCode && !recoveryCode) {
+        return res.status(400).json({ error: 'Code TOTP ou code de secours requis' });
+      }
+
+      const decoded = verifyTotpChallenge(challenge);
+      if (!decoded) {
+        securityLogger.totp(req, null, 'login_totp', false, 'invalid_or_expired_challenge');
+        return res.status(401).json({
+          error: 'Challenge 2FA invalide ou expiré. Recommencez la connexion.'
+        });
+      }
+
+      const user = await User.findByEmail(decoded.email);
+      if (!user || !user.totp_enabled) {
+        securityLogger.totp(req, decoded.email, 'login_totp', false, 'user_or_totp_state_changed');
+        return res.status(401).json({ error: 'État 2FA invalide. Recommencez la connexion.' });
+      }
+
+      let secondFactorOk = false;
+      let usedRecoveryCode = false;
+      let updatedRecoveryHashes = null;
+
+      if (totpCode) {
+        const secret = decryptSecret({
+          ciphertext: user.totp_secret_enc,
+          iv: user.totp_secret_iv,
+          tag: user.totp_secret_tag
+        });
+        secondFactorOk = verifyTOTP(secret, totpCode);
+      } else {
+        const normalized = normalizeRecoveryCode(recoveryCode);
+        const hashes = user.totp_recovery_codes_hashed || [];
+        for (let i = 0; i < hashes.length; i++) {
+          if (await bcrypt.compare(normalized, hashes[i])) {
+            secondFactorOk = true;
+            usedRecoveryCode = true;
+            // Single-use : retirer ce hash
+            updatedRecoveryHashes = hashes.filter((_, idx) => idx !== i);
+            break;
+          }
+        }
+      }
+
+      if (!secondFactorOk) {
+        securityLogger.totp(req, decoded.email, 'login_totp', false,
+          totpCode ? 'invalid_totp' : 'invalid_recovery'
+        );
+        return res.status(401).json({ error: 'Code 2FA incorrect' });
+      }
+
+      if (usedRecoveryCode && updatedRecoveryHashes) {
+        await User.setRecoveryCodesHashed(user.id, updatedRecoveryHashes);
+        securityLogger.totp(req, decoded.email, 'recovery_code_used', true, null);
+      }
+
+      // Pose les cookies de session standard
+      const accessToken = generateAccessToken(user.id, user.email);
+      const { token: refreshToken } = await generateRefreshToken(user.id);
+
+      const cookieOptions = getCookieOptions();
+      res.cookie('accessToken', accessToken, {
+        ...cookieOptions,
+        maxAge: ACCESS_TOKEN_MAX_AGE
+      });
+      res.cookie('refreshToken', refreshToken, {
+        ...cookieOptions,
+        maxAge: REFRESH_TOKEN_MAX_AGE,
+        path: '/api/auth'
+      });
+
+      securityLogger.totp(req, user.email, 'login_totp', true,
+        usedRecoveryCode ? 'recovery_used' : 'totp_ok'
+      );
+      securityLogger.loginAttempt(req, user.email, true, 'totp_completed');
+
+      res.json({
+        message: 'Connexion réussie',
+        user: {
+          id: user.id,
+          email: user.email,
+          createdAt: user.created_at
+        },
+        token: accessToken,
+        recoveryCodesRemaining: usedRecoveryCode
+          ? updatedRecoveryHashes.length
+          : (user.totp_recovery_codes_hashed || []).length
+      });
+    } catch (err) {
+      securityLogger.totp(req, null, 'login_totp', false, 'server_error');
+      res.status(500).json({ error: 'Erreur lors de la vérification 2FA' });
     }
   });
 
