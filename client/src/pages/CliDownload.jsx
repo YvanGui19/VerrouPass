@@ -61,7 +61,11 @@ export function CliDownload() {
             </div>
             <div className="flex justify-between items-center p-4 bg-dark-navy border border-cyan/20 rounded">
               <span className="font-mono text-xs text-cyan uppercase tracking-wider">Taille:</span>
-              <span className="font-mono text-white">~33 KB</span>
+              <span className="font-mono text-white">
+                {cliInfo?.sizeBytes
+                  ? `${(cliInfo.sizeBytes / 1024).toFixed(1)} KB`
+                  : 'N/A'}
+              </span>
             </div>
           </div>
 

@@ -4,6 +4,8 @@
  */
 
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -11,6 +13,19 @@ const router = express.Router();
 const CURRENT_CLI_VERSION = '2.1.1'; // Patch: missing deleteAccount export
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
 const CLI_SHA256 = 'd92f2cdc0a45d64101b71a415c81083c340752a21de2e11aad75e9ccbe041bac';
+
+// Chemin physique du ZIP servi par nginx (location /downloads/). Utilisé pour
+// renvoyer dynamiquement la taille réelle du fichier dans /api/cli/version,
+// pour éviter le drift entre l'archive déployée et la taille affichée par l'UI.
+const CLI_ZIP_PATH = '/var/www/verroupass/downloads/verroupass-cli.zip';
+
+function getCliFileSize() {
+  try {
+    return fs.statSync(CLI_ZIP_PATH).size;
+  } catch {
+    return null; // Fichier absent en dev local : le frontend affichera 'N/A'
+  }
+}
 
 /**
  * GET /api/cli/version
@@ -22,6 +37,7 @@ router.get('/version', (req, res) => {
     downloadUrl: DOWNLOAD_URL,
     releaseDate: '2026-04-29',
     sha256: CLI_SHA256,
+    sizeBytes: getCliFileSize(),
     changelog: [
       'Fix critique : alignement crypto avec le client web (PBKDF2 600k + hash PBKDF2 1 iter au lieu de SHA-256 simple). Les comptes créés via le web sont désormais accessibles via la CLI.',
       'Fix critique : login envoie maintenant le bon champ passwordHash (au lieu de password en clair non lu par le serveur).',
