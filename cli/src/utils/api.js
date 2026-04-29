@@ -97,4 +97,12 @@ export async function deleteVaultItem(id) {
   return response.data;
 }
 
+// Suppression definitive du compte. Le serveur (DELETE /api/auth/account) exige
+// le passwordHash dans le body pour confirmer, et supprime user + vault_items
+// en cascade.
+export async function deleteAccount(passwordHash) {
+  const response = await api.delete('/auth/account', { data: { passwordHash } });
+  return response.data;
+}
+
 export default api;
