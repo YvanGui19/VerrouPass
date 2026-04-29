@@ -8,9 +8,9 @@ import express from 'express';
 const router = express.Router();
 
 // Version actuelle du CLI
-const CURRENT_CLI_VERSION = '2.1.0'; // Fix login + support 2FA TOTP
+const CURRENT_CLI_VERSION = '2.1.1'; // Patch: missing deleteAccount export
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
-const CLI_SHA256 = 'f5f7b0dc917e1df278869d0f87c80af2958b9ab5ce72ac967f1b42b477dc580b';
+const CLI_SHA256 = 'd92f2cdc0a45d64101b71a415c81083c340752a21de2e11aad75e9ccbe041bac';
 
 /**
  * GET /api/cli/version
@@ -25,7 +25,8 @@ router.get('/version', (req, res) => {
     changelog: [
       'Fix critique : alignement crypto avec le client web (PBKDF2 600k + hash PBKDF2 1 iter au lieu de SHA-256 simple). Les comptes créés via le web sont désormais accessibles via la CLI.',
       'Fix critique : login envoie maintenant le bon champ passwordHash (au lieu de password en clair non lu par le serveur).',
-      'Nouveau : support de la 2FA TOTP. Si le compte a la 2FA activée, prompt interactif pour code à 6 chiffres ou code de secours après login.'
+      'Nouveau : support de la 2FA TOTP. Si le compte a la 2FA activée, prompt interactif pour code à 6 chiffres ou code de secours après login.',
+      'Patch : ajout de l\'export manquant deleteAccount dans utils/api.js (la commande v-account-delete plantait au démarrage du CLI).'
     ],
     breaking: true, // Anciens comptes CLI-only inutilisables (algo crypto changé)
     minVersion: '2.1.0' // Version minimum requise (anciennes versions ne peuvent plus se connecter)
