@@ -210,6 +210,12 @@ JWT_EXPIRES_IN=7d
 # Le serveur refuse de démarrer si elle est absente ou mal formée (32 bytes hex).
 TOTP_ENCRYPTION_KEY=GENERER_AVEC_OPENSSL_RAND_HEX_32
 
+# Admin - token statique requis par POST /api/admin/invitation pour
+# générer les codes d'invitation. Sans lui, aucun nouvel utilisateur ne
+# peut s'inscrire (l'inscription par invitation est le seul mode
+# supporté). Doit faire au moins 32 caractères.
+ADMIN_INVITATION_TOKEN=GENERER_AVEC_NODE_RANDOM_BYTES_32_HEX
+
 # CORS
 CLIENT_URL=https://verroupass.votredomaine.com
 ```
@@ -224,9 +230,36 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 openssl rand -hex 32
 ```
 
+**Pour générer ADMIN_INVITATION_TOKEN :**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
 > ⚠️ **Ne jamais regénérer TOTP_ENCRYPTION_KEY après mise en service** : tous les
 > secrets TOTP enregistrés deviendraient indéchiffrables et les utilisateurs avec
 > 2FA active seraient bloqués. La sauvegarder dans un coffre.
+
+> 💡 **`ADMIN_INVITATION_TOKEN` peut être régénéré** : il invalide juste
+> les codes d'invitation déjà émis (qui de toute façon expirent au bout
+> de 15 min en RAM). Aucune donnée utilisateur n'est touchée.
+
+### Générer un code d'invitation pour le premier compte
+
+Une fois le serveur démarré, utilisez `ADMIN_INVITATION_TOKEN` pour
+générer un code valide 15 minutes :
+
+```bash
+TOKEN=$(grep ^ADMIN_INVITATION_TOKEN= /var/www/verroupass/server/.env | cut -d= -f2-)
+curl -X POST -H "x-admin-token: $TOKEN" https://verroupass.votredomaine.com/api/admin/invitation
+```
+
+Réponse :
+
+```json
+{ "code": "xxxx-xxxx-xxxx-xxxx", "expiresAt": "...", "ttlMinutes": 15 }
+```
+
+Allez ensuite sur `/register` avec ce code pour créer le premier compte.
 
 ### 6. Initialiser la base de données
 

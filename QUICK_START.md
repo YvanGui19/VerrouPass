@@ -67,13 +67,36 @@ cp .env.production .env
 nano .env
 ```
 
-Modifiez ces valeurs dans `.env` :
+Générez les secrets avec ces commandes (notez les valeurs, vous les
+collerez dans `.env`) :
+
+```bash
+# JWT (HS256, 64 bytes hex = 512 bits)
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+# TOTP au repos (AES-256-GCM, 32 bytes hex = 256 bits, OBLIGATOIRE,
+# le serveur refuse de démarrer sans)
+openssl rand -hex 32
+
+# Admin (token statique pour POST /api/admin/invitation, OBLIGATOIRE
+# pour générer les codes d'invitation à chaque inscription)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Modifiez ensuite ces valeurs dans `.env` :
 
 ```env
 DATABASE_URL=postgresql://verroupass_user:VOTRE_MOT_DE_PASSE@localhost:5432/verroupass
-JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
+JWT_SECRET=<valeur du randomBytes(64) ci-dessus>
+JWT_EXPIRES_IN=7d
+TOTP_ENCRYPTION_KEY=<valeur du openssl rand -hex 32 ci-dessus>
+ADMIN_INVITATION_TOKEN=<valeur du randomBytes(32) ci-dessus>
 CLIENT_URL=https://verroupass.votredomaine.com
 ```
+
+> ⚠️ **`TOTP_ENCRYPTION_KEY` est immuable** : si vous la régénérez après
+> que des utilisateurs ont activé le 2FA, leurs secrets TOTP deviennent
+> indéchiffrables. Sauvegardez-la dans un coffre.
 
 ## Étape 5 : Installation des dépendances (2 min)
 

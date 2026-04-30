@@ -60,6 +60,10 @@ Mot de passe maitre
 - Hash bcrypt du hash d'authentification
 - Donnees chiffrees (blob illisible sans la cle)
 - IV (vecteur d'initialisation) pour chaque entree
+- Salt KDF Argon2id (16 bytes random par utilisateur, public par
+  construction puisque le client doit l'obtenir pour deriver)
+- Secret TOTP chiffre au repos (AES-256-GCM avec TOTP_ENCRYPTION_KEY
+  cote serveur), uniquement si l'utilisateur a active le 2FA
 
 ### Ce que le serveur ne voit JAMAIS
 
@@ -80,10 +84,14 @@ Mot de passe maitre
 
 ### Mitigations recommandees
 
-- Utiliser HTTPS avec HSTS
-- Verifier l'integrite du code (SRI pour les assets)
+- Utiliser HTTPS avec HSTS (actif en prod : `max-age=86400; includeSubDomains`)
+- CSP stricte cote nginx (`script-src 'self' 'wasm-unsafe-eval'`, pas de
+  `unsafe-inline` script, pas de tiers exterieur autorise sur connect-src
+  ni script-src) -- bloque l'injection de keylogger en cas de compromission
+  d'une dependance npm
+- Polices auto-hebergees (pas de connexion sortante a fonts.gstatic.com)
+- Activer le 2FA TOTP sur son compte (RFC 6238, secret AES-256-GCM au repos)
 - Utiliser un navigateur a jour
-- Activer le 2FA sur le compte serveur
 
 ---
 
@@ -93,14 +101,22 @@ Le projet minimise les dependances externes pour reduire la surface d'attaque.
 
 **Cote client :**
 - React (UI)
-- Web Crypto API native (chiffrement)
-- Aucune lib externe pour la crypto
+- Web Crypto API native (PBKDF2 legacy, AES-256-GCM, hashForServer)
+- libsodium-wrappers-sumo 0.7.15 (Argon2id, lazy-loade uniquement sur
+  les pages auth, ~315KB gzipped). Implementation de reference de Frank
+  Denis, audit Cure53. Compile en WebAssembly cote navigateur, d'ou la
+  directive CSP `script-src 'self' 'wasm-unsafe-eval'`.
+- @fontsource/* (polices Google Fonts repackagees pour npm, bundled
+  localement par Vite : aucune connexion sortante a Google CDN)
 
 **Cote serveur :**
 - Express.js
 - bcrypt (hachage)
-- jsonwebtoken (JWT)
-- PostgreSQL
+- jsonwebtoken (JWT, HS256, secret 64 bytes hex en .env)
+- helmet (avec CSP/HSTS/X-Frame-Options/COOP/CORP/Referrer-Policy
+  desactives car nginx les sert deja)
+- PostgreSQL (parameterized queries partout, scope par user_id sur
+  toutes les routes vault)
 
 ---
 
