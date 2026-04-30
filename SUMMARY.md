@@ -52,8 +52,7 @@ Votre application VerrouPass est maintenant **complète et prête pour le déplo
 - `QUICK_START.md` : Déploiement rapide en 15 minutes
 - `server/README.md` : Documentation du backend
 - `client/README.md` : Documentation du frontend
-- `cli/README.md` : Documentation de la CLI
-- `cli/QUICK_START.md` : Guide rapide CLI
+- `cli/README.md` : Documentation de la CLI (installation depuis le ZIP de release, configuration, toutes les commandes avec exemples)
 
 ## Fonctionnalités disponibles
 
@@ -178,7 +177,7 @@ VerrouPass/
 │   │       ├── config.js    (stockage local)
 │   │       ├── api.js       (client API)
 │   │       └── crypto.js    (chiffrement)
-│   ├── QUICK_START.md
+│   ├── bin/                 (stubs v-* npm install -g)
 │   └── README.md
 │
 ├── scripts/                 ← Scripts de gestion
@@ -285,7 +284,6 @@ pm2 status                       # Statut
 - [DEPLOY.md](./DEPLOY.md) - Déploiement VPS
 - [QUICK_START.md](./QUICK_START.md) - Déploiement rapide
 - [cli/README.md](./cli/README.md) - Documentation CLI
-- [cli/QUICK_START.md](./cli/QUICK_START.md) - Guide rapide CLI
 - [server/README.md](./server/README.md) - Documentation serveur
 - [client/README.md](./client/README.md) - Documentation client
 

@@ -107,7 +107,7 @@ v-ls
 v-cat GitHub -c
 ```
 
-Voir [cli/QUICK_START.md](./cli/QUICK_START.md) pour plus de details.
+Voir [cli/README.md](./cli/README.md) pour plus de details (installation depuis le ZIP de release, configuration, toutes les commandes avec exemples).
 
 ### Deploiement sur VPS
 
@@ -151,11 +151,11 @@ verroupass/
 │   └── README.md
 │
 ├── cli/                     # Interface en ligne de commande
+│   ├── bin/                 # Stubs v-* pour npm install -g (dispatch Windows)
 │   ├── src/
 │   │   ├── commands/        # Commandes CLI
 │   │   └── utils/           # Utilitaires (crypto, api, config)
-│   ├── QUICK_START.md       # Demarrage rapide
-│   └── README.md
+│   └── README.md            # Installation, configuration, commandes
 │
 ├── scripts/                 # Scripts de gestion
 │   ├── backup.sh            # Sauvegarde de la DB
