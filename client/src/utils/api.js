@@ -145,6 +145,28 @@ export const authApi = {
       data: { passwordHash }
     });
     return response.data;
+  },
+
+  // Migration silencieuse PBKDF2 -> Argon2id. Le serveur exige un cookie de
+  // session valide ET la connaissance du mdp (oldPasswordHash). Idempotent
+  // côté serveur : 409 si déjà v2.
+  async migrateKdf({
+    oldPasswordHash,
+    newPasswordHash,
+    kdfVersion,
+    kdfParams,
+    kdfSalt,
+    reencryptedItems
+  }) {
+    const response = await api.post('/auth/migrate-kdf', {
+      oldPasswordHash,
+      newPasswordHash,
+      kdfVersion,
+      kdfParams,
+      kdfSalt,
+      reencryptedItems
+    });
+    return response.data;
   }
 };
 

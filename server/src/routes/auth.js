@@ -451,6 +451,125 @@ import express from 'express';
     }
   });
 
+  // POST /api/auth/migrate-kdf — migration silencieuse PBKDF2 -> Argon2id.
+  //
+  // Déclenchée automatiquement par le client après un login réussi sur un
+  // compte legacy (kdf_version=1). Le mot de passe maître est inchangé, mais
+  // les clés sont re-dérivées avec Argon2id et le coffre re-chiffré.
+  //
+  // Authentification : cookie HttpOnly (auth requise) + proof-of-knowledge
+  // du master password via `oldPasswordHash` (= ancien hash PBKDF2). Le
+  // cookie seul ne suffit pas : un attaquant XSS qui exfiltrerait le cookie
+  // ne pourrait pas migrer le compte sans connaître le master password.
+  //
+  // Idempotente : refuse si l'utilisateur est déjà en kdf_version=2 (évite
+  // les races et les replays).
+  //
+  // Pas de révocation des refresh tokens : la migration n'est pas un
+  // changement de credentials, juste un changement d'algo. Les autres
+  // sessions actives continuent de fonctionner ; au prochain re-derive
+  // de leur encKey, leur client interrogera /kdf-info et obtiendra v2.
+  router.post('/migrate-kdf', authenticateToken, async (req, res) => {
+    try {
+      const {
+        oldPasswordHash,
+        newPasswordHash,
+        kdfVersion,
+        kdfParams,
+        kdfSalt,
+        reencryptedItems
+      } = req.body;
+      const userId = req.user.userId;
+
+      // Validation entrées
+      if (!oldPasswordHash || !newPasswordHash) {
+        return res.status(400).json({ error: 'oldPasswordHash et newPasswordHash requis' });
+      }
+      if (kdfVersion !== KDF_VERSION.ARGON2ID) {
+        return res.status(400).json({ error: 'kdfVersion cible invalide (Argon2id requis)' });
+      }
+      if (!isValidArgon2idParams(kdfParams)) {
+        return res.status(400).json({ error: 'kdfParams invalides' });
+      }
+      if (typeof kdfSalt !== 'string' || !kdfSalt) {
+        return res.status(400).json({ error: 'kdfSalt requis (base64)' });
+      }
+      let kdfSaltBuf;
+      try {
+        kdfSaltBuf = Buffer.from(kdfSalt, 'base64');
+      } catch (err) {
+        return res.status(400).json({ error: 'kdfSalt invalide (base64 attendu)' });
+      }
+      if (kdfSaltBuf.length !== KDF_SALT_LEN) {
+        return res.status(400).json({ error: `kdfSalt doit faire ${KDF_SALT_LEN} bytes` });
+      }
+      if (!Array.isArray(reencryptedItems)) {
+        return res.status(400).json({ error: 'reencryptedItems doit être un tableau' });
+      }
+
+      // Charger l'utilisateur (full row pour avoir password_hash + kdf_version)
+      const user = await User.findByEmail(req.user.email);
+      if (!user) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+
+      // Idempotence : refuse si déjà migré
+      if (user.kdf_version !== KDF_VERSION.PBKDF2_SHA256_600K) {
+        return res.status(409).json({ error: 'Compte déjà migré' });
+      }
+
+      // Proof-of-knowledge : vérifier que l'appelant connaît le mdp actuel.
+      const isValid = await User.verifyPassword(user, oldPasswordHash);
+      if (!isValid) {
+        securityLogger.passwordChange(req, req.user.email, false, 'invalid_old_password_kdf_migration');
+        return res.status(401).json({ error: 'oldPasswordHash invalide' });
+      }
+
+      // Transaction : update user + update tous les vault_items.
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+
+        const hashedNewPassword = await bcrypt.hash(newPasswordHash, SALT_ROUNDS);
+
+        await client.query(
+          `UPDATE users
+              SET password_hash = $1,
+                  kdf_version   = $2,
+                  kdf_params    = $3,
+                  kdf_salt      = $4,
+                  updated_at    = NOW()
+            WHERE id = $5`,
+          [hashedNewPassword, kdfVersion, kdfParams, kdfSaltBuf, userId]
+        );
+
+        for (const item of reencryptedItems) {
+          await client.query(
+            'UPDATE vault_items SET encrypted_data = $1, iv = $2 WHERE id = $3 AND user_id = $4',
+            [item.encryptedData, item.iv, item.id, userId]
+          );
+        }
+
+        await client.query('COMMIT');
+
+        securityLogger.passwordChange(req, req.user.email, true, 'kdf_migration_argon2id');
+
+        res.json({
+          message: 'Migration KDF effectuée',
+          kdfVersion: KDF_VERSION.ARGON2ID
+        });
+      } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      securityLogger.passwordChange(req, req.user?.email, false, 'kdf_migration_server_error');
+      res.status(500).json({ error: 'Erreur lors de la migration KDF' });
+    }
+  });
+
   // PUT /api/auth/change-password - Changer le mot de passe maître
   router.put('/change-password', authenticateToken, async (req, res) => {
     try {

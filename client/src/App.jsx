@@ -7,6 +7,7 @@ import { Settings } from './pages/Settings';
 import { Goodbye } from './pages/Goodbye';
 import PasswordGenerator from './pages/PasswordGenerator';
 import { CliDownload } from './pages/CliDownload';
+import MigrationOverlay from './components/MigrationOverlay';
 
 // Route protégée
 function PrivateRoute({ children }) {
@@ -96,6 +97,7 @@ export default function App() {
   return (
     <AuthProvider>
       <AppRoutes />
+      <MigrationOverlay />
     </AuthProvider>
   );
 }
