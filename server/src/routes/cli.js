@@ -15,7 +15,7 @@ const router = express.Router();
 // hash incorrect et refuseront le download).
 const CURRENT_CLI_VERSION = '2.2.0'; // Argon2id support + dual KDF login
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
-const CLI_SHA256 = 'd92f2cdc0a45d64101b71a415c81083c340752a21de2e11aad75e9ccbe041bac';
+const CLI_SHA256 = 'ba789a0e486b94cd441d3e53716065c0a91cd890e40c150bbeeadc0c8feb25d3';
 
 // Chemin physique du ZIP servi par nginx (location /downloads/). Utilisé pour
 // renvoyer dynamiquement la taille réelle du fichier dans /api/cli/version,
