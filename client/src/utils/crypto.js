@@ -82,10 +82,15 @@ export async function deriveKeys(masterPassword, email) {
  * Dériver les clés via Argon2id (libsodium WASM, lazy-loadé).
  * Même signature de retour que deriveKeys() pour rester drop-in.
  *
- * Note libsodium :
- * - L'API crypto_pwhash impose un salt de 16 bytes. On dérive un salt
- *   déterministe à partir de l'email via SHA-256 tronqué (le salt n'a
- *   pas besoin d'être secret, juste unique par utilisateur).
+ * @param {string} masterPassword - mot de passe maître saisi par l'utilisateur
+ * @param {Uint8Array} salt - 16 bytes random par utilisateur, fournis par le serveur
+ *                            via /api/auth/kdf-info (compte existant) ou générés
+ *                            côté client à l'inscription
+ * @param {{m:number,t:number,p:number}} params - paramètres Argon2id (m en KiB)
+ *
+ * Notes libsodium :
+ * - L'API crypto_pwhash impose un salt de exactement 16 bytes ;
+ *   on rejette toute autre longueur.
  * - p (parallélisme) est forcé à 1 par libsodium ; on rejette toute
  *   valeur différente pour ne pas créer de divergence silencieuse.
  */
@@ -102,20 +107,29 @@ async function getSodium() {
   return _sodiumPromise;
 }
 
-export async function deriveKeysArgon2id(masterPassword, email, params = ARGON2ID_DEFAULT_PARAMS) {
+// Helper : décode un salt en base64 (forme reçue du serveur) en Uint8Array.
+export function decodeKdfSalt(base64Salt) {
+  const binary = atob(base64Salt);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+// Helper : génère un salt KDF aléatoire 16 bytes (utilisé à l'inscription
+// Argon2id, transmis au serveur en base64).
+export function generateKdfSalt() {
+  return window.crypto.getRandomValues(new Uint8Array(16));
+}
+
+export async function deriveKeysArgon2id(masterPassword, salt, params = ARGON2ID_DEFAULT_PARAMS) {
   if (params.p !== 1) {
     throw new Error('Argon2id: p doit être 1 (contrainte libsodium)');
   }
+  if (!(salt instanceof Uint8Array) || salt.length !== 16) {
+    throw new Error('Argon2id: salt doit être un Uint8Array de 16 bytes');
+  }
 
   const sodium = await getSodium();
-  const encoder = new TextEncoder();
-
-  // Salt déterministe = SHA-256(email.lower()) tronqué à 16 bytes.
-  const emailHashBuf = await window.crypto.subtle.digest(
-    'SHA-256',
-    encoder.encode(email.toLowerCase())
-  );
-  const salt = new Uint8Array(emailHashBuf).slice(0, sodium.crypto_pwhash_SALTBYTES);
 
   // Dérive 64 bytes (= 512 bits, identique au PBKDF2 actuel).
   const derived = sodium.crypto_pwhash(

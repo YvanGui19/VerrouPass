@@ -32,6 +32,7 @@ export async function initDatabase() {
       totp_recovery_codes_hashed TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
       kdf_version SMALLINT NOT NULL DEFAULT 1,
       kdf_params JSONB,
+      kdf_salt BYTEA,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
@@ -55,6 +56,14 @@ export async function initDatabase() {
     ALTER TABLE users
       ADD COLUMN IF NOT EXISTS kdf_version SMALLINT NOT NULL DEFAULT 1,
       ADD COLUMN IF NOT EXISTS kdf_params JSONB;
+  `;
+
+  // Migration 003 : salt KDF aléatoire 16 bytes pour les comptes Argon2id.
+  // Nullable : les comptes PBKDF2 legacy utilisent salt = email.lower() et
+  // n'ont pas besoin de cette colonne tant qu'ils ne sont pas migrés.
+  const alterUsersAddKdfSalt = `
+    ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS kdf_salt BYTEA;
   `;
 
   const createVaultItemsTable = `
@@ -91,6 +100,7 @@ export async function initDatabase() {
     await pool.query(createUsersTable);
     await pool.query(alterUsersAddTotp);
     await pool.query(alterUsersAddKdf);
+    await pool.query(alterUsersAddKdfSalt);
     await pool.query(createVaultItemsTable);
     await pool.query(createIndex);
     await pool.query(createRefreshTokensTable);

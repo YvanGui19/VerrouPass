@@ -24,7 +24,11 @@ import express from 'express';
   import { decryptSecret } from '../utils/secretCrypto.js';
   import { securityLogger } from '../utils/logger.js';
   import { isValidEmail } from '../utils/validators.js';
-  import { KDF_VERSION, ARGON2ID_DEFAULT_PARAMS } from '../utils/kdf.js';
+  import {
+    KDF_VERSION,
+    ARGON2ID_DEFAULT_PARAMS,
+    kdfSaltForUnknownEmail
+  } from '../utils/kdf.js';
 
   const SALT_ROUNDS = 12;
 
@@ -104,16 +108,18 @@ import express from 'express';
   // POST /api/auth/kdf-info — étape 0 du login.
   //
   // Le client interroge cet endpoint avec un email pour savoir quel KDF
-  // utiliser (PBKDF2 legacy ou Argon2id) et avec quels paramètres. La réponse
-  // n'expose AUCUN secret : le KDF + ses paramètres sont des informations
-  // publiques nécessaires au client pour dériver les clés, qu'on doit pouvoir
-  // récupérer SANS être authentifié (c'est précisément le pré-requis du login).
+  // utiliser (PBKDF2 legacy ou Argon2id), avec quels paramètres et quel
+  // salt. La réponse n'expose AUCUN secret : ces informations sont
+  // publiques par construction (le client en a besoin AVANT le login pour
+  // dériver les clés).
   //
   // Anti-énumération : pour un email inconnu, on renvoie les paramètres
-  // Argon2id par défaut (= ce que les nouveaux comptes utilisent). Ça masque
-  // l'existence d'un user en v2 mais leak l'existence des users encore en v1
-  // (PBKDF2 legacy) — leak transitoire pendant la phase de migration, accepté.
-  // Une fois tous les comptes migrés vers v2, le leak disparaît.
+  // Argon2id par défaut + un salt déterministe HMAC(KDF_SALT_HMAC_KEY, email)
+  // pour que la réponse soit indistinguable d'un user Argon2id existant
+  // ET stable entre appels répétés (sinon l'attaquant détecte le random
+  // en répétant la requête). Reste un leak des users en v1 (PBKDF2 legacy)
+  // car on renvoie kdfVersion=1 pour eux ; transitoire pendant la migration,
+  // disparaît une fois tous les comptes en v2.
   router.post('/kdf-info', kdfInfoLimiter, async (req, res) => {
     try {
       const { email } = req.body;
@@ -125,20 +131,25 @@ import express from 'express';
       const user = await User.findByEmail(email);
 
       if (user && user.kdf_version === KDF_VERSION.PBKDF2_SHA256_600K) {
-        // Compte legacy : params figés (600k itérations SHA-256), kdf_params NULL.
+        // Compte legacy : params figés (600k itérations SHA-256), salt = email
+        // (déterministe côté client, donc pas besoin de le servir).
         return res.json({
           kdfVersion: KDF_VERSION.PBKDF2_SHA256_600K,
-          kdfParams: null
+          kdfParams: null,
+          kdfSalt: null
         });
       }
 
       // Compte Argon2id existant OU email inconnu (anti-énumération).
-      // Pour un user v2 sans kdf_params en DB (cas théorique : INSERT sans
-      // params), on retombe sur les défauts.
       const params = (user && user.kdf_params) ? user.kdf_params : ARGON2ID_DEFAULT_PARAMS;
+      const saltBuf = (user && user.kdf_salt)
+        ? user.kdf_salt
+        : kdfSaltForUnknownEmail(email);
+
       return res.json({
         kdfVersion: KDF_VERSION.ARGON2ID,
-        kdfParams: params
+        kdfParams: params,
+        kdfSalt: Buffer.from(saltBuf).toString('base64')
       });
     } catch (err) {
       res.status(500).json({ error: 'Erreur lors de la récupération du KDF' });
