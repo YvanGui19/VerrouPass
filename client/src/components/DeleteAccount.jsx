@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deriveKeys, hashForServer } from '../utils/crypto';
+import { hashForServer } from '../utils/crypto';
+import { deriveKeysForUser } from '../utils/deriveForUser';
 import api from '../utils/api';
 
 export function DeleteAccount({ user }) {
@@ -28,8 +29,8 @@ export function DeleteAccount({ user }) {
     setLoading(true);
 
     try {
-      // Dériver les clés
-      const { authKey } = await deriveKeys(masterPassword, user.email);
+      // Dériver les clés avec le KDF actuel du user.
+      const { authKey } = await deriveKeysForUser(masterPassword, user.email);
       const hashedPassword = await hashForServer(authKey);
 
       // Appeler l'API de suppression

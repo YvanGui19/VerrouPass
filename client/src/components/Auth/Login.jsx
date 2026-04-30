@@ -127,7 +127,7 @@ export default function Login() {
           <p className="font-mono text-xs text-grey/70 leading-relaxed">
             <span className="text-lime">▸</span> Chiffrement local AES-256
             <br />
-            <span className="text-lime">▸</span> PBKDF2 600,000 iterations
+            <span className="text-lime">▸</span> Dérivation Argon2id (RFC 9106)
             <br />
             <span className="text-cyan">▸</span> Vos mots de passe restent secrets
           </p>

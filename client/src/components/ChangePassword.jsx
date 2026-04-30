@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deriveKeys, hashForServer, decrypt, encrypt } from '../utils/crypto';
+import { hashForServer, decrypt, encrypt } from '../utils/crypto';
+import { deriveKeysForUser, deriveKeysWithKnownKdf } from '../utils/deriveForUser';
 import api from '../utils/api';
 
 export function ChangePassword({ user, onClose }) {
@@ -37,8 +38,10 @@ export function ChangePassword({ user, onClose }) {
 
     try {
       // 1. Vérifier l'ancien mot de passe et dériver les anciennes clés
+      // (interroge /kdf-info pour utiliser le bon algo).
       setProgress(10);
-      const { authKey: oldAuthKey, encKey: oldEncKey } = await deriveKeys(oldPassword, user.email);
+      const { authKey: oldAuthKey, encKey: oldEncKey, kdfInfo } =
+        await deriveKeysForUser(oldPassword, user.email);
       const oldPasswordHash = await hashForServer(oldAuthKey);
 
       // 2. Récupérer toutes les entrées du vault
@@ -66,9 +69,15 @@ export function ChangePassword({ user, onClose }) {
           setProgress(30 + (i / items.length) * 20);
         }
 
-        // 4. Dériver les nouvelles clés
+        // 4. Dériver les nouvelles clés avec le MÊME KDF que l'ancien
+        // (le salt random est conservé : changer de mdp ne révèle pas le
+        // salt et un attaquant qui aurait précomputé sur ce salt aurait dû
+        // déjà avoir accès à la DB ; coût Argon2id = précomputation
+        // irréaliste). La migration de KDF (PBKDF2 → Argon2id) se fait
+        // séparément dans le flow de migration silencieuse au login.
         setProgress(50);
-        const { authKey: newAuthKey, encKey: newEncKey } = await deriveKeys(newPassword, user.email);
+        const { authKey: newAuthKey, encKey: newEncKey } =
+          await deriveKeysWithKnownKdf(newPassword, user.email, kdfInfo);
         const newPasswordHash = await hashForServer(newAuthKey);
 
         // 5. Re-chiffrer toutes les entrées avec le nouveau mot de passe
@@ -92,7 +101,8 @@ export function ChangePassword({ user, onClose }) {
 
       // Si pas d'entrées, juste changer le mot de passe
       if (!items || items.length === 0) {
-        const { authKey: newAuthKey } = await deriveKeys(newPassword, user.email);
+        const { authKey: newAuthKey } =
+          await deriveKeysWithKnownKdf(newPassword, user.email, kdfInfo);
         const newPasswordHash = await hashForServer(newAuthKey);
 
         await api.put('/auth/change-password', {

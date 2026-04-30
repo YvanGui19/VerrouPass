@@ -4,13 +4,18 @@ import bcrypt from 'bcrypt';
 const SALT_ROUNDS = 12;
 
 export const User = {
-  async create(email, passwordHash) {
-    // Hash the auth key hash again with bcrypt for storage
+  // kdfVersion : 1 (PBKDF2 legacy) ou 2 (Argon2id). Pour les nouvelles
+  // inscriptions on n'accepte que 2 (validation côté route).
+  // kdfParams : null pour PBKDF2, { m, t, p } pour Argon2id.
+  // kdfSalt : null pour PBKDF2, Buffer 16 bytes pour Argon2id.
+  async create(email, passwordHash, kdfVersion, kdfParams, kdfSalt) {
     const hashedPassword = await bcrypt.hash(passwordHash, SALT_ROUNDS);
 
     const result = await pool.query(
-      'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
-      [email.toLowerCase(), hashedPassword]
+      `INSERT INTO users (email, password_hash, kdf_version, kdf_params, kdf_salt)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, email, created_at`,
+      [email.toLowerCase(), hashedPassword, kdfVersion, kdfParams, kdfSalt]
     );
 
     return result.rows[0];

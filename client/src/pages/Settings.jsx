@@ -108,7 +108,7 @@ export function Settings() {
             <div className="bg-dark-navy border border-cyan/20 rounded p-4">
               <p className="font-mono text-grey text-sm leading-relaxed">
                 <span className="text-lime">▸</span> Toutes vos données sont chiffrées localement avant d'être envoyées au serveur.<br />
-                <span className="text-cyan">▸</span> Chiffrement AES-256 avec PBKDF2 (600,000 itérations).<br />
+                <span className="text-cyan">▸</span> Chiffrement AES-256-GCM, dérivation des clés via Argon2id (libsodium, RFC 9106).<br />
                 <span className="text-lime">▸</span> Le serveur ne peut jamais déchiffrer vos mots de passe (zero-knowledge).
               </p>
             </div>

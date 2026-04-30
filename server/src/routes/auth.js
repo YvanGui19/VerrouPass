@@ -27,7 +27,9 @@ import express from 'express';
   import {
     KDF_VERSION,
     ARGON2ID_DEFAULT_PARAMS,
-    kdfSaltForUnknownEmail
+    KDF_SALT_LEN,
+    kdfSaltForUnknownEmail,
+    isValidArgon2idParams
   } from '../utils/kdf.js';
 
   const SALT_ROUNDS = 12;
@@ -54,7 +56,7 @@ import express from 'express';
     };
 
     try {
-      const { email, passwordHash, invitationCode } = req.body;
+      const { email, passwordHash, invitationCode, kdfVersion, kdfParams, kdfSalt } = req.body;
 
       // Validation des entrees obligatoires
       if (!email || !passwordHash || !invitationCode) {
@@ -72,6 +74,33 @@ import express from 'express';
       if (passwordHash.length < 64) {
         securityLogger.registerAttempt(req, email, false, 'invalid_password_hash');
         return res.status(400).json({ error: 'Format de mot de passe invalide' });
+      }
+
+      // Validation KDF : on n'accepte plus que des nouveaux comptes Argon2id.
+      // Ces 400 ne leakent rien sur l'existence d'un email (validation du
+      // format des donnees envoyees par le client, indépendante de la DB).
+      if (kdfVersion !== KDF_VERSION.ARGON2ID) {
+        securityLogger.registerAttempt(req, email, false, 'invalid_kdf_version');
+        return res.status(400).json({ error: 'kdfVersion invalide (Argon2id requis)' });
+      }
+      if (!isValidArgon2idParams(kdfParams)) {
+        securityLogger.registerAttempt(req, email, false, 'invalid_kdf_params');
+        return res.status(400).json({ error: 'kdfParams invalides' });
+      }
+      if (typeof kdfSalt !== 'string' || !kdfSalt) {
+        securityLogger.registerAttempt(req, email, false, 'missing_kdf_salt');
+        return res.status(400).json({ error: 'kdfSalt requis (base64)' });
+      }
+      let kdfSaltBuf;
+      try {
+        kdfSaltBuf = Buffer.from(kdfSalt, 'base64');
+      } catch (err) {
+        securityLogger.registerAttempt(req, email, false, 'invalid_kdf_salt_b64');
+        return res.status(400).json({ error: 'kdfSalt invalide (base64 attendu)' });
+      }
+      if (kdfSaltBuf.length !== KDF_SALT_LEN) {
+        securityLogger.registerAttempt(req, email, false, 'invalid_kdf_salt_len');
+        return res.status(400).json({ error: `kdfSalt doit faire ${KDF_SALT_LEN} bytes` });
       }
 
       // Verifier d abord si l email est deja utilise. Si oui, on ne consomme
@@ -94,8 +123,8 @@ import express from 'express';
         return res.status(200).json(GENERIC_RESPONSE);
       }
 
-      // Code valide consomme : creer le compte
-      await User.create(email, passwordHash);
+      // Code valide consomme : creer le compte avec son KDF Argon2id
+      await User.create(email, passwordHash, kdfVersion, kdfParams, kdfSaltBuf);
       securityLogger.registerAttempt(req, email, true);
 
       res.status(200).json(GENERIC_RESPONSE);

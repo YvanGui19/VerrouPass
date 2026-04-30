@@ -82,8 +82,22 @@ api.interceptors.response.use(
 
 // Auth API
 export const authApi = {
-  async register(email, passwordHash, invitationCode) {
-    const response = await api.post('/auth/register', { email, passwordHash, invitationCode });
+  // Étape 0 du login / flows post-login : récupère le KDF et ses paramètres
+  // pour un email donné. Anti-énumération côté serveur (cf /api/auth/kdf-info).
+  async kdfInfo(email) {
+    const response = await api.post('/auth/kdf-info', { email });
+    return response.data;
+  },
+
+  async register(email, passwordHash, invitationCode, kdfMeta) {
+    const response = await api.post('/auth/register', {
+      email,
+      passwordHash,
+      invitationCode,
+      kdfVersion: kdfMeta.kdfVersion,
+      kdfParams: kdfMeta.kdfParams,
+      kdfSalt: kdfMeta.kdfSalt
+    });
     return response.data;
   },
 

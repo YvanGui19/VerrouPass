@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { totpApi } from '../utils/api';
-import { deriveKeys, hashForServer } from '../utils/crypto';
+import { hashForServer } from '../utils/crypto';
+import { deriveKeysForUser } from '../utils/deriveForUser';
 
 // Section 2FA dans la page Settings. Affiche l etat (active/inactif), permet
 // l activation (wizard QR + code de confirmation + recovery codes) et la
@@ -355,7 +356,7 @@ function TotpDisableModal({ email, onClose, onDisabled }) {
     setSubmitting(true);
     setError('');
     try {
-      const { authKey } = await deriveKeys(password, email);
+      const { authKey } = await deriveKeysForUser(password, email);
       const passwordHash = await hashForServer(authKey);
       await totpApi.disable({ passwordHash, totpCode: code });
       onDisabled();

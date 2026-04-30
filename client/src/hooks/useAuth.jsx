@@ -1,6 +1,13 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { authApi } from '../utils/api';
-import { deriveKeys, hashForServer } from '../utils/crypto';
+import {
+  deriveKeysArgon2id,
+  hashForServer,
+  generateKdfSalt,
+  ARGON2ID_DEFAULT_PARAMS,
+  KDF_VERSION
+} from '../utils/crypto';
+import { deriveKeysForUser } from '../utils/deriveForUser';
 
 const AuthContext = createContext(null);
 
@@ -28,22 +35,30 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = async (email, masterPassword, invitationCode) => {
-    // Dériver les clés (validation que la dérivation fonctionne avant d'appeler l'API)
-    const { authKey } = await deriveKeys(masterPassword, email);
+    // Tous les nouveaux comptes sont en Argon2id avec un salt random 16B
+    // généré côté client. Le serveur valide le format et stocke tel quel.
+    const salt = generateKdfSalt();
+    const { authKey } = await deriveKeysArgon2id(masterPassword, salt, ARGON2ID_DEFAULT_PARAMS);
 
     // Hasher la clé d'authentification pour l'envoi
     const passwordHash = await hashForServer(authKey);
 
     // Le serveur renvoie une réponse générique (anti-énumération) sans cookies ni tokens.
     // L'utilisateur doit se connecter explicitement après l'inscription.
-    const data = await authApi.register(email, passwordHash, invitationCode);
+    const saltBase64 = btoa(String.fromCharCode.apply(null, salt));
+    const data = await authApi.register(email, passwordHash, invitationCode, {
+      kdfVersion: KDF_VERSION.ARGON2ID,
+      kdfParams: ARGON2ID_DEFAULT_PARAMS,
+      kdfSalt: saltBase64
+    });
 
     return data;
   };
 
   const login = async (email, masterPassword) => {
-    // Dériver les clés
-    const { authKey, encKey: derivedEncKey } = await deriveKeys(masterPassword, email);
+    // Étape 0 : interroger /kdf-info pour savoir quel KDF utiliser, puis
+    // dériver les clés avec le bon algo. Géré par deriveKeysForUser.
+    const { authKey, encKey: derivedEncKey } = await deriveKeysForUser(masterPassword, email);
 
     // Hasher la clé d'authentification pour l'envoi
     const passwordHash = await hashForServer(authKey);
@@ -105,8 +120,8 @@ export function AuthProvider({ children }) {
   const unlockVault = async (masterPassword) => {
     if (!user) throw new Error('Non connecté');
 
-    // Re-dériver la clé de chiffrement
-    const { encKey: derivedEncKey } = await deriveKeys(masterPassword, user.email);
+    // Re-dériver la clé de chiffrement avec le KDF actuel du user.
+    const { encKey: derivedEncKey } = await deriveKeysForUser(masterPassword, user.email);
     setEncKey(derivedEncKey);
 
     return derivedEncKey;
