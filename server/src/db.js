@@ -30,6 +30,8 @@ export async function initDatabase() {
       totp_secret_tag TEXT,
       totp_enabled BOOLEAN NOT NULL DEFAULT FALSE,
       totp_recovery_codes_hashed TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[],
+      kdf_version SMALLINT NOT NULL DEFAULT 1,
+      kdf_params JSONB,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     );
@@ -44,6 +46,15 @@ export async function initDatabase() {
       ADD COLUMN IF NOT EXISTS totp_secret_tag TEXT,
       ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN NOT NULL DEFAULT FALSE,
       ADD COLUMN IF NOT EXISTS totp_recovery_codes_hashed TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+  `;
+
+  // Migration 002 : suivi du KDF par utilisateur (PBKDF2 legacy vs Argon2id).
+  // Le DEFAULT 1 (PBKDF2) garantit que les comptes existants restent fonctionnels
+  // jusqu'à leur migration silencieuse au prochain login.
+  const alterUsersAddKdf = `
+    ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS kdf_version SMALLINT NOT NULL DEFAULT 1,
+      ADD COLUMN IF NOT EXISTS kdf_params JSONB;
   `;
 
   const createVaultItemsTable = `
@@ -79,6 +90,7 @@ export async function initDatabase() {
   try {
     await pool.query(createUsersTable);
     await pool.query(alterUsersAddTotp);
+    await pool.query(alterUsersAddKdf);
     await pool.query(createVaultItemsTable);
     await pool.query(createIndex);
     await pool.query(createRefreshTokensTable);
