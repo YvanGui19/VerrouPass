@@ -31,13 +31,15 @@ import api, { authApi } from './api';
  */
 export async function migrateAccountToArgon2id(masterPassword, email, oldEncKey, oldPasswordHash) {
   // 1. Récupérer tout le coffre avec l'ancienne session.
+  // GET /api/vault renvoie { items: [...] } avec des clés snake_case
+  // (encrypted_data, iv) comme stockées en DB.
   const itemsResp = await api.get('/vault');
-  const items = itemsResp.data || [];
+  const items = (itemsResp.data && itemsResp.data.items) || [];
 
   // 2. Déchiffrer chaque item avec l'ancienne encKey (en mémoire).
   const decryptedItems = [];
   for (const item of items) {
-    const data = await decrypt(item.encryptedData, item.iv, oldEncKey);
+    const data = await decrypt(item.encrypted_data, item.iv, oldEncKey);
     decryptedItems.push({ id: item.id, data });
   }
 

@@ -45,13 +45,14 @@ export function ChangePassword({ user, onClose }) {
       const oldPasswordHash = await hashForServer(oldAuthKey);
 
       // 2. Récupérer toutes les entrées du vault
+      // GET /api/vault renvoie { items: [...] } avec clés snake_case en DB.
       setProgress(20);
       const response = await api.get('/vault', {
         headers: { 'x-password-hash': oldPasswordHash }
       });
-      const items = response.data;
+      const items = (response.data && response.data.items) || [];
 
-      if (!items || items.length === 0) {
+      if (items.length === 0) {
         // Aucune entrée, on peut changer directement le mot de passe
         setProgress(60);
       } else {
@@ -61,7 +62,7 @@ export function ChangePassword({ user, onClose }) {
         for (let i = 0; i < items.length; i++) {
           const item = items[i];
           try {
-            const decrypted = await decrypt(item.encryptedData, item.iv, oldEncKey);
+            const decrypted = await decrypt(item.encrypted_data, item.iv, oldEncKey);
             decryptedItems.push({ id: item.id, data: decrypted });
           } catch (err) {
             throw new Error(`Erreur lors du déchiffrement de l'entrée ${item.id}: ${err.message}`);
@@ -100,7 +101,7 @@ export function ChangePassword({ user, onClose }) {
       }
 
       // Si pas d'entrées, juste changer le mot de passe
-      if (!items || items.length === 0) {
+      if (items.length === 0) {
         const { authKey: newAuthKey } =
           await deriveKeysWithKnownKdf(newPassword, user.email, kdfInfo);
         const newPasswordHash = await hashForServer(newAuthKey);
