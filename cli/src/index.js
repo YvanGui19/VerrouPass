@@ -23,7 +23,7 @@ import { updateCommand } from './commands/update.js';
 import { autoCheckUpdate } from './utils/autoUpdateCheck.js';
 
 // Mapping des commandes Linux-style vers les commandes commander internes.
-// `v-ls` -> list, `v-man` -> --help, `v-exit` -> logout, etc.
+// `v-ls` → list, `v-man` → --help, `v-exit` → logout, etc.
 const BIN_ALIASES = {
   'ls': 'list',
   'cat': 'get',
@@ -37,11 +37,11 @@ const BIN_ALIASES = {
   'man': '--help'
 };
 
-// Injection de la commande quand le CLI est lance via un bin v-X.
-// Apres `npm install -g`, npm cree un wrapper par bin. Sur Windows c'est
+// Injection de la commande quand le CLI est lancé via un bin v-X.
+// Après `npm install -g`, npm crée un wrapper par bin. Sur Windows c'est
 // un .cmd qui invoque `node .../index.js`, donc process.argv[1] vaut le
 // chemin de index.js et ne nous renseigne plus sur le bin choisi (cf bug
-// historique qui empechait v-login/v-ls/etc. de fonctionner sous Windows).
+// historique qui empêchait v-login/v-ls/etc. de fonctionner sous Windows).
 // On passe donc le nom du bin explicitement via les stubs `bin/v-*.js`,
 // qui appellent runCli(binName).
 export function injectBinCommand(binName) {
@@ -54,7 +54,7 @@ export function injectBinCommand(binName) {
 export function runCli(binName) {
   injectBinCommand(binName);
 
-  // Verification automatique des mises a jour (1x/jour max, non bloquant)
+  // Vérification automatique des mises à jour (1x/jour max, non bloquante)
   autoCheckUpdate().catch(() => {}); // Silencieux en cas d'erreur
 
   const program = new Command();
@@ -149,7 +149,7 @@ export function runCli(binName) {
   program.parse(process.argv);
 }
 
-// Auto-execution quand on lance `node src/index.js [args]` directement
+// Auto-exécution quand on lance `node src/index.js [args]` directement
 // (cas dev/debug). En prod, les bins passent par les stubs bin/v-*.js
 // qui importent ce module et appellent runCli(binName) explicitement.
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

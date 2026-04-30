@@ -42,11 +42,11 @@ router.get('/version', (req, res) => {
     sha256: CLI_SHA256,
     sizeBytes: getCliFileSize(),
     changelog: [
-      'Fix : v-login / v-ls / v-cat / etc. fonctionnent maintenant sous Windows. Avant cette version, le wrapper .cmd cree par npm install -g pointait directement sur src/index.js, donc path.basename(process.argv[1]) renvoyait index.js et le dispatch des commandes v-* ne se declenchait pas.',
-      'Refactor : le dispatch passe par des stubs bin/v-*.js qui appellent runCli(binName) explicitement, plus de detection fragile basee sur argv[1]. Comportement identique sous Linux/Mac.'
+      'Fix : v-login / v-ls / v-cat / etc. fonctionnent maintenant sous Windows. Avant cette version, le wrapper .cmd créé par npm install -g pointait directement sur src/index.js, donc path.basename(process.argv[1]) renvoyait index.js et le dispatch des commandes v-* ne se déclenchait pas.',
+      'Refactor : le dispatch passe par des stubs bin/v-*.js qui appellent runCli(binName) explicitement, plus de détection fragile basée sur argv[1]. Comportement identique sous Linux/Mac.'
     ],
     breaking: false,
-    minVersion: '2.2.0' // Comptes Argon2id necessitent libsodium cote CLI (>=2.2.0)
+    minVersion: '2.2.0' // Comptes Argon2id nécessitent libsodium côté CLI (>=2.2.0)
   });
 });
 

@@ -24,16 +24,16 @@ assertTotpKeyConfigured();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware de securite.
-// Les en-tetes critiques (CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
-// Referrer-Policy, Permissions-Policy, COOP, CORP) sont deja appliques en
+// Middleware de sécurité.
+// Les en-têtes critiques (CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
+// Referrer-Policy, Permissions-Policy, COOP, CORP) sont déjà appliqués en
 // amont par nginx via /etc/nginx/snippets/verroupass-security-headers.conf.
-// On desactive les directives helmet qui font doublon pour eviter les
-// en-tetes contradictoires (cas reel observe : X-Frame-Options DENY/nginx +
-// SAMEORIGIN/helmet sur les reponses /api/). On garde uniquement les
+// On désactive les directives helmet qui font doublon pour éviter les
+// en-têtes contradictoires (cas réel observé : X-Frame-Options DENY/nginx +
+// SAMEORIGIN/helmet sur les réponses /api/). On garde uniquement les
 // directives helmet qui ne sont pas servies par nginx :
 //   - hidePoweredBy : retire X-Powered-By: Express
-//   - dnsPrefetchControl, ieNoOpen, noSniff (small extras)
+//   - dnsPrefetchControl, ieNoOpen, noSniff (petits extras)
 app.use(helmet({
   contentSecurityPolicy: false,    // nginx
   strictTransportSecurity: false,  // nginx (HSTS)

@@ -1,19 +1,19 @@
 # Security Policy
 
-## Signaler une vulnerabilite
+## Signaler une vulnérabilité
 
-Si vous decouvrez une faille de securite, **ne creez pas d'Issue publique**.
+Si vous découvrez une faille de sécurité, **ne créez pas d'Issue publique**.
 
 Contactez-moi directement par email : **[votre-email@yvangui.fr]**
 
-Je m'engage a :
-- Repondre sous 48h
-- Corriger les failles critiques en priorite
-- Vous crediter (si vous le souhaitez) apres correction
+Je m'engage à :
+- Répondre sous 48h
+- Corriger les failles critiques en priorité
+- Vous créditer (si vous le souhaitez) après correction
 
 ---
 
-## Architecture de securite
+## Architecture de sécurité
 
 VerrouPass est un gestionnaire de mots de passe **zero-knowledge**.
 
@@ -21,22 +21,22 @@ VerrouPass est un gestionnaire de mots de passe **zero-knowledge**.
 
 | Composant | Algorithme |
 |-----------|------------|
-| Chiffrement des donnees | AES-256-GCM |
-| Derivation de cle (comptes >= 2026-04-30) | Argon2id (libsodium, m=64 MiB, t=3, p=1, salt 16B random) |
-| Derivation de cle (comptes legacy) | PBKDF2-SHA256 (600 000 iterations, salt = email) -- migres silencieusement vers Argon2id au prochain login |
+| Chiffrement des données | AES-256-GCM |
+| Dérivation de clé (comptes >= 2026-04-30) | Argon2id (libsodium, m=64 MiB, t=3, p=1, salt 16B random) |
+| Dérivation de clé (comptes legacy) | PBKDF2-SHA256 (600 000 itérations, salt = email) — migrés silencieusement vers Argon2id au prochain login |
 | Authentification | bcrypt (12 rounds) sur le hash transmis |
 | TOTP | HMAC-SHA1 (RFC 6238) |
 
-Le KDF d'un compte est resolu via `POST /api/auth/kdf-info` (interroge avant
-le login). Anti-enumeration : pour un email inconnu, le serveur renvoie les
-parametres Argon2id par defaut + un salt deterministe HMAC-SHA256 (cle
-serveur) pour que la reponse soit indistinguable d'un compte v2 existant et
+Le KDF d'un compte est résolu via `POST /api/auth/kdf-info` (interrogé avant
+le login). Anti-énumération : pour un email inconnu, le serveur renvoie les
+paramètres Argon2id par défaut + un salt déterministe HMAC-SHA256 (clé
+serveur) pour que la réponse soit indistinguable d'un compte v2 existant et
 stable entre appels.
 
-### Flux de securite (compte Argon2id, le cas par defaut depuis 2026-04-30)
+### Flux de sécurité (compte Argon2id, le cas par défaut depuis 2026-04-30)
 
 ```
-Mot de passe maitre
+Mot de passe maître
         |
         v
     GET kdfInfo --> { kdfVersion: 2, kdfParams: {m:64MiB,t:3,p:1}, kdfSalt: <16B> }
@@ -44,32 +44,32 @@ Mot de passe maitre
         v
     Argon2id (RFC 9106, salt 16B random per-user)
         |
-        +--> Cle d'authentification --> Hash --> Serveur (stocke le hash bcrypt)
+        +--> Clé d'authentification --> Hash --> Serveur (stocke le hash bcrypt)
         |
-        +--> Cle de chiffrement --> Reste dans le navigateur (jamais transmise)
+        +--> Clé de chiffrement --> Reste dans le navigateur (jamais transmise)
                     |
                     v
               AES-256-GCM
                     |
                     v
-        Donnees chiffrees --> Serveur (stocke le blob chiffre)
+        Données chiffrées --> Serveur (stocke le blob chiffré)
 ```
 
 ### Ce que le serveur stocke
 
 - Hash bcrypt du hash d'authentification
-- Donnees chiffrees (blob illisible sans la cle)
-- IV (vecteur d'initialisation) pour chaque entree
+- Données chiffrées (blob illisible sans la clé)
+- IV (vecteur d'initialisation) pour chaque entrée
 - Salt KDF Argon2id (16 bytes random par utilisateur, public par
-  construction puisque le client doit l'obtenir pour deriver)
-- Secret TOTP chiffre au repos (AES-256-GCM avec TOTP_ENCRYPTION_KEY
-  cote serveur), uniquement si l'utilisateur a active le 2FA
+  construction puisque le client doit l'obtenir pour dériver)
+- Secret TOTP chiffré au repos (AES-256-GCM avec TOTP_ENCRYPTION_KEY
+  côté serveur), uniquement si l'utilisateur a activé le 2FA
 
 ### Ce que le serveur ne voit JAMAIS
 
-- Mot de passe maitre
-- Cle de chiffrement
-- Mots de passe stockes dans le coffre
+- Mot de passe maître
+- Clé de chiffrement
+- Mots de passe stockés dans le coffre
 - Secrets TOTP
 
 ---
@@ -78,43 +78,43 @@ Mot de passe maitre
 
 | Limite | Explication |
 |--------|-------------|
-| Perte du mot de passe maitre | Donnees **irrecuperables** (zero-knowledge) |
-| Compromission du navigateur | Un keylogger ou extension malveillante peut capturer le mot de passe maitre |
-| Attaque cote client | Si le JavaScript est modifie (MITM), la securite est compromise |
+| Perte du mot de passe maître | Données **irrécupérables** (zero-knowledge) |
+| Compromission du navigateur | Un keylogger ou extension malveillante peut capturer le mot de passe maître |
+| Attaque côté client | Si le JavaScript est modifié (MITM), la sécurité est compromise |
 
-### Mitigations recommandees
+### Mitigations recommandées
 
 - Utiliser HTTPS avec HSTS (actif en prod : `max-age=86400; includeSubDomains`)
-- CSP stricte cote nginx (`script-src 'self' 'wasm-unsafe-eval'`, pas de
-  `unsafe-inline` script, pas de tiers exterieur autorise sur connect-src
-  ni script-src) -- bloque l'injection de keylogger en cas de compromission
-  d'une dependance npm
-- Polices auto-hebergees (pas de connexion sortante a fonts.gstatic.com)
+- CSP stricte côté nginx (`script-src 'self' 'wasm-unsafe-eval'`, pas de
+  `unsafe-inline` script, pas de tiers extérieur autorisé sur connect-src
+  ni script-src) — bloque l'injection de keylogger en cas de compromission
+  d'une dépendance npm
+- Polices auto-hébergées (pas de connexion sortante à fonts.gstatic.com)
 - Activer le 2FA TOTP sur son compte (RFC 6238, secret AES-256-GCM au repos)
-- Utiliser un navigateur a jour
+- Utiliser un navigateur à jour
 
 ---
 
-## Dependances
+## Dépendances
 
-Le projet minimise les dependances externes pour reduire la surface d'attaque.
+Le projet minimise les dépendances externes pour réduire la surface d'attaque.
 
-**Cote client :**
+**Côté client :**
 - React (UI)
 - Web Crypto API native (PBKDF2 legacy, AES-256-GCM, hashForServer)
-- libsodium-wrappers-sumo 0.7.15 (Argon2id, lazy-loade uniquement sur
-  les pages auth, ~315KB gzipped). Implementation de reference de Frank
-  Denis, audit Cure53. Compile en WebAssembly cote navigateur, d'ou la
+- libsodium-wrappers-sumo 0.7.15 (Argon2id, lazy-loadé uniquement sur
+  les pages auth, ~315 KB gzipped). Implémentation de référence de Frank
+  Denis, audit Cure53. Compilé en WebAssembly côté navigateur, d'où la
   directive CSP `script-src 'self' 'wasm-unsafe-eval'`.
-- @fontsource/* (polices Google Fonts repackagees pour npm, bundled
-  localement par Vite : aucune connexion sortante a Google CDN)
+- @fontsource/* (polices Google Fonts repackagées pour npm, bundled
+  localement par Vite : aucune connexion sortante à Google CDN)
 
-**Cote serveur :**
+**Côté serveur :**
 - Express.js
 - bcrypt (hachage)
 - jsonwebtoken (JWT, HS256, secret 64 bytes hex en .env)
 - helmet (avec CSP/HSTS/X-Frame-Options/COOP/CORP/Referrer-Policy
-  desactives car nginx les sert deja)
+  désactivés car nginx les sert déjà)
 - PostgreSQL (parameterized queries partout, scope par user_id sur
   toutes les routes vault)
 
@@ -122,6 +122,6 @@ Le projet minimise les dependances externes pour reduire la surface d'attaque.
 
 ## Audit
 
-Ce projet n'a pas ete audite par un tiers. Le code source est disponible pour inspection.
+Ce projet n'a pas été audité par un tiers. Le code source est disponible pour inspection.
 
-Si vous etes chercheur en securite et souhaitez auditer ce projet, contactez-moi.
+Si vous êtes chercheur en sécurité et souhaitez auditer ce projet, contactez-moi.
