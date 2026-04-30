@@ -22,17 +22,27 @@ VerrouPass est un gestionnaire de mots de passe **zero-knowledge**.
 | Composant | Algorithme |
 |-----------|------------|
 | Chiffrement des donnees | AES-256-GCM |
-| Derivation de cle | PBKDF2-SHA256 (600 000 iterations) |
-| Authentification | bcrypt (12 rounds) |
+| Derivation de cle (comptes >= 2026-04-30) | Argon2id (libsodium, m=64 MiB, t=3, p=1, salt 16B random) |
+| Derivation de cle (comptes legacy) | PBKDF2-SHA256 (600 000 iterations, salt = email) -- migres silencieusement vers Argon2id au prochain login |
+| Authentification | bcrypt (12 rounds) sur le hash transmis |
 | TOTP | HMAC-SHA1 (RFC 6238) |
 
-### Flux de securite
+Le KDF d'un compte est resolu via `POST /api/auth/kdf-info` (interroge avant
+le login). Anti-enumeration : pour un email inconnu, le serveur renvoie les
+parametres Argon2id par defaut + un salt deterministe HMAC-SHA256 (cle
+serveur) pour que la reponse soit indistinguable d'un compte v2 existant et
+stable entre appels.
+
+### Flux de securite (compte Argon2id, le cas par defaut depuis 2026-04-30)
 
 ```
 Mot de passe maitre
         |
         v
-    PBKDF2 (600k iterations, salt = email)
+    GET kdfInfo --> { kdfVersion: 2, kdfParams: {m:64MiB,t:3,p:1}, kdfSalt: <16B> }
+        |
+        v
+    Argon2id (RFC 9106, salt 16B random per-user)
         |
         +--> Cle d'authentification --> Hash --> Serveur (stocke le hash bcrypt)
         |

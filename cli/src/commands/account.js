@@ -6,7 +6,8 @@ import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
 import { deleteAccount } from '../utils/api.js';
-import { deriveKeys, hashForServer } from '../utils/crypto.js';
+import { hashForServer } from '../utils/crypto.js';
+import { deriveKeysForUser } from '../utils/deriveForUser.js';
 import { isAuthenticated, getUser, clearSession } from '../utils/config.js';
 
 export async function deleteAccountCommand() {
@@ -83,8 +84,8 @@ export async function deleteAccountCommand() {
   const spinner = ora('Vérification et suppression du compte...').start();
 
   try {
-    // Dériver les clés
-    const { authKey } = await deriveKeys(masterPassword, user.email);
+    // Deriver les cles avec le KDF actuel du user (interroge /kdf-info).
+    const { authKey } = await deriveKeysForUser(masterPassword, user.email);
     const hashedPassword = await hashForServer(authKey);
 
     // Supprimer le compte

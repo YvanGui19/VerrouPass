@@ -16,7 +16,7 @@ Application React pour VerrouPass, un gestionnaire de mots de passe zero-knowled
 Le client gère **tout le chiffrement** localement :
 - Les mots de passe ne quittent JAMAIS le client en clair
 - Chiffrement AES-256-GCM avec la Web Crypto API
-- Dérivation de clés avec PBKDF2 (100 000 itérations)
+- Dérivation de clés avec Argon2id (libsodium, m=64 MiB, t=3, p=1) ; comptes legacy PBKDF2-600k auto-migrés
 - Deux clés dérivées : une pour l'authentification, une pour le chiffrement
 
 ## Installation
@@ -100,7 +100,7 @@ client/
 
 ### Authentification
 - Inscription avec email et mot de passe maître
-- Connexion avec dérivation de clés (PBKDF2)
+- Connexion avec dérivation de clés (Argon2id, ou PBKDF2 pour comptes legacy en attente de migration)
 - Gestion de session avec JWT
 - Protection des routes privées
 

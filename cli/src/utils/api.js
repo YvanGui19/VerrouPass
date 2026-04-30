@@ -42,7 +42,15 @@ api.interceptors.response.use(
 
 // Fonctions de l'API
 
-// 1ere etape du login. Envoie le passwordHash (PBKDF2 + transformation,
+// Etape 0 du login : recupere le KDF + ses parametres pour un email donne.
+// Le client utilise ces infos pour deriver les cles avec le bon algo
+// (PBKDF2 legacy ou Argon2id). Anti-enumeration cote serveur.
+export async function kdfInfo(email) {
+  const response = await api.post('/auth/kdf-info', { email });
+  return response.data;
+}
+
+// 1ere etape du login. Envoie le passwordHash (derive + transformation,
 // jamais le password en clair) sous le nom de champ attendu par le serveur.
 // Retourne { token, user } pour un compte sans 2FA, ou { totpRequired: true,
 // challenge } si le compte a active la 2FA.
@@ -63,14 +71,9 @@ export async function loginTotp({ challenge, totpCode, recoveryCode }) {
   return response.data;
 }
 
-export async function register(email, passwordHash, invitationCode) {
-  const response = await api.post('/auth/register', {
-    email,
-    passwordHash,
-    invitationCode
-  });
-  return response.data;
-}
+// Pas de register cote CLI : l inscription par invitation se fait via le
+// frontend web (formulaire HTML + validation visuelle du QR de recovery).
+// Le CLI ne fait que se connecter a un compte existant.
 
 export async function getVaultItems() {
   const response = await api.get('/vault');

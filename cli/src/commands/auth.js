@@ -5,7 +5,8 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import ora from 'ora';
-import { deriveKeys, hashForServer, exportKey } from '../utils/crypto.js';
+import { hashForServer, exportKey } from '../utils/crypto.js';
+import { deriveKeysForUser } from '../utils/deriveForUser.js';
 import { login as apiLogin, loginTotp as apiLoginTotp } from '../utils/api.js';
 import {
   saveToken,
@@ -124,11 +125,12 @@ export async function loginCommand(options) {
   email = email || answers.email;
   masterPassword = answers.masterPassword;
 
-  // Dérivation des clés
-  const spinner = ora('Dérivation des clés de chiffrement...').start();
+  // Derivation des cles (interroge /kdf-info pour choisir l algo).
+  // Argon2id m=64MiB peut prendre 1-2s sur du materiel modeste.
+  const spinner = ora('Derivation des cles de chiffrement...').start();
 
   try {
-    const { authKey, encKey } = await deriveKeys(masterPassword, email);
+    const { authKey, encKey } = await deriveKeysForUser(masterPassword, email);
     const passwordHash = await hashForServer(authKey);
 
     spinner.text = 'Connexion au serveur...';

@@ -1,6 +1,6 @@
 {
   "name": "verroupass-cli",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "CLI pour VerrouPass - Gestionnaire de mots de passe zero-knowledge",
   "main": "src/index.js",
   "type": "module",
@@ -44,6 +44,7 @@
     "clipboardy": "^4.0.0",
     "conf": "^12.0.0",
     "axios": "^1.6.7",
+    "libsodium-wrappers-sumo": "0.7.15",
     "table": "^6.8.1"
   }
 }

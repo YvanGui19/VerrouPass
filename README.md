@@ -10,7 +10,7 @@ VerrouPass est une application web qui vous permet de stocker tous vos mots de p
 
 - **Zero-knowledge** : Le serveur ne peut jamais lire vos mots de passe
 - **Chiffrement AES-256-GCM** : Standard militaire de chiffrement
-- **PBKDF2** : 600 000 iterations pour la derivation de cles
+- **Argon2id** : derivation de cles via libsodium (RFC 9106, m=64 MiB, t=3, p=1) avec salt random 16B per-user. Comptes legacy PBKDF2-600k migres silencieusement.
 - **Auto-heberge** : Vos donnees restent sur votre serveur
 - **Interface moderne** : Design epure avec Tailwind CSS
 - **CLI disponible** : Interface en ligne de commande pour terminaux
@@ -219,8 +219,8 @@ verroupass/
 ### Mesures de securite implementees
 
 - **Chiffrement zero-knowledge** : AES-256-GCM cote client
-- **Derivation de cles** : PBKDF2 avec 600 000 iterations
-- **Hash des mots de passe** : bcrypt avec 12 rounds
+- **Derivation de cles** : Argon2id (RFC 9106, libsodium, m=64 MiB, t=3, p=1, salt random 16B per-user). Comptes legacy PBKDF2-600k auto-migres au prochain login.
+- **Hash des mots de passe** : bcrypt avec 12 rounds sur le passwordHash transmis
 - **HTTPS obligatoire** : Certificat Let's Encrypt gratuit
 - **Headers de securite** : Helmet.js
 - **CORS configure** : Acces restreint au client

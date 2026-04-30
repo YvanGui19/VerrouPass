@@ -10,7 +10,10 @@ import path from 'path';
 const router = express.Router();
 
 // Version actuelle du CLI
-const CURRENT_CLI_VERSION = '2.1.1'; // Patch: missing deleteAccount export
+// /!\ Quand on bump : regenerer le ZIP via scripts/release-cli.sh qui met
+// aussi a jour CLI_SHA256 ci-dessous (sinon les nouveaux clients verront un
+// hash incorrect et refuseront le download).
+const CURRENT_CLI_VERSION = '2.2.0'; // Argon2id support + dual KDF login
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
 const CLI_SHA256 = 'd92f2cdc0a45d64101b71a415c81083c340752a21de2e11aad75e9ccbe041bac';
 
@@ -35,17 +38,16 @@ router.get('/version', (req, res) => {
   res.json({
     version: CURRENT_CLI_VERSION,
     downloadUrl: DOWNLOAD_URL,
-    releaseDate: '2026-04-29',
+    releaseDate: '2026-04-30',
     sha256: CLI_SHA256,
     sizeBytes: getCliFileSize(),
     changelog: [
-      'Fix critique : alignement crypto avec le client web (PBKDF2 600k + hash PBKDF2 1 iter au lieu de SHA-256 simple). Les comptes créés via le web sont désormais accessibles via la CLI.',
-      'Fix critique : login envoie maintenant le bon champ passwordHash (au lieu de password en clair non lu par le serveur).',
-      'Nouveau : support de la 2FA TOTP. Si le compte a la 2FA activée, prompt interactif pour code à 6 chiffres ou code de secours après login.',
-      'Patch : ajout de l\'export manquant deleteAccount dans utils/api.js (la commande v-account-delete plantait au démarrage du CLI).'
+      'Nouveau : support du KDF Argon2id (libsodium-wrappers-sumo, m=64MiB t=3 p=1, RFC 9106). Indispensable pour les comptes crees ou migres depuis le 2026-04-30.',
+      'Nouveau : login dual-KDF. Le CLI interroge /api/auth/kdf-info avant de deriver les cles, puis utilise Argon2id ou PBKDF2 selon ce que le serveur indique. Les comptes PBKDF2 legacy continuent de fonctionner.',
+      'Cleanup : suppression de la fonction register inutilisee (l inscription se fait uniquement via le frontend web).'
     ],
-    breaking: true, // Anciens comptes CLI-only inutilisables (algo crypto changé)
-    minVersion: '2.1.0' // Version minimum requise (anciennes versions ne peuvent plus se connecter)
+    breaking: true, // Versions <2.2.0 ne peuvent pas se connecter aux comptes Argon2id
+    minVersion: '2.2.0' // Comptes Argon2id necessitent libsodium cote CLI
   });
 });
 
