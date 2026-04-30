@@ -15,7 +15,8 @@ import express from 'express';
   import {
     loginLimiter,
     registerLimiter,
-    totpLoginLimiter
+    totpLoginLimiter,
+    kdfInfoLimiter
   } from '../middleware/rateLimiter.js';
   import pool from '../db.js';
   import bcrypt from 'bcrypt';
@@ -23,6 +24,7 @@ import express from 'express';
   import { decryptSecret } from '../utils/secretCrypto.js';
   import { securityLogger } from '../utils/logger.js';
   import { isValidEmail } from '../utils/validators.js';
+  import { KDF_VERSION, ARGON2ID_DEFAULT_PARAMS } from '../utils/kdf.js';
 
   const SALT_ROUNDS = 12;
 
@@ -96,6 +98,50 @@ import express from 'express';
     } catch (err) {
       securityLogger.registerAttempt(req, req.body?.email, false, 'server_error');
       res.status(500).json({ error: 'Erreur lors de la création du compte' });
+    }
+  });
+
+  // POST /api/auth/kdf-info — étape 0 du login.
+  //
+  // Le client interroge cet endpoint avec un email pour savoir quel KDF
+  // utiliser (PBKDF2 legacy ou Argon2id) et avec quels paramètres. La réponse
+  // n'expose AUCUN secret : le KDF + ses paramètres sont des informations
+  // publiques nécessaires au client pour dériver les clés, qu'on doit pouvoir
+  // récupérer SANS être authentifié (c'est précisément le pré-requis du login).
+  //
+  // Anti-énumération : pour un email inconnu, on renvoie les paramètres
+  // Argon2id par défaut (= ce que les nouveaux comptes utilisent). Ça masque
+  // l'existence d'un user en v2 mais leak l'existence des users encore en v1
+  // (PBKDF2 legacy) — leak transitoire pendant la phase de migration, accepté.
+  // Une fois tous les comptes migrés vers v2, le leak disparaît.
+  router.post('/kdf-info', kdfInfoLimiter, async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email || typeof email !== 'string' || !isValidEmail(email)) {
+        return res.status(400).json({ error: 'Email valide requis' });
+      }
+
+      const user = await User.findByEmail(email);
+
+      if (user && user.kdf_version === KDF_VERSION.PBKDF2_SHA256_600K) {
+        // Compte legacy : params figés (600k itérations SHA-256), kdf_params NULL.
+        return res.json({
+          kdfVersion: KDF_VERSION.PBKDF2_SHA256_600K,
+          kdfParams: null
+        });
+      }
+
+      // Compte Argon2id existant OU email inconnu (anti-énumération).
+      // Pour un user v2 sans kdf_params en DB (cas théorique : INSERT sans
+      // params), on retombe sur les défauts.
+      const params = (user && user.kdf_params) ? user.kdf_params : ARGON2ID_DEFAULT_PARAMS;
+      return res.json({
+        kdfVersion: KDF_VERSION.ARGON2ID,
+        kdfParams: params
+      });
+    } catch (err) {
+      res.status(500).json({ error: 'Erreur lors de la récupération du KDF' });
     }
   });
 

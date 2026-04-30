@@ -8,6 +8,21 @@ const PBKDF2_HASH = 'SHA-256';
 const AES_ALGORITHM = 'AES-GCM';
 const AES_LENGTH = 256;
 
+// Identifiants de KDF stockés dans users.kdf_version (cf migration 002).
+export const KDF_VERSION = Object.freeze({
+  PBKDF2_SHA256_600K: 1,
+  ARGON2ID: 2
+});
+
+// Paramètres Argon2id par défaut : RFC 9106 "third recommended option" et
+// défaut OWASP 2024 pour une dérivation côté navigateur. p=1 imposé par
+// libsodium (mono-thread), accepté en échange de l'audit Cure53 et de
+// l'implémentation de référence de Frank Denis.
+//   m : mémoire en KiB (65536 = 64 MiB)
+//   t : itérations (3)
+//   p : parallélisme (1, contrainte libsodium)
+export const ARGON2ID_DEFAULT_PARAMS = Object.freeze({ m: 65536, t: 3, p: 1 });
+
 /**
  * Dériver les clés d'authentification et de chiffrement depuis le mot de passe maître
  */
@@ -52,6 +67,79 @@ export async function deriveKeys(masterPassword, email) {
   );
 
   // Créer la clé de chiffrement (pour chiffrer les données localement)
+  const encKey = await window.crypto.subtle.importKey(
+    'raw',
+    encKeyBytes,
+    { name: AES_ALGORITHM, length: AES_LENGTH },
+    true,
+    ['encrypt', 'decrypt']
+  );
+
+  return { authKey, encKey };
+}
+
+/**
+ * Dériver les clés via Argon2id (libsodium WASM, lazy-loadé).
+ * Même signature de retour que deriveKeys() pour rester drop-in.
+ *
+ * Note libsodium :
+ * - L'API crypto_pwhash impose un salt de 16 bytes. On dérive un salt
+ *   déterministe à partir de l'email via SHA-256 tronqué (le salt n'a
+ *   pas besoin d'être secret, juste unique par utilisateur).
+ * - p (parallélisme) est forcé à 1 par libsodium ; on rejette toute
+ *   valeur différente pour ne pas créer de divergence silencieuse.
+ */
+let _sodiumPromise = null;
+async function getSodium() {
+  if (!_sodiumPromise) {
+    _sodiumPromise = (async () => {
+      const mod = await import('libsodium-wrappers-sumo');
+      const sodium = mod.default || mod;
+      await sodium.ready;
+      return sodium;
+    })();
+  }
+  return _sodiumPromise;
+}
+
+export async function deriveKeysArgon2id(masterPassword, email, params = ARGON2ID_DEFAULT_PARAMS) {
+  if (params.p !== 1) {
+    throw new Error('Argon2id: p doit être 1 (contrainte libsodium)');
+  }
+
+  const sodium = await getSodium();
+  const encoder = new TextEncoder();
+
+  // Salt déterministe = SHA-256(email.lower()) tronqué à 16 bytes.
+  const emailHashBuf = await window.crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(email.toLowerCase())
+  );
+  const salt = new Uint8Array(emailHashBuf).slice(0, sodium.crypto_pwhash_SALTBYTES);
+
+  // Dérive 64 bytes (= 512 bits, identique au PBKDF2 actuel).
+  const derived = sodium.crypto_pwhash(
+    64,
+    masterPassword,
+    salt,
+    params.t,                   // opslimit (itérations)
+    params.m * 1024,            // memlimit en bytes (KiB → bytes)
+    sodium.crypto_pwhash_ALG_ARGON2ID13
+  );
+
+  // Split 32+32 comme PBKDF2 actuel.
+  const authKeyBytes = derived.slice(0, 32);
+  const encKeyBytes = derived.slice(32, 64);
+
+  // Importer comme CryptoKey (compat hashForServer + AES-GCM existants).
+  const authKey = await window.crypto.subtle.importKey(
+    'raw',
+    authKeyBytes,
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
+
   const encKey = await window.crypto.subtle.importKey(
     'raw',
     encKeyBytes,

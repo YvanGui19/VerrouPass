@@ -69,3 +69,17 @@ import rateLimit from 'express-rate-limit';
     standardHeaders: true,
     legacyHeaders: false,
   });
+
+  // Rate limiter pour /api/auth/kdf-info — appelé une fois avant chaque login
+  // pour savoir quel KDF utiliser. 20 / 15 min couvre largement les usages
+  // légitimes (max 5 tentatives login → max 5 kdf-info, marge x4) et coupe
+  // tout scan d'énumération massif.
+  export const kdfInfoLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20,
+    message: {
+      error: 'Trop de requêtes. Veuillez réessayer plus tard.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
