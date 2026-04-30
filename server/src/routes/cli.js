@@ -13,7 +13,7 @@ const router = express.Router();
 // /!\ Quand on bump : regenerer le ZIP via scripts/release-cli.sh qui met
 // aussi a jour CLI_SHA256 ci-dessous (sinon les nouveaux clients verront un
 // hash incorrect et refuseront le download).
-const CURRENT_CLI_VERSION = '2.2.0'; // Argon2id support + dual KDF login
+const CURRENT_CLI_VERSION = '2.3.0'; // Fix dispatch v-* sous Windows
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
 const CLI_SHA256 = 'ba789a0e486b94cd441d3e53716065c0a91cd890e40c150bbeeadc0c8feb25d3';
 
@@ -42,12 +42,11 @@ router.get('/version', (req, res) => {
     sha256: CLI_SHA256,
     sizeBytes: getCliFileSize(),
     changelog: [
-      'Nouveau : support du KDF Argon2id (libsodium-wrappers-sumo, m=64MiB t=3 p=1, RFC 9106). Indispensable pour les comptes crees ou migres depuis le 2026-04-30.',
-      'Nouveau : login dual-KDF. Le CLI interroge /api/auth/kdf-info avant de deriver les cles, puis utilise Argon2id ou PBKDF2 selon ce que le serveur indique. Les comptes PBKDF2 legacy continuent de fonctionner.',
-      'Cleanup : suppression de la fonction register inutilisee (l inscription se fait uniquement via le frontend web).'
+      'Fix : v-login / v-ls / v-cat / etc. fonctionnent maintenant sous Windows. Avant cette version, le wrapper .cmd cree par npm install -g pointait directement sur src/index.js, donc path.basename(process.argv[1]) renvoyait index.js et le dispatch des commandes v-* ne se declenchait pas.',
+      'Refactor : le dispatch passe par des stubs bin/v-*.js qui appellent runCli(binName) explicitement, plus de detection fragile basee sur argv[1]. Comportement identique sous Linux/Mac.'
     ],
-    breaking: true, // Versions <2.2.0 ne peuvent pas se connecter aux comptes Argon2id
-    minVersion: '2.2.0' // Comptes Argon2id necessitent libsodium cote CLI
+    breaking: false,
+    minVersion: '2.2.0' // Comptes Argon2id necessitent libsodium cote CLI (>=2.2.0)
   });
 });
 

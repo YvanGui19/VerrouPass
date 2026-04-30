@@ -6,34 +6,8 @@
  */
 
 import { Command } from 'commander';
-import chalk from 'chalk';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { pathToFileURL } from 'url';
 import { c } from './utils/themes.js';
-
-// Détecter le nom du binaire appelé pour les commandes v-*
-const binName = path.basename(process.argv[1]);
-
-// Si appelé via v-<commande>, injecter la commande dans les arguments
-if (binName.startsWith('v-')) {
-  const command = binName.slice(2); // Enlever "v-"
-  // Mapper les commandes Linux-style vers les commandes internes
-  const aliases = {
-    'ls': 'list',
-    'cat': 'get',
-    'grep': 'search',
-    'find': 'search',
-    'touch': 'add',
-    'nano': 'edit',
-    'rm': 'delete',
-    'gen': 'generate',
-    'exit': 'logout',
-    'man': '--help'
-  };
-  const actualCommand = aliases[command] || command;
-  // Injecter la commande dans argv avant les autres arguments
-  process.argv.splice(2, 0, actualCommand);
-}
 import { loginCommand } from './commands/auth.js';
 import { logoutCommand } from './commands/auth.js';
 import { listCommand } from './commands/list.js';
@@ -48,109 +22,136 @@ import { deleteAccountCommand } from './commands/account.js';
 import { updateCommand } from './commands/update.js';
 import { autoCheckUpdate } from './utils/autoUpdateCheck.js';
 
-// Vérification automatique des mises à jour (une fois par jour max, non bloquant)
-autoCheckUpdate().catch(() => {}); // Silencieux en cas d'erreur
+// Mapping des commandes Linux-style vers les commandes commander internes.
+// `v-ls` -> list, `v-man` -> --help, `v-exit` -> logout, etc.
+const BIN_ALIASES = {
+  'ls': 'list',
+  'cat': 'get',
+  'grep': 'search',
+  'find': 'search',
+  'touch': 'add',
+  'nano': 'edit',
+  'rm': 'delete',
+  'gen': 'generate',
+  'exit': 'logout',
+  'man': '--help'
+};
 
-const program = new Command();
+// Injection de la commande quand le CLI est lance via un bin v-X.
+// Apres `npm install -g`, npm cree un wrapper par bin. Sur Windows c'est
+// un .cmd qui invoque `node .../index.js`, donc process.argv[1] vaut le
+// chemin de index.js et ne nous renseigne plus sur le bin choisi (cf bug
+// historique qui empechait v-login/v-ls/etc. de fonctionner sous Windows).
+// On passe donc le nom du bin explicitement via les stubs `bin/v-*.js`,
+// qui appellent runCli(binName).
+export function injectBinCommand(binName) {
+  if (!binName || !binName.startsWith('v-')) return;
+  const command = binName.slice(2);
+  const actualCommand = BIN_ALIASES[command] || command;
+  process.argv.splice(2, 0, actualCommand);
+}
 
-program
-  .name('v')
-  .description(c.primary('VerrouPass CLI - Gestionnaire de mots de passe zero-knowledge'))
-  .version('2.0.0');
+export function runCli(binName) {
+  injectBinCommand(binName);
 
-// Commande: login
-program
-  .command('login')
-  .description('Se connecter à votre compte VerrouPass')
-  .option('-e, --email <email>', 'Email de connexion')
-  .action(loginCommand);
+  // Verification automatique des mises a jour (1x/jour max, non bloquant)
+  autoCheckUpdate().catch(() => {}); // Silencieux en cas d'erreur
 
-// Commande: logout
-program
-  .command('logout')
-  .description('Se déconnecter de votre compte')
-  .action(logoutCommand);
+  const program = new Command();
 
-// Commande: list
-program
-  .command('list')
-  .alias('ls')
-  .description('Lister toutes les entrées de votre coffre')
-  .option('-s, --short', 'Affichage court (noms uniquement)')
-  .action(listCommand);
+  program
+    .name('v')
+    .description(c.primary('VerrouPass CLI - Gestionnaire de mots de passe zero-knowledge'))
+    .version('2.3.0');
 
-// Commande: get
-program
-  .command('get <name>')
-  .description('Récupérer une entrée spécifique')
-  .option('-c, --copy', 'Copier le mot de passe dans le presse-papiers')
-  .option('-p, --show-password', 'Afficher le mot de passe en clair')
-  .action(getCommand);
+  program
+    .command('login')
+    .description('Se connecter à votre compte VerrouPass')
+    .option('-e, --email <email>', 'Email de connexion')
+    .action(loginCommand);
 
-// Commande: search
-program
-  .command('search <query>')
-  .alias('find')
-  .description('Rechercher dans vos entrées')
-  .action(searchCommand);
+  program
+    .command('logout')
+    .description('Se déconnecter de votre compte')
+    .action(logoutCommand);
 
-// Commande: add
-program
-  .command('add')
-  .description('Ajouter une nouvelle entrée au coffre')
-  .option('-n, --name <name>', 'Nom de l\'application')
-  .option('-u, --username <username>', 'Nom d\'utilisateur ou email')
-  .option('-p, --password <password>', 'Mot de passe')
-  .option('--url <url>', 'URL du service')
-  .option('--notes <notes>', 'Notes supplémentaires')
-  .action(addCommand);
+  program
+    .command('list')
+    .alias('ls')
+    .description('Lister toutes les entrées de votre coffre')
+    .option('-s, --short', 'Affichage court (noms uniquement)')
+    .action(listCommand);
 
-// Commande: edit
-program
-  .command('edit <name>')
-  .description('Modifier une entrée existante')
-  .action(editCommand);
+  program
+    .command('get <name>')
+    .description('Récupérer une entrée spécifique')
+    .option('-c, --copy', 'Copier le mot de passe dans le presse-papiers')
+    .option('-p, --show-password', 'Afficher le mot de passe en clair')
+    .action(getCommand);
 
-// Commande: delete
-program
-  .command('delete <name>')
-  .alias('rm')
-  .description('Supprimer une entrée du coffre')
-  .option('-f, --force', 'Supprimer sans confirmation')
-  .action(deleteCommand);
+  program
+    .command('search <query>')
+    .alias('find')
+    .description('Rechercher dans vos entrées')
+    .action(searchCommand);
 
-// Commande: generate
-program
-  .command('generate')
-  .alias('gen')
-  .description('Générer un mot de passe sécurisé')
-  .option('-l, --length <number>', 'Longueur du mot de passe', '16')
-  .option('--no-upper', 'Exclure les majuscules')
-  .option('--no-lower', 'Exclure les minuscules')
-  .option('--no-numbers', 'Exclure les chiffres')
-  .option('--no-symbols', 'Exclure les symboles')
-  .option('-c, --copy', 'Copier dans le presse-papiers')
-  .action(generateCommand);
+  program
+    .command('add')
+    .description('Ajouter une nouvelle entrée au coffre')
+    .option('-n, --name <name>', 'Nom de l\'application')
+    .option('-u, --username <username>', 'Nom d\'utilisateur ou email')
+    .option('-p, --password <password>', 'Mot de passe')
+    .option('--url <url>', 'URL du service')
+    .option('--notes <notes>', 'Notes supplémentaires')
+    .action(addCommand);
 
-// Commande: config
-program
-  .command('config')
-  .description('Configurer l\'URL du serveur')
-  .option('--url <url>', 'Définir l\'URL du serveur')
-  .option('--show', 'Afficher la configuration actuelle')
-  .action(configCommand);
+  program
+    .command('edit <name>')
+    .description('Modifier une entrée existante')
+    .action(editCommand);
 
-// Commande: account delete
-program
-  .command('account-delete')
-  .description('Supprimer définitivement votre compte et toutes vos données')
-  .action(deleteAccountCommand);
+  program
+    .command('delete <name>')
+    .alias('rm')
+    .description('Supprimer une entrée du coffre')
+    .option('-f, --force', 'Supprimer sans confirmation')
+    .action(deleteCommand);
 
-// Commande: update
-program
-  .command('update')
-  .description('Vérifier et installer les mises à jour')
-  .action(updateCommand);
+  program
+    .command('generate')
+    .alias('gen')
+    .description('Générer un mot de passe sécurisé')
+    .option('-l, --length <number>', 'Longueur du mot de passe', '16')
+    .option('--no-upper', 'Exclure les majuscules')
+    .option('--no-lower', 'Exclure les minuscules')
+    .option('--no-numbers', 'Exclure les chiffres')
+    .option('--no-symbols', 'Exclure les symboles')
+    .option('-c, --copy', 'Copier dans le presse-papiers')
+    .action(generateCommand);
 
-// Parser les arguments
-program.parse(process.argv);
+  program
+    .command('config')
+    .description('Configurer l\'URL du serveur')
+    .option('--url <url>', 'Définir l\'URL du serveur')
+    .option('--show', 'Afficher la configuration actuelle')
+    .action(configCommand);
+
+  program
+    .command('account-delete')
+    .description('Supprimer définitivement votre compte et toutes vos données')
+    .action(deleteAccountCommand);
+
+  program
+    .command('update')
+    .description('Vérifier et installer les mises à jour')
+    .action(updateCommand);
+
+  program.parse(process.argv);
+}
+
+// Auto-execution quand on lance `node src/index.js [args]` directement
+// (cas dev/debug). En prod, les bins passent par les stubs bin/v-*.js
+// qui importent ce module et appellent runCli(binName) explicitement.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runCli(null);
+}
