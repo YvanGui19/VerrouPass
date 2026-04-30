@@ -1,37 +1,86 @@
 # VerrouPass CLI
 
-Interface en ligne de commande pour VerrouPass, votre gestionnaire de mots de passe zero-knowledge.
+Interface en ligne de commande pour VerrouPass, votre gestionnaire de mots
+de passe zero-knowledge. Version actuelle : **2.3.0**.
 
-## Installation
+## Pré-requis
 
-### Depuis le dossier du projet
+- **Node.js >= 20** et npm (la CLI est en ESM et utilise `libsodium-wrappers-sumo`
+  pour la dérivation Argon2id)
+- Un compte VerrouPass (l'inscription se fait via l'interface web, pas la CLI)
+- Sur Windows : un terminal qui supporte UTF-8 (PowerShell, Windows Terminal,
+  Git Bash). cmd.exe legacy peut afficher des caractères mal encodés sur les
+  prompts inquirer.
+
+## Installation depuis le ZIP de release (recommandé)
+
+C'est le mode normal pour un utilisateur final.
 
 ```bash
-cd cli
+# 1. Télécharger
+curl -O https://verroupass.yvangui.fr/downloads/verroupass-cli.zip
+
+# 2. Vérifier le SHA-256
+#    La valeur attendue est affichée par GET /api/cli/version
+curl -s https://verroupass.yvangui.fr/api/cli/version | grep sha256
+sha256sum verroupass-cli.zip   # Linux/macOS
+# ou en PowerShell :
+# Get-FileHash verroupass-cli.zip -Algorithm SHA256
+
+# 3. Extraire
+unzip verroupass-cli.zip
+cd verroupass-cli
+
+# 4. Installer les dépendances locales (le ZIP n'embarque pas node_modules
+#    pour rester léger ; cette étape les télécharge depuis le registre npm)
 npm install
-npm run install-global
+
+# 5. Rendre les commandes v-* disponibles dans le PATH
+npm install -g .
 ```
 
-### Vérifier l'installation
+Vérifier que l'installation a réussi :
 
 ```bash
 v-man
 ```
+
+### Configurer l'URL du serveur
+
+Par défaut la CLI pointe sur `http://localhost:3001/api`. Pour pointer sur
+votre instance hébergée :
+
+```bash
+v-config --url https://verroupass.votredomaine.com/api
+v-config --show
+```
+
+## Installation depuis le code source (dev / contributors)
+
+```bash
+git clone https://github.com/YvanGui19/VerrouPass.git
+cd VerrouPass/cli
+npm install
+npm run install-global
+```
+
+## Mise à jour
+
+Quand le serveur annonce une nouvelle version (banner affiché au lancement
+d'une commande), la mettre à jour avec `v-update` ou en répétant la
+procédure d'installation depuis le ZIP avec la version courante.
 
 ## Configuration
 
 ### Première utilisation
 
 Avant d'utiliser la CLI, assurez-vous que :
-1. Le serveur VerrouPass est démarré et accessible
-2. Vous avez créé un compte (via l'interface web ou `v register`)
-
-Par défaut, la CLI se connecte à `http://localhost:3001/api`. Pour changer l'URL du serveur :
-
-```bash
-# Modifier directement dans le fichier de config
-# La config est stockée dans ~/.config/verroupass-cli/
-```
+1. Le serveur VerrouPass est démarré et accessible (par défaut
+   `http://localhost:3001/api` ; sinon configurer via `v-config --url`)
+2. Vous avez créé un compte **via l'interface web**. La CLI ne supporte
+   pas l'inscription : elle nécessite un code d'invitation que seul
+   l'admin peut générer côté serveur, et le formulaire est plus simple
+   à présenter graphiquement.
 
 ## Commandes
 
@@ -381,9 +430,15 @@ v-touch \
 
 ### Changer l'URL du serveur
 
-La configuration est stockée dans `~/.config/verroupass-cli/config.json`.
+La méthode recommandée est `v-config --url <url>`. Le fichier de config
+sous-jacent est géré par [`conf`](https://www.npmjs.com/package/conf) et
+se trouve, selon l'OS :
 
-Vous pouvez modifier manuellement ce fichier pour changer l'URL du serveur :
+- **Linux** : `~/.config/verroupass-cli/config.json`
+- **macOS** : `~/Library/Preferences/verroupass-cli-nodejs/config.json`
+- **Windows** : `%APPDATA%\verroupass-cli-nodejs\Config\config.json`
+
+Vous pouvez l'éditer à la main :
 
 ```json
 {
@@ -391,16 +446,9 @@ Vous pouvez modifier manuellement ce fichier pour changer l'URL du serveur :
 }
 ```
 
-Ou programmatiquement :
-
-```javascript
-import config from './src/utils/config.js';
-config.saveServerUrl('https://verroupass.votredomaine.com/api');
-```
-
 ### Emplacement des données
 
-- **Configuration** : `~/.config/verroupass-cli/config.json`
+- **Configuration** : voir ci-dessus selon l'OS
 - **Session** : Token JWT et clé de chiffrement stockés dans le fichier de config
 - **Logs** : Pas de logs locaux (tout est en mémoire)
 
