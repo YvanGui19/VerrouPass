@@ -15,7 +15,7 @@ const router = express.Router();
 // hash incorrect et refuseront le download).
 const CURRENT_CLI_VERSION = '2.3.0'; // Fix dispatch v-* sous Windows
 const DOWNLOAD_URL = 'https://verroupass.yvangui.fr/downloads/verroupass-cli.zip';
-const CLI_SHA256 = 'ba789a0e486b94cd441d3e53716065c0a91cd890e40c150bbeeadc0c8feb25d3';
+const CLI_SHA256 = '251abab83ade68ab9a96209969517e4a18bc9f9e9b86e7992e8706f1e0faf201';
 
 // Chemin physique du ZIP servi par nginx (location /downloads/). Utilisé pour
 // renvoyer dynamiquement la taille réelle du fichier dans /api/cli/version,
