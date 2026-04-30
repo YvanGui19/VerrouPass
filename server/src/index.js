@@ -24,8 +24,24 @@ assertTotpKeyConfigured();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware de sécurité
-app.use(helmet());
+// Middleware de securite.
+// Les en-tetes critiques (CSP, HSTS, X-Frame-Options, X-Content-Type-Options,
+// Referrer-Policy, Permissions-Policy, COOP, CORP) sont deja appliques en
+// amont par nginx via /etc/nginx/snippets/verroupass-security-headers.conf.
+// On desactive les directives helmet qui font doublon pour eviter les
+// en-tetes contradictoires (cas reel observe : X-Frame-Options DENY/nginx +
+// SAMEORIGIN/helmet sur les reponses /api/). On garde uniquement les
+// directives helmet qui ne sont pas servies par nginx :
+//   - hidePoweredBy : retire X-Powered-By: Express
+//   - dnsPrefetchControl, ieNoOpen, noSniff (small extras)
+app.use(helmet({
+  contentSecurityPolicy: false,    // nginx
+  strictTransportSecurity: false,  // nginx (HSTS)
+  frameguard: false,               // nginx (X-Frame-Options)
+  referrerPolicy: false,           // nginx
+  crossOriginOpenerPolicy: false,  // nginx
+  crossOriginResourcePolicy: false // nginx
+}));
 
 // Trust proxy - exactement 1 hop (Nginx reverse proxy local)
 // "true" ferait confiance à toute la chaîne X-Forwarded-For et permettrait de spoofer
