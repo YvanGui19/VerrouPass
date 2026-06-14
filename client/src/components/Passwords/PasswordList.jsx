@@ -9,6 +9,7 @@ import PasswordDetail from './PasswordDetail';
 import UnlockPrompt from './UnlockPrompt';
 
 const CARD_WIDTH = 300;
+const CARD_HEIGHT = 280;
 const ROULETTE_HEIGHT = 420;
 
 // Position 3D d'une carte relative au centre. Au-delà de ±3 on la masque.
@@ -244,9 +245,14 @@ export default function PasswordList() {
                     }}
                     transition={{ type: 'spring', stiffness: 220, damping: 28 }}
                     onClick={() => !isCenter && setCurrentIndex(index)}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                     style={{
+                      position: 'absolute',
                       width: `${CARD_WIDTH}px`,
+                      minHeight: `${CARD_HEIGHT}px`,
+                      left: '50%',
+                      top: '50%',
+                      marginLeft: `-${CARD_WIDTH / 2}px`,
+                      marginTop: `-${CARD_HEIGHT / 2}px`,
                       zIndex: 10 - Math.abs(offset),
                       transformStyle: 'preserve-3d',
                       pointerEvents: Math.abs(offset) > 2 ? 'none' : 'auto',
