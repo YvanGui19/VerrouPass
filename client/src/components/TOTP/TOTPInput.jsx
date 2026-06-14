@@ -78,7 +78,7 @@ export default function TOTPInput({ value, onChange }) {
 
   const startScanner = async () => {
     if (!scannerSupported) {
-      setError('Scan QR non supporte par ce navigateur. Saisissez le secret manuellement.');
+      setError('Scan QR non supporté par ce navigateur. Saisissez le secret manuellement.');
       return;
     }
 
@@ -100,11 +100,11 @@ export default function TOTPInput({ value, onChange }) {
       }
     } catch (err) {
       if (err.name === 'NotAllowedError') {
-        setError('Acces a la camera refuse');
+        setError('Accès a la caméra refuse');
       } else if (err.name === 'NotFoundError') {
-        setError('Aucune camera disponible');
+        setError('Aucune caméra disponible');
       } else {
-        setError('Erreur d\'acces a la camera');
+        setError('Erreur d\'accès a la caméra');
       }
     }
   };
@@ -197,7 +197,7 @@ export default function TOTPInput({ value, onChange }) {
       {/* Help text */}
       {!showScanner && (
         <p className="text-grey text-xs font-mono">
-          <span className="text-cyan">▸</span> Saisissez le secret TOTP ou scannez un QR code
+          Saisissez le secret TOTP ou scannez un QR code
         </p>
       )}
 

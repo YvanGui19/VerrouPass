@@ -84,8 +84,8 @@ export function Settings() {
                   Mot de passe maître:
                 </label>
                 <p className="font-mono text-grey text-sm leading-relaxed mb-4">
-                  <span className="text-lime">▸</span> Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.<br />
-                  <span className="text-cyan">▸</span> Si vous l'oubliez, vous devrez créer un nouveau compte.
+                  Votre mot de passe maître n'est jamais stocké et ne peut pas être récupéré.<br />
+                  Si vous l'oubliez, vous devrez créer un nouveau compte.
                 </p>
                 <button
                   onClick={() => setShowChangePassword(true)}
@@ -107,9 +107,9 @@ export function Settings() {
             </h2>
             <div className="bg-dark-navy border border-cyan/20 rounded p-4">
               <p className="font-mono text-grey text-sm leading-relaxed">
-                <span className="text-lime">▸</span> Toutes vos données sont chiffrées localement avant d'être envoyées au serveur.<br />
-                <span className="text-cyan">▸</span> Chiffrement AES-256-GCM, dérivation des clés via Argon2id (libsodium, RFC 9106).<br />
-                <span className="text-lime">▸</span> Le serveur ne peut jamais déchiffrer vos mots de passe (zero-knowledge).
+                Toutes vos données sont chiffrées localement avant d'être envoyées au serveur.<br />
+                Chiffrement AES-256-GCM, dérivation des clés via Argon2id (libsodium, RFC 9106).<br />
+                Le serveur ne peut jamais déchiffrer vos mots de passe (zero-knowledge).
               </p>
             </div>
           </section>

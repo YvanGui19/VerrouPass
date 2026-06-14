@@ -86,7 +86,7 @@ export function CliDownload() {
                 {cliInfo.sha256}
               </code>
               <p className="font-mono text-grey text-sm mb-4">
-                <span className="text-cyan">▸</span> Pour vérifier l'intégrité du fichier téléchargé:
+                Pour vérifier l'intégrité du fichier téléchargé:
               </p>
               <div className="space-y-3">
                 <div className="bg-dark-navy border-l-4 border-cyan rounded p-4">

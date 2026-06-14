@@ -106,7 +106,7 @@ export const authApi = {
     return response.data;
   },
 
-  // 2e etape login pour les comptes 2FA. Body : { challenge, totpCode } OU
+  // 2e étape login pour les comptes 2FA. Body : { challenge, totpCode } OU
   // { challenge, recoveryCode }.
   async loginTotp({ challenge, totpCode, recoveryCode }) {
     const body = { challenge };
@@ -170,7 +170,7 @@ export const authApi = {
   }
 };
 
-// TOTP / 2FA management API (toutes les routes exigent une session active)
+// TOTP / 2FA management API (toutes les routes exigent une session activé)
 export const totpApi = {
   async status() {
     const response = await api.get('/auth/totp/status');

@@ -73,7 +73,7 @@ export default function UnlockPrompt() {
 
           <div className="mt-8 text-center border-t border-cyan/10 pt-6">
             <p className="font-mono text-grey text-sm mb-3">
-              <span className="text-cyan">▸</span> Connecte en tant que <span className="text-white">{user?.email}</span>
+              Connecté en tant que <span className="text-white">{user?.email}</span>
             </p>
             <button
               onClick={logout}

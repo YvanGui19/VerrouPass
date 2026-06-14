@@ -23,7 +23,7 @@ VerrouPass est un gestionnaire de mots de passe **zero-knowledge**.
 |-----------|------------|
 | Chiffrement des données | AES-256-GCM |
 | Dérivation de clé (comptes >= 2026-04-30) | Argon2id (libsodium, m=64 MiB, t=3, p=1, salt 16B random) |
-| Dérivation de clé (comptes legacy) | PBKDF2-SHA256 (600 000 itérations, salt = email) — migrés silencieusement vers Argon2id au prochain login |
+| Dérivation de clé (comptes legacy) | PBKDF2-SHA256 (600 000 itérations, salt = email) - migrés silencieusement vers Argon2id au prochain login |
 | Authentification | bcrypt (12 rounds) sur le hash transmis |
 | TOTP | HMAC-SHA1 (RFC 6238) |
 
@@ -87,7 +87,7 @@ Mot de passe maître
 - Utiliser HTTPS avec HSTS (actif en prod : `max-age=86400; includeSubDomains`)
 - CSP stricte côté nginx (`script-src 'self' 'wasm-unsafe-eval'`, pas de
   `unsafe-inline` script, pas de tiers extérieur autorisé sur connect-src
-  ni script-src) — bloque l'injection de keylogger en cas de compromission
+  ni script-src) - bloque l'injection de keylogger en cas de compromission
   d'une dépendance npm
 - Polices auto-hébergées (pas de connexion sortante à fonts.gstatic.com)
 - Activer le 2FA TOTP sur son compte (RFC 6238, secret AES-256-GCM au repos)

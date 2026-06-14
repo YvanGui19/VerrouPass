@@ -204,7 +204,7 @@ export function ChangePassword({ user, onClose }) {
                 disabled={loading}
               />
               <p className="text-grey/70 font-mono text-xs mt-2">
-                <span className="text-lime">▸</span> Minimum 8 caractères
+                Minimum 8 caractères
               </p>
             </div>
 

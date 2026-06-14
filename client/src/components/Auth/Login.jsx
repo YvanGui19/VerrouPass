@@ -13,7 +13,7 @@ export default function Login() {
   const location = useLocation();
   const infoMessage = location.state?.info;
 
-  // Si une etape 2FA est en attente (apres un /login reussi sur compte 2FA),
+  // Si une étape 2FA est en attente (après un /login réussi sur compte 2FA),
   // afficher TotpChallenge a la place du formulaire.
   if (pendingTotp) {
     return <TotpChallenge />;
@@ -125,11 +125,11 @@ export default function Login() {
         {/* Footer info */}
         <div className="mt-8 text-center">
           <p className="font-mono text-xs text-grey/70 leading-relaxed">
-            <span className="text-lime">▸</span> Chiffrement local AES-256
+            Chiffrement local AES-256
             <br />
-            <span className="text-lime">▸</span> Dérivation Argon2id (RFC 9106)
+            Dérivation Argon2id (RFC 9106)
             <br />
-            <span className="text-cyan">▸</span> Vos mots de passe restent secrets
+            Vos mots de passe restent secrets
           </p>
         </div>
       </div>

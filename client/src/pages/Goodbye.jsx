@@ -33,7 +33,7 @@ export function Goodbye() {
 
           {/* Message */}
           <p className="font-mono text-grey text-base sm:text-lg mb-4 leading-relaxed">
-            <span className="text-cyan">▸</span> Votre compte et toutes vos données ont été définitivement supprimés.
+            Votre compte et toutes vos données ont été définitivement supprimés.
           </p>
 
           <p className="font-mono text-grey/70 text-sm sm:text-base mb-8">

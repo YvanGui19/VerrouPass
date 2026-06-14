@@ -18,7 +18,7 @@ import rateLimit from 'express-rate-limit';
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true, // Ne compte que les échecs
+    skipSuccèssfulRequests: true, // Ne compte que les échecs
   });
 
   // Rate limiter pour register - éviter spam d'inscriptions
@@ -43,7 +43,7 @@ import rateLimit from 'express-rate-limit';
     legacyHeaders: false,
   });
 
-  // Rate limiter strict pour la 2e étape TOTP — anti-brute-force du code
+  // Rate limiter strict pour la 2e étape TOTP - anti-brute-force du code
   // 6 chiffres (10^6 combinaisons). 5 tentatives par IP / 15 min, ne compte
   // que les échecs (un succès n'incrémente pas le compteur).
   export const totpLoginLimiter = rateLimit({
@@ -54,7 +54,7 @@ import rateLimit from 'express-rate-limit';
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccessfulRequests: true,
+    skipSuccèssfulRequests: true,
   });
 
   // Rate limiter pour les opérations TOTP authentifiées (setup/enable/disable).
@@ -70,7 +70,7 @@ import rateLimit from 'express-rate-limit';
     legacyHeaders: false,
   });
 
-  // Rate limiter pour /api/auth/kdf-info — appelé une fois avant chaque login
+  // Rate limiter pour /api/auth/kdf-info - appelé une fois avant chaque login
   // pour savoir quel KDF utiliser. 20 / 15 min couvre largement les usages
   // légitimes (max 5 tentatives login → max 5 kdf-info, marge x4) et coupe
   // tout scan d'énumération massif.

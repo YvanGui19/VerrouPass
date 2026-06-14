@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-// TOTP RFC 6238 — implémentation pure Node crypto, sans dépendance externe.
+// TOTP RFC 6238 - implémentation pure Node crypto, sans dépendance externe.
 // Aligné sur l'impl client (client/src/utils/totp.js) pour cohérence.
 //
 // Paramètres figés :
@@ -81,7 +81,7 @@ export function generateTOTP(secret, timestampMs = Date.now()) {
 }
 
 // Validation timing-safe avec window ±1 (accepte le code courant, le précédent
-// et le suivant — couvre 90 secondes pour décalage horloge client/serveur).
+// et le suivant - couvre 90 secondes pour décalage horloge client/serveur).
 export function verifyTOTP(secret, code, { window = 1, timestampMs = Date.now() } = {}) {
   if (!code || typeof code !== 'string' || !/^\d{6}$/.test(code)) {
     return false;

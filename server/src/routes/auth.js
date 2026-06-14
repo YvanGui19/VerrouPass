@@ -43,12 +43,12 @@ import express from 'express';
   // POST /api/auth/register - avec rate limiting strict
   //
   // Inscription par invitation uniquement. L utilisateur doit fournir un code
-  // d invitation valide genere par l admin via POST /api/admin/invitation.
+  // d invitation valide généré par l admin via POST /api/admin/invitation.
   // Les codes vivent uniquement en RAM serveur, expirent au bout de 15 min,
-  // et sont consommes a la premiere reussite d inscription.
+  // et sont consommes a la première réussite d inscription.
   //
-  // Anti-enumeration preservee : meme reponse 200 generique pour code invalide,
-  // email deja existant et succes. Bcrypt fictif pour egaliser le timing.
+  // Anti-enumeration preservee : meme réponse 200 generique pour code invalide,
+  // email déjà existant et succès. Bcrypt fictif pour egaliser le timing.
   // Pas d auto-login : l utilisateur doit se connecter explicitement.
   router.post('/register', registerLimiter, async (req, res) => {
     const GENERIC_RESPONSE = {
@@ -58,7 +58,7 @@ import express from 'express';
     try {
       const { email, passwordHash, invitationCode, kdfVersion, kdfParams, kdfSalt } = req.body;
 
-      // Validation des entrees obligatoires
+      // Validation des entrées obligatoires
       if (!email || !passwordHash || !invitationCode) {
         securityLogger.registerAttempt(req, email, false, 'missing_credentials');
         return res.status(400).json({ error: 'Email, mot de passe et code d\'invitation requis' });
@@ -78,7 +78,7 @@ import express from 'express';
 
       // Validation KDF : on n'accepte plus que des nouveaux comptes Argon2id.
       // Ces 400 ne leakent rien sur l'existence d'un email (validation du
-      // format des donnees envoyees par le client, indépendante de la DB).
+      // format des données envoyees par le client, indépendante de la DB).
       if (kdfVersion !== KDF_VERSION.ARGON2ID) {
         securityLogger.registerAttempt(req, email, false, 'invalid_kdf_version');
         return res.status(400).json({ error: 'kdfVersion invalide (Argon2id requis)' });
@@ -103,7 +103,7 @@ import express from 'express';
         return res.status(400).json({ error: `kdfSalt doit faire ${KDF_SALT_LEN} bytes` });
       }
 
-      // Verifier d abord si l email est deja utilise. Si oui, on ne consomme
+      // Vérifier d abord si l email est déjà utilise. Si oui, on ne consomme
       // PAS le code d invitation, sinon un attaquant qui a un code pourrait
       // le bruler en testant des emails. Bcrypt fictif pour egaliser le timing.
       const existingUser = await User.findByEmail(email);
@@ -134,7 +134,7 @@ import express from 'express';
     }
   });
 
-  // POST /api/auth/kdf-info — étape 0 du login.
+  // POST /api/auth/kdf-info - étape 0 du login.
   //
   // Le client interroge cet endpoint avec un email pour savoir quel KDF
   // utiliser (PBKDF2 legacy ou Argon2id), avec quels paramètres et quel
@@ -210,7 +210,7 @@ import express from 'express';
         return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
       }
 
-      // Si 2FA active, ne PAS poser de cookies : retourner un challenge JWT
+      // Si 2FA activé, ne PAS poser de cookies : retourner un challenge JWT
       // 5min que l'utilisateur devra échanger contre des cookies via
       // POST /api/auth/login/totp avec un code TOTP ou un recovery code.
       if (user.totp_enabled) {
@@ -246,9 +246,7 @@ import express from 'express';
           id: user.id,
           email: user.email,
           createdAt: user.created_at
-        },
-        // Token aussi dans le body pour le CLI
-        token: accessToken
+        }
       });
     } catch (err) {
       securityLogger.loginAttempt(req, req.body?.email, false, 'server_error');
@@ -256,9 +254,9 @@ import express from 'express';
     }
   });
 
-  // POST /api/auth/login/totp - 2e etape du login quand 2FA est activee.
+  // POST /api/auth/login/totp - 2e étape du login quand 2FA est activee.
   // Body : { challenge, totpCode } OU { challenge, recoveryCode }.
-  // Le challenge est le JWT court emis par /login. Code TOTP verifie avec
+  // Le challenge est le JWT court emis par /login. Code TOTP vérifié avec
   // window +/-1 ; recovery code compare bcrypt sur la liste, marque single-use.
   router.post('/login/totp', totpLoginLimiter, async (req, res) => {
     try {
@@ -421,9 +419,7 @@ import express from 'express';
       });
 
       res.json({
-        message: 'Token rafraîchi',
-        // Token aussi dans le body pour le CLI
-        token: accessToken
+        message: 'Token rafraîchi'
       });
     } catch (err) {
       res.status(500).json({ error: 'Erreur lors du rafraîchissement du token' });
@@ -451,7 +447,7 @@ import express from 'express';
     }
   });
 
-  // POST /api/auth/migrate-kdf — migration silencieuse PBKDF2 -> Argon2id.
+  // POST /api/auth/migrate-kdf - migration silencieuse PBKDF2 -> Argon2id.
   //
   // Déclenchée automatiquement par le client après un login réussi sur un
   // compte legacy (kdf_version=1). Le mot de passe maître est inchangé, mais

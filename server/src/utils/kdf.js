@@ -52,8 +52,8 @@ export function generateKdfSalt() {
 
 // Cle HMAC pour calculer le salt deterministe des emails inconnus
 // (anti-enumeration via /kdf-info). Lue depuis l'env au premier appel.
-// Si KDF_SALT_HMAC_KEY n'est pas definie, fallback sur une cle aleatoire
-// generee au boot : effective pour la session courante mais change au
+// Si KDF_SALT_HMAC_KEY n'est pas définie, fallback sur une cle aléatoire
+// générée au boot : effective pour la session courante mais change au
 // restart serveur. Un warning est affiche pour pousser a configurer
 // proprement l'env var.
 let _hmacKey = null;
@@ -66,13 +66,13 @@ function getHmacKey() {
     return _hmacKey;
   }
 
-  // Fallback : cle aleatoire au boot. Solide pour la session, change
+  // Fallback : cle aléatoire au boot. Solide pour la session, change
   // au restart (acceptable : aucun secret persistant ne depend de cette
-  // cle, elle ne sert qu'a stabiliser la reponse anti-enum).
+  // cle, elle ne sert qu'a stabiliser la réponse anti-enum).
   console.warn(
     '[KDF] KDF_SALT_HMAC_KEY absent ou mal forme (32 bytes hex requis). ' +
-    'Fallback sur cle aleatoire au boot. Configurer .env pour stabiliser ' +
-    'le salt anti-enumeration entre redemarrages.'
+    'Fallback sur cle aléatoire au boot. Configurer .env pour stabiliser ' +
+    'le salt anti-enumeration entre redémarrages.'
   );
   _hmacKey = crypto.randomBytes(32);
   return _hmacKey;
@@ -81,7 +81,7 @@ function getHmacKey() {
 // Calcule un salt KDF deterministe pour un email inconnu.
 // HMAC-SHA256(KDF_SALT_HMAC_KEY, email.lower())[0..16]. Le client recoit
 // un salt indistinguable d'un vrai salt random (16 bytes opaques).
-// Repete pour le meme email = meme reponse a chaque fois (impossible de
+// Repete pour le meme email = meme réponse a chaque fois (impossible de
 // distinguer "user inconnu" de "user existant" en repetant l'appel).
 export function kdfSaltForUnknownEmail(email) {
   const normalized = email.toLowerCase();

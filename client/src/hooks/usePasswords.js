@@ -9,7 +9,7 @@ export function usePasswords() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Recuperer et dechiffrer toutes les entrees
+  // Récupérer et déchiffrer toutes les entrées
   const fetchItems = useCallback(async () => {
     if (!encKey) {
       setError('Coffre verrouille');
@@ -22,7 +22,7 @@ export function usePasswords() {
     try {
       const data = await vaultApi.getAll();
 
-      // Dechiffrer chaque entree
+      // Déchiffrer chaque entrée
       const decryptedItems = await Promise.all(
         data.items.map(async (item) => {
           try {
@@ -34,10 +34,10 @@ export function usePasswords() {
               updatedAt: item.updated_at
             };
           } catch (err) {
-            console.error('Erreur dechiffrement:', err);
+            console.error('Erreur déchiffrément:', err);
             return {
               id: item.id,
-              name: '[Erreur de dechiffrement]',
+              name: '[Erreur de déchiffrément]',
               error: true
             };
           }
@@ -52,7 +52,7 @@ export function usePasswords() {
     }
   }, [encKey]);
 
-  // Ajouter une nouvelle entree
+  // Ajouter une nouvelle entrée
   const addItem = useCallback(async (itemData) => {
     if (!encKey) {
       throw new Error('Coffre verrouille');
@@ -62,7 +62,7 @@ export function usePasswords() {
     setError(null);
 
     try {
-      // Chiffrer les donnees
+      // Chiffrer les données
       const { encryptedData, iv } = await encrypt(itemData, encKey);
 
       // Envoyer au serveur
@@ -86,7 +86,7 @@ export function usePasswords() {
     }
   }, [encKey]);
 
-  // Modifier une entree
+  // Modifier une entrée
   const updateItem = useCallback(async (id, itemData) => {
     if (!encKey) {
       throw new Error('Coffre verrouille');
@@ -96,7 +96,7 @@ export function usePasswords() {
     setError(null);
 
     try {
-      // Chiffrer les donnees
+      // Chiffrer les données
       const { encryptedData, iv } = await encrypt(itemData, encKey);
 
       // Envoyer au serveur
@@ -118,7 +118,7 @@ export function usePasswords() {
     }
   }, [encKey]);
 
-  // Supprimer une entree
+  // Supprimer une entrée
   const deleteItem = useCallback(async (id) => {
     setLoading(true);
     setError(null);

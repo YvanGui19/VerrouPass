@@ -2,11 +2,11 @@
  * Service de codes d invitation en memoire.
  *
  * Les codes sont stockes uniquement en RAM, indexes par leur hash SHA-256.
- * Ils expirent automatiquement apres INVITATION_TTL_MS et sont nettoyes par
- * un timer periodique. Au redemarrage du serveur, tous les codes en cours
+ * Ils expirent automatiquement après INVITATION_TTL_MS et sont nettoyes par
+ * un timer periodique. Au redémarrage du serveur, tous les codes en cours
  * sont perdus (comportement voulu : ce sont des codes ephemeres).
  *
- * Securite :
+ * Sécurité :
  *  - Le code en clair n est jamais stocke (uniquement le hash SHA-256).
  *  - Comparaison en temps constant pour eviter les attaques par timing.
  *  - 64 bits d entropie + rate-limit sur /register : brute-force impraticable.
@@ -38,7 +38,7 @@ function normalizeCode(input) {
 }
 
 /**
- * Genere un nouveau code et l enregistre. Retourne le code en clair, formate.
+ * Généré un nouveau code et l enregistre. Retourne le code en clair, formate.
  */
 export function generateInvitationCode() {
   const raw = crypto.randomBytes(CODE_BYTES).toString('hex'); // 16 chars hex
@@ -64,7 +64,7 @@ export function consumeInvitationCode(code) {
   const entry = store.get(hash);
   if (!entry) return false;
 
-  // Suppression atomique avant verification d expiration : un code ne peut
+  // Suppression atomique avant vérification d expiration : un code ne peut
   // etre utilise qu une seule fois meme si plusieurs requetes arrivent
   // simultanement (Node est mono-thread, donc c est sur).
   store.delete(hash);
@@ -74,7 +74,7 @@ export function consumeInvitationCode(code) {
 }
 
 /**
- * Cleanup periodique des codes expires (best-effort, le consume verifie deja
+ * Cleanup periodique des codes expires (best-effort, le consume vérifié déjà
  * l expiration).
  */
 let cleanupTimer = null;

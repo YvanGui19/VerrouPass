@@ -140,11 +140,11 @@ const securityLogger = {
   /**
    * Log une tentative de connexion
    */
-  loginAttempt: (req, email, success, reason = null) => {
+  loginAttempt: (req, email, succèss, reason = null) => {
     logger.log('security', 'LOGIN_ATTEMPT', {
       event: 'LOGIN_ATTEMPT',
       email: maskEmail(email),
-      success,
+      succèss,
       reason,
       ip: getClientIP(req),
       userAgent: req.headers['user-agent'] || 'unknown',
@@ -155,11 +155,11 @@ const securityLogger = {
   /**
    * Log une tentative d'inscription
    */
-  registerAttempt: (req, email, success, reason = null) => {
+  registerAttempt: (req, email, succèss, reason = null) => {
     logger.log('security', 'REGISTER_ATTEMPT', {
       event: 'REGISTER_ATTEMPT',
       email: maskEmail(email),
-      success,
+      succèss,
       reason,
       ip: getClientIP(req),
       userAgent: req.headers['user-agent'] || 'unknown',
@@ -182,11 +182,11 @@ const securityLogger = {
   /**
    * Log un changement de mot de passe
    */
-  passwordChange: (req, email, success, reason = null) => {
+  passwordChange: (req, email, succèss, reason = null) => {
     logger.log('security', 'PASSWORD_CHANGE', {
       event: 'PASSWORD_CHANGE',
       email: maskEmail(email),
-      success,
+      succèss,
       reason,
       ip: getClientIP(req),
       timestamp: new Date().toISOString()
@@ -196,11 +196,11 @@ const securityLogger = {
   /**
    * Log une suppression de compte
    */
-  accountDeletion: (req, email, success, reason = null) => {
+  accountDeletion: (req, email, succèss, reason = null) => {
     logger.log('security', 'ACCOUNT_DELETION', {
       event: 'ACCOUNT_DELETION',
       email: maskEmail(email),
-      success,
+      succèss,
       reason,
       ip: getClientIP(req),
       timestamp: new Date().toISOString()
@@ -210,12 +210,12 @@ const securityLogger = {
   /**
    * Log un évènement TOTP (setup, enable, disable, login_totp_*, recovery_used)
    */
-  totp: (req, email, action, success, reason = null) => {
+  totp: (req, email, action, succèss, reason = null) => {
     logger.log('security', 'TOTP', {
       event: 'TOTP',
       action,
       email: maskEmail(email),
-      success,
+      succèss,
       reason,
       ip: getClientIP(req),
       userAgent: req.headers['user-agent'] || 'unknown',

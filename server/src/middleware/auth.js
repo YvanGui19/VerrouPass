@@ -7,14 +7,8 @@ const ACCESS_TOKEN_EXPIRES = '15m';  // Token d'accès court (15 minutes)
 const REFRESH_TOKEN_EXPIRES_DAYS = 7; // Refresh token 7 jours
 
 export function authenticateToken(req, res, next) {
-  // Chercher le token dans le cookie HttpOnly OU dans le header Authorization (CLI)
-  let token = req.cookies?.accessToken;
-
-  // Fallback pour le CLI qui utilise Authorization header
-  if (!token) {
-    const authHeader = req.headers['authorization'];
-    token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  }
+  // Token uniquement via cookie HttpOnly (CLI archivé)
+  const token = req.cookies?.accessToken;
 
   if (!token) {
     return res.status(401).json({ error: 'Token d\'authentification requis' });

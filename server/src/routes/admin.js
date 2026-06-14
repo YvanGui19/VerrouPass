@@ -3,7 +3,7 @@
  * Pas de session ni JWT : un simple secret partage suffit pour l usage CLI/curl.
  *
  * Variable requise : ADMIN_INVITATION_TOKEN (32+ caracteres aleatoires).
- * Generer avec : node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+ * Générer avec : node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
  */
 
 import express from 'express';
@@ -48,7 +48,7 @@ function requireAdminToken(req, res, next) {
   next();
 }
 
-// POST /api/admin/invitation - genere un code d invitation valable 15 min
+// POST /api/admin/invitation - généré un code d invitation valable 15 min
 router.post('/invitation', adminLimiter, requireAdminToken, (req, res) => {
   const { code, expiresAt } = generateInvitationCode();
   res.json({

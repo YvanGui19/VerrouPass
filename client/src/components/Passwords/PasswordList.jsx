@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Header from '../Header';
 import PasswordItem from './PasswordItem';
 import PasswordForm from './PasswordForm';
+import PasswordDetail from './PasswordDetail';
 import UnlockPrompt from './UnlockPrompt';
 
 export default function PasswordList() {
@@ -11,6 +12,7 @@ export default function PasswordList() {
   const { items, loading, error, fetchItems, addItem, updateItem, deleteItem } = usePasswords();
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [viewingItem, setViewingItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -36,7 +38,12 @@ export default function PasswordList() {
     setShowForm(false);
   };
 
+  const handleView = (item) => {
+    setViewingItem(item);
+  };
+
   const handleEdit = (item) => {
+    setViewingItem(null);
     setEditingItem(item);
     setShowForm(true);
   };
@@ -48,8 +55,9 @@ export default function PasswordList() {
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Supprimer cette entree ?')) {
+    if (confirm('Supprimer cette entrée ?')) {
       await deleteItem(id);
+      if (viewingItem?.id === id) setViewingItem(null);
     }
   };
 
@@ -110,25 +118,26 @@ export default function PasswordList() {
               </svg>
             </div>
             <h3 className="font-heading text-2xl text-lime uppercase tracking-wider mb-2">
-              Base de donnees vide
+              Base de données vide
             </h3>
-            <p className="font-mono text-grey mb-8">// Ajoutez votre premier mot de passe securise</p>
+            <p className="font-mono text-grey mb-8">// Ajoutez votre premier mot de passe sécurisé</p>
             <button
               onClick={() => setShowForm(true)}
               className="bg-lime hover:bg-lime-dim text-dark-navy font-heading text-lg uppercase tracking-wider px-8 py-3 rounded transition-all shadow-[0_0_15px_rgba(194,254,11,0.4)]"
             >
-              [ Nouvelle Entree ]
+              [ Nouvelle Entrée ]
             </button>
           </div>
         )}
 
-        {/* Items list */}
+        {/* Items grid */}
         {filteredItems.length > 0 && (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredItems.map(item => (
               <PasswordItem
                 key={item.id}
                 item={item}
+                onView={() => handleView(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item.id)}
               />
@@ -140,7 +149,7 @@ export default function PasswordList() {
         {searchQuery && filteredItems.length === 0 && items.length > 0 && (
           <div className="text-center py-20">
             <p className="font-mono text-grey text-lg">
-              <span className="text-red-400">[ 0 RESULTATS ]</span><br />
+              <span className="text-red-400">[ 0 RÉSULTATS ]</span><br />
               <span className="text-sm">// Aucune correspondance pour "{searchQuery}"</span>
             </p>
           </div>
@@ -150,12 +159,22 @@ export default function PasswordList() {
         {items.length > 0 && (
           <div className="mt-8 pt-4 border-t border-lime/10">
             <p className="font-mono text-xs text-grey/70 text-center">
-              <span className="text-cyan">{items.length}</span> entree{items.length > 1 ? 's' : ''} •
-              <span className="text-lime"> {filteredItems.length}</span> affichee{filteredItems.length > 1 ? 's' : ''}
+              <span className="text-cyan">{items.length}</span> entrée{items.length > 1 ? 's' : ''} •
+              <span className="text-lime"> {filteredItems.length}</span> affichée{filteredItems.length > 1 ? 's' : ''}
             </p>
           </div>
         )}
       </main>
+
+      {/* Detail Modal */}
+      {viewingItem && (
+        <PasswordDetail
+          item={viewingItem}
+          onClose={() => setViewingItem(null)}
+          onEdit={() => handleEdit(viewingItem)}
+          onDelete={() => handleDelete(viewingItem.id)}
+        />
+      )}
 
       {/* Form Modal */}
       {showForm && (

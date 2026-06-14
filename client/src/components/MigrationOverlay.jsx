@@ -29,9 +29,9 @@ export default function MigrationOverlay() {
           </p>
         </div>
         <p className="font-mono text-xs text-grey/70 leading-relaxed">
-          <span className="text-cyan">▸</span> Cette opération ne se produit qu'une fois.
+          Cette opération ne se produit qu'une fois.
           <br />
-          <span className="text-cyan">▸</span> Ne fermez pas cette page.
+          Ne fermez pas cette page.
         </p>
       </div>
     </div>

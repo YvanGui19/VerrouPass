@@ -4,7 +4,7 @@ import { totpApi } from '../utils/api';
 import { hashForServer } from '../utils/crypto';
 import { deriveKeysForUser } from '../utils/deriveForUser';
 
-// Section 2FA dans la page Settings. Affiche l etat (active/inactif), permet
+// Section 2FA dans la page Settings. Affiche l état (activé/inactif), permet
 // l activation (wizard QR + code de confirmation + recovery codes) et la
 // desactivation (modal mot de passe + code 2FA).
 export function TotpManager({ user }) {
@@ -58,8 +58,8 @@ export function TotpManager({ user }) {
         ) : status?.enabled ? (
           <div className="space-y-4">
             <p className="font-mono text-sm text-grey leading-relaxed">
-              <span className="text-lime">▸</span> 2FA activée. Un code à 6 chiffres est requis à chaque connexion.<br />
-              <span className="text-cyan">▸</span> Codes de secours restants :{' '}
+              2FA activée. Un code à 6 chiffres est requis à chaque connexion.<br />
+              Codes de secours restants :{' '}
               <span className="text-white font-bold">{status.recoveryCodesRemaining}</span> / 10
             </p>
             {status.recoveryCodesRemaining <= 3 && (
@@ -82,9 +82,9 @@ export function TotpManager({ user }) {
         ) : (
           <div className="space-y-4">
             <p className="font-mono text-sm text-grey leading-relaxed">
-              <span className="text-lime">▸</span> Une fois activée, un code à 6 chiffres généré par votre app
+              Une fois activée, un code à 6 chiffres généré par votre app
               authenticator (Google Authenticator, Authy, 1Password, etc.) sera demandé à chaque connexion.<br />
-              <span className="text-cyan">▸</span> Vous recevrez 10 codes de secours à usage unique en cas de perte de votre téléphone.
+              Vous recevrez 10 codes de secours à usage unique en cas de perte de votre téléphone.
             </p>
             <button
               type="button"
@@ -116,8 +116,8 @@ export function TotpManager({ user }) {
   );
 }
 
-// Wizard 2 etapes : (1) afficher QR + secret + champ code de confirmation,
-// (2) afficher les recovery codes apres activation.
+// Wizard 2 étapes : (1) afficher QR + secret + champ code de confirmation,
+// (2) afficher les recovery codes après activation.
 function TotpSetupWizard({ email, onClose, onActivated }) {
   const [step, setStep] = useState('loading'); // loading | configure | recovery
   const [setupData, setSetupData] = useState(null);

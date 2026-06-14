@@ -16,11 +16,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [encKey, setEncKey] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Etat intermediaire entre /login (etape 1 OK, 2FA requise) et /login/totp.
-  // Stocke la encKey deja derivee + le challenge JWT pour ne pas redemander
-  // le mot de passe a la 2e etape. Reset apres succes ou cancel.
+  // État intermédiaire entre /login (étape 1 OK, 2FA requise) et /login/totp.
+  // Stocke la encKey déjà dérivée + le challenge JWT pour ne pas redemander
+  // le mot de passe a la 2e étape. Reset après succès ou cancel.
   // Inclut aussi masterPassword + kdfInfo (eph) pour permettre la migration
-  // silencieuse PBKDF2 -> Argon2id juste apres l'etape 2FA.
+  // silencieuse PBKDF2 -> Argon2id juste après l'étape 2FA.
   const [pendingTotp, setPendingTotp] = useState(null);
   // True pendant la re-encryption du coffre lors d'une migration KDF.
   // L'UI peut afficher un overlay informatif "Mise a jour du chiffrement...".
@@ -110,10 +110,10 @@ export function AuthProvider({ children }) {
     // Envoyer au serveur (le token est maintenant dans un cookie HttpOnly)
     const data = await authApi.login(email, passwordHash);
 
-    // Si 2FA active : pas de session posee. On garde la encKey + challenge en
-    // memoire dans le state du hook pour la 2e etape (loginTotp). On garde
+    // Si 2FA activé : pas de session posee. On garde la encKey + challenge en
+    // memoire dans le state du hook pour la 2e étape (loginTotp). On garde
     // aussi masterPassword + kdfInfo pour permettre la migration silencieuse
-    // apres validation 2FA si le compte est en v1.
+    // après validation 2FA si le compte est en v1.
     if (data.totpRequired) {
       setPendingTotp({
         challenge: data.challenge,
@@ -138,8 +138,8 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  // 2e etape du login quand 2FA est active. A appeler apres un login() qui a
-  // retourne { totpRequired: true }. Reutilise la encKey deja derivee.
+  // 2e étape du login quand 2FA est activé. A appeler après un login() qui a
+  // retourne { totpRequired: true }. Réutilise la encKey déjà dérivée.
   const loginTotp = async ({ totpCode, recoveryCode }) => {
     if (!pendingTotp) {
       throw new Error('Aucune connexion 2FA en attente. Recommencez la connexion.');

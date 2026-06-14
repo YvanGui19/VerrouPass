@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
-// 2e etape du login pour les comptes 2FA. Affiche un champ 6 chiffres avec
+// 2e étape du login pour les comptes 2FA. Affiche un champ 6 chiffres avec
 // auto-submit, ou un champ "code de secours" en alternative.
 export default function TotpChallenge() {
   const { loginTotp, cancelTotpFlow, pendingTotpEmail } = useAuth();
@@ -96,7 +96,7 @@ export default function TotpChallenge() {
 
           {pendingTotpEmail && (
             <p className="font-mono text-sm text-grey mb-4">
-              <span className="text-cyan">▸</span> Connexion en cours pour{' '}
+              Connexion en cours pour{' '}
               <span className="text-white">{pendingTotpEmail}</span>
             </p>
           )}
@@ -140,7 +140,7 @@ export default function TotpChallenge() {
                   required
                 />
                 <p id="totp-help" className="font-mono text-xs text-grey mt-2">
-                  <span className="text-cyan">▸</span> Code généré par votre application authenticator
+                  Code généré par votre application authenticator
                 </p>
               </div>
             ) : (
@@ -169,7 +169,7 @@ export default function TotpChallenge() {
                   required
                 />
                 <p id="recovery-help" className="font-mono text-xs text-grey mt-2">
-                  <span className="text-lime">▸</span> Code à usage unique : il ne fonctionnera plus après cette utilisation.
+                  Code à usage unique : il ne fonctionnera plus après cette utilisation.
                 </p>
               </div>
             )}

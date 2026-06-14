@@ -82,7 +82,7 @@ router.post('/setup', async (req, res) => {
 
 // POST /api/auth/totp/enable
 // Confirme l'activation : vérifie un code TOTP (preuve que l'utilisateur a
-// bien scanné le QR), active totp_enabled=TRUE, génère et persiste 10 recovery
+// bien scanné le QR), activé totp_enabled=TRUE, génère et persiste 10 recovery
 // codes hashés bcrypt, révoque tous les refresh tokens existants (force
 // re-login sur les autres sessions, qui devront passer par TOTP).
 // Body : { totpCode: "123456" }

@@ -6,7 +6,6 @@ import PasswordList from './components/Passwords/PasswordList';
 import { Settings } from './pages/Settings';
 import { Goodbye } from './pages/Goodbye';
 import PasswordGenerator from './pages/PasswordGenerator';
-import { CliDownload } from './pages/CliDownload';
 import MigrationOverlay from './components/MigrationOverlay';
 
 // Route protégée
@@ -85,7 +84,6 @@ function AppRoutes() {
 
       {/* Routes publiques */}
       <Route path="/goodbye" element={<Goodbye />} />
-      <Route path="/cli" element={<CliDownload />} />
 
       <Route path="/" element={<Navigate to="/vault" />} />
       <Route path="*" element={<Navigate to="/vault" />} />

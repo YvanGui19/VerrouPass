@@ -7,9 +7,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { to: '/generator', label: 'Generateur' },
-    { to: '/cli', label: 'CLI' },
-    { to: '/settings', label: 'Parametres' },
+    { to: '/generator', label: 'Générateur' },
+    { to: '/settings', label: 'Paramètres' },
   ];
 
   const handleLogout = () => {
@@ -47,7 +46,7 @@ export default function Header() {
                 onClick={logout}
                 className="font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wide"
               >
-                [ Deconnexion ]
+                [ Déconnexion ]
               </button>
             )}
           </nav>
@@ -76,7 +75,7 @@ export default function Header() {
           <nav className="md:hidden mt-4 pt-4 border-t border-lime/10">
             {user && (
               <p className="font-mono text-grey text-xs mb-4 truncate">
-                <span className="text-cyan">▸</span> {user.email}
+                {user.email}
               </p>
             )}
             <div className="flex flex-col gap-1">
@@ -95,7 +94,7 @@ export default function Header() {
                   onClick={handleLogout}
                   className="font-mono text-red-400 hover:text-red-300 transition-colors uppercase tracking-wide py-3 px-3 -mx-3 hover:bg-dark-navy/50 rounded text-left min-h-[44px] flex items-center mt-2 border-t border-lime/10 pt-4"
                 >
-                  [ Deconnexion ]
+                  [ Déconnexion ]
                 </button>
               )}
             </div>

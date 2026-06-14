@@ -93,7 +93,7 @@ export default function Register() {
                 required
               />
               <p className="text-grey/70 font-mono text-xs mt-2">
-                <span className="text-lime">▸</span> Inscription sur invitation uniquement
+                Inscription sur invitation uniquement
               </p>
             </div>
 
@@ -127,7 +127,7 @@ export default function Register() {
                 minLength={12}
               />
               <p className="text-grey/70 font-mono text-xs mt-2">
-                <span className="text-lime">▸</span> Minimum 12 caractères (recommandation OWASP)
+                Minimum 12 caractères (recommandation OWASP)
               </p>
             </div>
 
@@ -176,9 +176,9 @@ export default function Register() {
         {/* Footer info */}
         <div className="mt-8 text-center">
           <p className="font-mono text-xs text-grey/70 leading-relaxed">
-            <span className="text-lime">▸</span> Chiffrement zero-knowledge
+            Chiffrement zero-knowledge
             <br />
-            <span className="text-cyan">▸</span> Nous ne voyons jamais vos données
+            Nous ne voyons jamais vos données
           </p>
         </div>
       </div>

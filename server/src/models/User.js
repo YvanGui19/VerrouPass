@@ -60,7 +60,7 @@ export const User = {
     );
   },
 
-  // Active effectivement le TOTP et stocke les hashes bcrypt des recovery codes.
+  // Activé effectivement le TOTP et stocke les hashes bcrypt des recovery codes.
   async enableTotp(userId, recoveryCodesHashed) {
     await pool.query(
       `UPDATE users
