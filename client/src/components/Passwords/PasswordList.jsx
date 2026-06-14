@@ -12,6 +12,15 @@ const CARD_WIDTH = 300;
 const CARD_HEIGHT = 280;
 const ROULETTE_HEIGHT = 420;
 
+// Décale l'offset brut vers le plus court chemin sur le cercle (boucle infinie).
+function wrapOffset(raw, length) {
+  if (length <= 1) return 0;
+  const half = length / 2;
+  if (raw > half) return raw - length;
+  if (raw < -half) return raw + length;
+  return raw;
+}
+
 // Position 3D d'une carte relative au centre. Au-delà de ±3 on la masque.
 function getCardTransform(offset) {
   const abs = Math.abs(offset);
@@ -80,8 +89,12 @@ export default function PasswordList() {
     }
   }, [sortedItems.length, currentIndex]);
 
-  const goPrev = () => setCurrentIndex((i) => Math.max(0, i - 1));
-  const goNext = () => setCurrentIndex((i) => Math.min(sortedItems.length - 1, i + 1));
+  const goPrev = () =>
+    setCurrentIndex((i) =>
+      sortedItems.length === 0 ? 0 : (i - 1 + sortedItems.length) % sortedItems.length
+    );
+  const goNext = () =>
+    setCurrentIndex((i) => (sortedItems.length === 0 ? 0 : (i + 1) % sortedItems.length));
 
   // Navigation clavier
   useEffect(() => {
@@ -230,7 +243,7 @@ export default function PasswordList() {
               onTouchEnd={onTouchEnd}
             >
               {sortedItems.map((item, index) => {
-                const offset = index - currentIndex;
+                const offset = wrapOffset(index - currentIndex, sortedItems.length);
                 const { x, rotateY, scale, opacity, z } = getCardTransform(offset);
                 const isCenter = offset === 0;
                 return (
@@ -244,7 +257,6 @@ export default function PasswordList() {
                       z,
                     }}
                     transition={{ type: 'spring', stiffness: 220, damping: 28 }}
-                    onClick={() => !isCenter && setCurrentIndex(index)}
                     style={{
                       position: 'absolute',
                       width: `${CARD_WIDTH}px`,
@@ -255,8 +267,8 @@ export default function PasswordList() {
                       marginTop: `-${CARD_HEIGHT / 2}px`,
                       zIndex: 10 - Math.abs(offset),
                       transformStyle: 'preserve-3d',
-                      pointerEvents: Math.abs(offset) > 2 ? 'none' : 'auto',
-                      cursor: isCenter ? 'default' : 'pointer',
+                      pointerEvents: isCenter ? 'auto' : 'none',
+                      cursor: 'default',
                     }}
                   >
                     <div className="relative">
@@ -285,7 +297,7 @@ export default function PasswordList() {
             <div className="flex items-center justify-center gap-4 mt-6">
               <button
                 onClick={goPrev}
-                disabled={currentIndex === 0}
+                disabled={sortedItems.length <= 1}
                 className="p-3 bg-mid-navy border-2 border-cyan/30 rounded text-cyan hover:border-cyan hover:shadow-[0_0_10px_rgba(1,255,255,0.3)] disabled:opacity-30 disabled:cursor-not-allowed transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
                 title="Précédent (←)"
               >
@@ -302,7 +314,7 @@ export default function PasswordList() {
 
               <button
                 onClick={goNext}
-                disabled={currentIndex >= sortedItems.length - 1}
+                disabled={sortedItems.length <= 1}
                 className="p-3 bg-mid-navy border-2 border-cyan/30 rounded text-cyan hover:border-cyan hover:shadow-[0_0_10px_rgba(1,255,255,0.3)] disabled:opacity-30 disabled:cursor-not-allowed transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
                 title="Suivant (→)"
               >
