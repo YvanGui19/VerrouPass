@@ -139,7 +139,6 @@ export default function PasswordList() {
                 item={item}
                 onView={() => handleView(item)}
                 onEdit={() => handleEdit(item)}
-                onDelete={() => handleDelete(item.id)}
               />
             ))}
           </div>
