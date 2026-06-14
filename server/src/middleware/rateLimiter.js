@@ -18,7 +18,7 @@ import rateLimit from 'express-rate-limit';
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccèssfulRequests: true, // Ne compte que les échecs
+    skipSuccessfulRequests: true, // Ne compte que les échecs
   });
 
   // Rate limiter pour register - éviter spam d'inscriptions
@@ -54,7 +54,7 @@ import rateLimit from 'express-rate-limit';
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skipSuccèssfulRequests: true,
+    skipSuccessfulRequests: true,
   });
 
   // Rate limiter pour les opérations TOTP authentifiées (setup/enable/disable).

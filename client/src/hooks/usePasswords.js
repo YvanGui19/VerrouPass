@@ -34,10 +34,10 @@ export function usePasswords() {
               updatedAt: item.updated_at
             };
           } catch (err) {
-            console.error('Erreur déchiffrément:', err);
+            console.error('Erreur déchiffrement:', err);
             return {
               id: item.id,
-              name: '[Erreur de déchiffrément]',
+              name: '[Erreur de déchiffrement]',
               error: true
             };
           }
