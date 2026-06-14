@@ -53,19 +53,12 @@ export default function PasswordItem({ item, onView, onEdit }) {
         )}
       </div>
 
-      {/* Indicateurs presence (TOTP / notes) */}
-      {(item.totpSecret || item.notes) && (
+      {/* Indicateur presence notes */}
+      {item.notes && (
         <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider">
-          {item.totpSecret && (
-            <span className="px-2 py-0.5 bg-cyan/10 text-cyan border border-cyan/30 rounded">
-              2FA
-            </span>
-          )}
-          {item.notes && (
-            <span className="px-2 py-0.5 bg-lime/10 text-lime border border-lime/30 rounded">
-              Notes
-            </span>
-          )}
+          <span className="px-2 py-0.5 bg-lime/10 text-lime border border-lime/30 rounded">
+            Notes
+          </span>
         </div>
       )}
 

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import PasswordGenerator from '../Generator/PasswordGenerator';
-import TOTPInput from '../TOTP/TOTPInput';
 
 export default function PasswordForm({ item, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
@@ -8,13 +7,11 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
     username: item?.username || '',
     password: item?.password || '',
     url: item?.url || '',
-    notes: item?.notes || '',
-    totpSecret: item?.totpSecret || ''
+    notes: item?.notes || ''
   });
   const [loading, setLoading] = useState(false);
   const [showGenerator, setShowGenerator] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showTOTP, setShowTOTP] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -148,34 +145,6 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
                 className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all placeholder-grey"
                 placeholder="ex: github.com"
               />
-            </div>
-
-            {/* TOTP Section */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowTOTP(!showTOTP)}
-                className="flex items-center gap-2 font-mono text-xs text-cyan uppercase tracking-wider mb-2 hover:text-lime transition-colors py-1"
-              >
-                <svg
-                  className={`w-4 h-4 transition-transform duration-200 ${showTOTP ? 'rotate-90' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                2FA / TOTP (optionnel)
-              </button>
-
-              {showTOTP && (
-                <div className="mt-2 p-3 bg-dark-navy/50 border border-cyan/20 rounded">
-                  <TOTPInput
-                    value={formData.totpSecret}
-                    onChange={(secret) => setFormData(prev => ({ ...prev, totpSecret: secret }))}
-                  />
-                </div>
-              )}
             </div>
 
             <div>

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import TOTPDisplay from '../TOTP/TOTPDisplay';
 
 export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -107,22 +106,6 @@ export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
                       </svg>
                     )}
                   </button>
-                </div>
-              </div>
-            )}
-
-            {/* TOTP */}
-            {item.totpSecret && (
-              <div>
-                <label className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">2FA / TOTP</label>
-                <div className="bg-dark-navy border border-cyan/20 rounded px-3 py-2">
-                  <TOTPDisplay
-                    secret={item.totpSecret}
-                    onCopy={() => {
-                      setCopied('totp');
-                      setTimeout(() => setCopied(null), 2000);
-                    }}
-                  />
                 </div>
               </div>
             )}
