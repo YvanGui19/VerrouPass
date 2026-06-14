@@ -14,6 +14,7 @@
     "@fontsource/rajdhani": "^5.2.7",
     "@fontsource/share-tech-mono": "^5.2.7",
     "axios": "^1.6.7",
+    "framer-motion": "^12.40.0",
     "libsodium-wrappers-sumo": "0.7.15",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
