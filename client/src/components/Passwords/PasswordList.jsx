@@ -25,13 +25,17 @@ export default function PasswordList() {
     return <UnlockPrompt />;
   }
 
-  const filteredItems = items.filter(item =>
-    !item.error && (
-      item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.url?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredItems = items
+    .filter(item =>
+      !item.error && (
+        item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.url?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     )
-  );
+    .sort((a, b) =>
+      (a.name || '').localeCompare(b.name || '', 'fr', { sensitivity: 'base' })
+    );
 
   const handleAdd = async (data) => {
     await addItem(data);
