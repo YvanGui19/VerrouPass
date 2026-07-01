@@ -11,9 +11,9 @@ export function Settings() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-navy">
+      <div className="min-h-[100svh] bg-dark-navy">
         <Header />
-        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
+        <div className="flex items-center justify-center h-[calc(100svh-73px)]">
           <div className="inline-block animate-pulse">
             <p className="font-mono text-cyan text-lg">[ CHARGEMENT... ]</p>
           </div>
@@ -24,9 +24,9 @@ export function Settings() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-dark-navy">
+      <div className="min-h-[100svh] bg-dark-navy">
         <Header />
-        <div className="flex items-center justify-center h-[calc(100vh-73px)]">
+        <div className="flex items-center justify-center h-[calc(100svh-73px)]">
           <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-6 py-4 rounded font-mono text-sm">
             <span className="text-red-500 font-bold">ERROR:</span> Vous devez être connecté pour accéder aux paramètres.
           </div>
@@ -36,7 +36,7 @@ export function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-navy">
+    <div className="min-h-[100svh] bg-dark-navy">
       <Header />
       <div className="px-4 py-8">
         <div className="max-w-4xl mx-auto">

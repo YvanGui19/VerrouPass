@@ -14,7 +14,7 @@ export function Goodbye() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-dark-navy flex items-center justify-center px-4">
+    <div className="min-h-[100svh] bg-dark-navy flex items-center justify-center px-4">
       <div className="max-w-2xl w-full">
         <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 sm:p-12 text-center shadow-glow-lg">
           {/* Icon */}

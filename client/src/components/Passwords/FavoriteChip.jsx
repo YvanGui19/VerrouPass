@@ -30,7 +30,7 @@ export default function FavoriteChip({ item, isFlipped, onFlipToggle }) {
 
   return (
     <div
-      className="relative w-full h-[68px] sm:h-[92px]"
+      className="relative w-full h-[68px] sm:h-[92px] short:h-[72px]"
       style={{ perspective: '800px' }}
     >
       <button

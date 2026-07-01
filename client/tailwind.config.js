@@ -6,6 +6,10 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        // Ecran vertical court (typique laptop 1366x768 ou 1080p avec URL bar)
+        'short': { 'raw': '(max-height: 750px)' },
+      },
       colors: {
         // Couleurs VerrouPass (primary blue)
         primary: {

@@ -38,10 +38,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-8 sm:py-12">
+    <div className="min-h-[100svh] flex flex-col items-center justify-center bg-dark-navy px-4 py-6 sm:py-12 short:py-3">
       {/* Logo/Titre - centre */}
-      <div className="text-center mb-8 sm:mb-12 w-full">
-        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
+      <div className="text-center mb-8 sm:mb-12 short:mb-4 w-full">
+        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl short:text-3xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
           VERROUPASS
         </h1>
         <p className="font-mono text-cyan text-xs sm:text-sm tracking-widest uppercase">
@@ -52,8 +52,8 @@ export default function Login() {
       <div className="max-w-md w-full">
 
         {/* Formulaire */}
-        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg backdrop-blur-sm">
-          <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 short:p-4 shadow-glow-lg backdrop-blur-sm">
+          <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 short:mb-3 border-b border-lime/30 pb-2">
             Connexion
           </h2>
 
@@ -69,7 +69,7 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 short:space-y-3">
             <div>
               <label htmlFor="email" className="block text-cyan font-mono text-xs uppercase tracking-wider mb-2">
                 Email
@@ -112,7 +112,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-8 text-center">
+          <div className="mt-8 short:mt-4 text-center">
             <p className="text-grey font-mono text-sm">
               Pas encore de compte ?{' '}
               <Link to="/register" className="text-cyan hover:text-lime transition-colors underline">

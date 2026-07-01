@@ -14,8 +14,8 @@ function PrivateRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-500">Chargement...</div>
+      <div className="min-h-[100svh] flex items-center justify-center bg-dark-navy">
+        <div className="text-lime font-mono">Chargement...</div>
       </div>
     );
   }
@@ -29,8 +29,8 @@ function PublicRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-500">Chargement...</div>
+      <div className="min-h-[100svh] flex items-center justify-center bg-dark-navy">
+        <div className="text-lime font-mono">Chargement...</div>
       </div>
     );
   }

@@ -18,7 +18,7 @@ export default function PasswordItem({ item, onView, onToggleFavorite, favorites
   };
 
   return (
-    <div className={`bg-mid-navy border-2 rounded-lg overflow-hidden hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all flex flex-col ${
+    <div className={`bg-mid-navy border-2 rounded-lg overflow-hidden hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all flex flex-col h-full ${
       item.favorite ? 'border-lime/60 hover:border-lime' : 'border-cyan/20 hover:border-cyan/40'
     }`}>
       {/* Zone cliquable - infos + ouverture détail */}
@@ -106,33 +106,37 @@ export default function PasswordItem({ item, onView, onToggleFavorite, favorites
         )}
       </div>
 
-      {/* Bouton Copier - pleine largeur, prominent */}
+      {/* Bouton Copier - hauteur fixe, texte nudge de 2px pour compenser
+          la baseline haute de Bebas Neue */}
       {item.password && (
+        <>
+        <div className={`h-0.5 shrink-0 transition-colors ${copied ? 'bg-lime' : 'bg-lime/20'}`} />
         <button
           onClick={copyPassword}
-          className={`w-full py-3 px-4 font-heading uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all border-t-2 ${
+          className={`w-full h-11 px-4 font-heading uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all ${
             copied
-              ? 'bg-lime text-dark-navy border-lime'
-              : 'bg-lime/10 text-lime border-lime/20 hover:bg-lime hover:text-dark-navy hover:border-lime hover:shadow-[0_0_15px_rgba(194,254,11,0.4)]'
+              ? 'bg-lime text-dark-navy'
+              : 'bg-lime/10 text-lime hover:bg-lime hover:text-dark-navy hover:shadow-[0_0_15px_rgba(194,254,11,0.4)]'
           }`}
           title="Copier le mot de passe"
         >
           {copied ? (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
-              Copié
+              <span className="translate-y-[2px]">Copié</span>
             </>
           ) : (
             <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
-              Copier
+              <span className="translate-y-[2px]">Copier</span>
             </>
           )}
         </button>
+        </>
       )}
     </div>
   );

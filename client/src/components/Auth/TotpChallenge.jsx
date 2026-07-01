@@ -78,9 +78,9 @@ export default function TotpChallenge() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-8 sm:py-12">
-      <div className="text-center mb-8 sm:mb-12 w-full">
-        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
+    <div className="min-h-[100svh] flex flex-col items-center justify-center bg-dark-navy px-4 py-6 sm:py-12 short:py-3">
+      <div className="text-center mb-8 sm:mb-12 short:mb-4 w-full">
+        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl short:text-3xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
           VERROUPASS
         </h1>
         <p className="font-mono text-cyan text-xs sm:text-sm tracking-widest uppercase">
@@ -89,8 +89,8 @@ export default function TotpChallenge() {
       </div>
 
       <div className="max-w-md w-full">
-        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg backdrop-blur-sm">
-          <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
+        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 short:p-4 shadow-glow-lg backdrop-blur-sm">
+          <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 short:mb-3 border-b border-lime/30 pb-2">
             Code 2FA
           </h2>
 
@@ -112,7 +112,7 @@ export default function TotpChallenge() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-6 short:space-y-3" noValidate>
             {mode === 'totp' ? (
               <div>
                 <label

@@ -10,7 +10,12 @@ import UnlockPrompt from './UnlockPrompt';
 import FavoriteChip from './FavoriteChip';
 
 const CARD_WIDTH = 300;
-const CARD_HEIGHT = 280;
+// Card compacte : 200 sur ecran normal, 160 sur ecran vertical court
+// (laptop 1366x768, Firefox 1080p avec URL+bookmark bar). Determine via
+// window.innerHeight au mount + resize.
+const CARD_HEIGHT_NORMAL = 200;
+const CARD_HEIGHT_SHORT = 160;
+const SHORT_VIEWPORT_THRESHOLD = 750;
 
 // Décale l'offset brut vers le plus court chemin sur le cercle (boucle infinie).
 function wrapOffset(raw, length) {
@@ -48,6 +53,8 @@ export default function PasswordList() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [highlightTrigger, setHighlightTrigger] = useState(0);
   const [flippedFavoriteId, setFlippedFavoriteId] = useState(null);
+  // Hauteur de la card ajustee au viewport court (evite l'overflow sur laptop).
+  const [cardHeight, setCardHeight] = useState(CARD_HEIGHT_NORMAL);
   // Une fois la premiere positionnee sur le favori, on n'y touche plus (pour
   // ne pas ecraser le currentIndex quand l'utilisateur navigue ou toggle).
   const initialFavoritePositioned = useRef(false);
@@ -60,6 +67,20 @@ export default function PasswordList() {
       fetchItems();
     }
   }, [isUnlocked, fetchItems]);
+
+  // Reduit la card sur ecran vertical court pour eviter l'overflow.
+  useEffect(() => {
+    const compute = () => {
+      setCardHeight(
+        window.innerHeight < SHORT_VIEWPORT_THRESHOLD
+          ? CARD_HEIGHT_SHORT
+          : CARD_HEIGHT_NORMAL
+      );
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
 
   // Reset le flag de positionnement sur le favori a chaque nouvelle session
   // (verrouillage/deverrouillage).
@@ -300,9 +321,9 @@ export default function PasswordList() {
     >
       <Header />
 
-      <main className="max-w-6xl w-full mx-auto px-4 py-2 sm:py-8 flex flex-col">
+      <main className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-4 py-2 sm:py-4 flex flex-col justify-between overflow-hidden">
         {/* Actions - flex-row toujours pour economiser la hauteur sur mobile */}
-        <div className="flex flex-row gap-2 sm:gap-4 mb-3 sm:mb-8 shrink-0">
+        <div className="flex flex-row gap-2 sm:gap-4 mb-3 sm:mb-4 short:mb-2 shrink-0">
           <div className="flex-1 min-w-0">
             <input
               type="text"
@@ -367,8 +388,9 @@ export default function PasswordList() {
           {/* Scène 3D - hauteur fixe pour rester collee aux flèches */}
           <div
             ref={sceneRef}
-            className="relative mx-auto flex items-center justify-center w-full h-[300px] shrink-0"
+            className="relative mx-auto flex items-center justify-center w-full shrink-0"
               style={{
+                height: `${cardHeight + 20}px`,
                 perspective: '1400px',
                 perspectiveOrigin: '50% 50%',
                 touchAction: 'pan-y',
@@ -395,18 +417,18 @@ export default function PasswordList() {
                     style={{
                       position: 'absolute',
                       width: `${CARD_WIDTH}px`,
-                      minHeight: `${CARD_HEIGHT}px`,
+                      height: `${cardHeight}px`,
                       left: '50%',
                       top: '50%',
                       marginLeft: `-${CARD_WIDTH / 2}px`,
-                      marginTop: `-${CARD_HEIGHT / 2}px`,
+                      marginTop: `-${cardHeight / 2}px`,
                       zIndex: 10 - Math.abs(offset),
                       transformStyle: 'preserve-3d',
                       pointerEvents: isCenter ? 'auto' : 'none',
                       cursor: 'default',
                     }}
                   >
-                    <div className="relative">
+                    <div className="relative w-full h-full">
                       {/* Pulse lime sur la carte ciblée par la recherche */}
                       {isCenter && (
                         <motion.div
@@ -462,7 +484,7 @@ export default function PasswordList() {
 
             {/* Bande favoris - jusqu'a 5 raccourcis retournables */}
             {favoriteItems.length > 0 && (
-              <div ref={favoritesStripRef} className="mt-1 sm:mt-3 shrink-0 w-full">
+              <div ref={favoritesStripRef} className="mt-1 sm:mt-3 short:mt-1 shrink-0 w-full">
                 <p className="font-mono text-[10px] text-lime/60 uppercase tracking-wider text-center mb-1">
                   Favoris ({favoriteItems.length}/5)
                 </p>
@@ -503,7 +525,7 @@ export default function PasswordList() {
 
         {/* Stats footer */}
         {items.length > 0 && (
-          <div className="mt-1 sm:mt-8 pt-1 sm:pt-4 border-t border-lime/10 shrink-0">
+          <div className="mt-1 sm:mt-4 pt-1 sm:pt-3 short:mt-2 short:pt-2 border-t border-lime/10 shrink-0">
             <p className="font-mono text-xs text-grey/70 text-center">
               <span className="text-cyan">{sortedItems.length}</span> entrée{sortedItems.length > 1 ? 's' : ''} dans le coffre
             </p>
