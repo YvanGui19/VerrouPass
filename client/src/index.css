@@ -14,24 +14,34 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+  background-color: #0A0E1A;
+  overscroll-behavior: none;
+  overflow-x: hidden;
 }
 
-/* Scrollbar minimaliste */
+/* Compense le decalage visuel gauche du a letter-spacing (tracking-*)
+   sur les titres centres : la letter-spacing ajoute un vide a droite du
+   dernier caractere, ce qui pousse le contenu visible a gauche du vrai
+   centre. On applique un text-indent egal a la letter-spacing. */
+.tracked-center {
+  text-indent: 0.05em;
+}
+
+/* Scrollbar minimaliste - theme sombre */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #1C2333;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #3f4a63;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #5a6a88;
 }

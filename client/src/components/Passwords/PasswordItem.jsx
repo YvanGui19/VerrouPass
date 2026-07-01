@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-export default function PasswordItem({ item, onView, onEdit }) {
+export default function PasswordItem({ item, onView, onToggleFavorite, favoritesFull }) {
+  const starDisabled = favoritesFull && !item.favorite;
   const [copied, setCopied] = useState(false);
   const initial = item.name ? item.name.charAt(0).toUpperCase() : '?';
 
@@ -17,7 +18,9 @@ export default function PasswordItem({ item, onView, onEdit }) {
   };
 
   return (
-    <div className="bg-mid-navy border-2 border-cyan/20 rounded-lg overflow-hidden hover:border-cyan/40 hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all flex flex-col">
+    <div className={`bg-mid-navy border-2 rounded-lg overflow-hidden hover:shadow-[0_0_15px_rgba(1,255,255,0.1)] transition-all flex flex-col ${
+      item.favorite ? 'border-lime/60 hover:border-lime' : 'border-cyan/20 hover:border-cyan/40'
+    }`}>
       {/* Zone cliquable - infos + ouverture détail */}
       <div
         onClick={onView}
@@ -31,24 +34,50 @@ export default function PasswordItem({ item, onView, onEdit }) {
         tabIndex={0}
         className="p-4 cursor-pointer flex flex-col gap-3 flex-1"
       >
-        {/* Header : avatar + nom + édit */}
+        {/* Header : avatar + nom + [etoile favori] + édit */}
         <div className="flex items-start gap-3 min-w-0">
           <div className="w-10 h-10 bg-dark-navy border border-lime/20 rounded-lg flex items-center justify-center flex-shrink-0">
             <span className="text-lime font-heading text-lg">{initial}</span>
           </div>
-          <h3 className="font-heading text-lg text-lime uppercase tracking-wider truncate flex-1 mt-1">
+          <h3 className="font-heading text-lg uppercase tracking-wider truncate flex-1 mt-1 text-lime">
             {item.name}
           </h3>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onEdit();
+              if (starDisabled) return;
+              onToggleFavorite?.();
             }}
-            className="p-2 text-cyan hover:text-lime rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:p-1.5 flex items-center justify-center flex-shrink-0 -mr-1 -mt-1"
-            title="Modifier"
+            disabled={starDisabled}
+            className={`p-2 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:p-1.5 flex items-center justify-center flex-shrink-0 -mr-1 -mt-1 ${
+              item.favorite
+                ? 'text-lime hover:text-lime-dim drop-shadow-[0_0_6px_rgba(194,254,11,0.6)]'
+                : starDisabled
+                ? 'text-grey/30 cursor-not-allowed'
+                : 'text-grey hover:text-lime'
+            }`}
+            title={
+              item.favorite
+                ? 'Retirer des favoris'
+                : starDisabled
+                ? 'Limite de 5 favoris atteinte'
+                : 'Definir comme favori'
+            }
+            aria-pressed={!!item.favorite}
+            aria-disabled={starDisabled}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg
+              className="w-4 h-4"
+              fill={item.favorite ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.786 5.497h5.781c.969 0 1.371 1.24.588 1.81l-4.676 3.397 1.786 5.497c.3.921-.755 1.688-1.539 1.118L12 16.847l-4.677 3.399c-.783.57-1.838-.197-1.539-1.118l1.786-5.497-4.676-3.397c-.783-.57-.38-1.81.588-1.81h5.781l1.786-5.497z"
+              />
             </svg>
           </button>
         </div>

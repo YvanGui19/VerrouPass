@@ -37,16 +37,19 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50">
+      <div
+        className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full overflow-y-auto"
+        style={{ maxHeight: 'calc(100svh - 1rem)' }}
+      >
+        <div className="p-3 sm:p-6">
+          <div className="flex items-center justify-between gap-2 mb-4 sm:mb-6">
+            <h2 className="font-heading text-base sm:text-2xl text-lime uppercase tracking-wider truncate">
               [ {item ? 'Modifier l\'entrée' : 'Nouvelle entrée'} ]
             </h2>
             <button
               onClick={onClose}
-              className="p-2 sm:p-1 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center"
+              className="p-2 sm:p-1 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 flex items-center justify-center flex-shrink-0"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -54,7 +57,7 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-5">
             <div>
               <label htmlFor="name" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
                 Nom *
@@ -158,7 +161,7 @@ export default function PasswordForm({ item, onSubmit, onClose }) {
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-4 py-3 bg-dark-navy border-2 border-cyan/30 rounded text-white font-mono focus:border-cyan focus:outline-none focus:shadow-[0_0_10px_rgba(1,255,255,0.3)] transition-all resize-none placeholder-grey"
-                placeholder="Notes supplementaires..."
+                placeholder="Notes supplémentaires..."
               />
             </div>
 

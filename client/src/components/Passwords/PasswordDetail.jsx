@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
-export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
+export default function PasswordDetail({ item, onClose, onEdit, onDelete, onToggleFavorite, favoritesFull }) {
+  const starDisabled = favoritesFull && !item.favorite;
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(null);
 
@@ -17,19 +18,59 @@ export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
   const initial = item.name ? item.name.charAt(0).toUpperCase() : '?';
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={onClose}>
-      <div className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 sm:p-6">
-          {/* Header avec avatar + nom + close */}
-          <div className="flex items-start gap-3 mb-6">
-            <div className="w-12 h-12 bg-dark-navy border border-lime/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <span className="text-lime font-heading text-xl">{initial}</span>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50" onClick={onClose}>
+      <div
+        className="bg-mid-navy border-2 border-lime/20 rounded-lg shadow-glow-lg max-w-lg w-full overflow-y-auto"
+        style={{ maxHeight: 'calc(100svh - 1rem)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-3 sm:p-6">
+          {/* Header avec avatar + nom + favori + close */}
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-dark-navy border border-lime/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-lime font-heading text-lg sm:text-xl">{initial}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider truncate">
+              <h2 className="font-heading text-base sm:text-2xl text-lime uppercase tracking-wider truncate">
                 {item.name}
               </h2>
             </div>
+            {onToggleFavorite && (
+              <button
+                onClick={() => { if (!starDisabled) onToggleFavorite(); }}
+                disabled={starDisabled}
+                className={`p-2 rounded transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0 ${
+                  item.favorite
+                    ? 'text-lime hover:text-lime-dim'
+                    : starDisabled
+                    ? 'text-grey/30 cursor-not-allowed'
+                    : 'text-grey hover:text-lime'
+                }`}
+                title={
+                  item.favorite
+                    ? 'Retirer des favoris'
+                    : starDisabled
+                    ? 'Limite de 5 favoris atteinte'
+                    : 'Definir comme favori'
+                }
+                aria-pressed={!!item.favorite}
+                aria-disabled={starDisabled}
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill={item.favorite ? 'currentColor' : 'none'}
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.786 5.497h5.781c.969 0 1.371 1.24.588 1.81l-4.676 3.397 1.786 5.497c.3.921-.755 1.688-1.539 1.118L12 16.847l-4.677 3.399c-.783.57-1.838-.197-1.539-1.118l1.786-5.497-4.676-3.397c-.783-.57-.38-1.81.588-1.81h5.781l1.786-5.497z"
+                  />
+                </svg>
+              </button>
+            )}
             <button
               onClick={onClose}
               className="p-2 text-grey hover:text-red-400 rounded transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0"
@@ -41,7 +82,7 @@ export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Identifiant */}
             {item.username && (
               <div>
@@ -137,7 +178,7 @@ export default function PasswordDetail({ item, onClose, onEdit, onDelete }) {
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-6 mt-6 border-t border-lime/10">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 mt-4 sm:pt-6 sm:mt-6 border-t border-lime/10">
             <button
               onClick={onDelete}
               className="flex-1 py-3 px-4 bg-red-900/20 hover:bg-red-900/30 text-red-300 hover:text-red-200 border-2 border-red-500/30 font-heading uppercase tracking-wider rounded transition-all"

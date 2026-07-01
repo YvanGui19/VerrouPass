@@ -5,7 +5,7 @@ export default function UnlockPrompt() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { unlockVault, logout, user } = useAuth();
+  const { unlockVault, logout } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,23 +22,26 @@ export default function UnlockPrompt() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-navy px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-mid-navy border-2 border-lime/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
-            <svg className="w-10 h-10 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div
+      className="flex items-center justify-center bg-dark-navy px-4 py-6 overflow-hidden"
+      style={{ minHeight: '100svh' }}
+    >
+      <div className="max-w-md sm:max-w-lg w-full mx-auto flex flex-col items-center">
+        <div className="text-center mb-6 sm:mb-8 w-full">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-mid-navy border-2 border-lime/30 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-glow">
+            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-lime" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <h1 className="font-display text-4xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
-            [ COFFRE VERROUILLE ]
+          <h1 className="font-display text-base sm:text-2xl md:text-3xl font-bold text-lime tracking-wider mb-3 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] whitespace-nowrap tracked-center">
+            [ COFFRE VERROUILLÉ ]
           </h1>
-          <p className="font-mono text-cyan text-sm uppercase tracking-wide">
-            // Entrez votre mot de passe maitre pour deverrouiller
+          <p className="font-mono text-cyan text-[10px] sm:text-xs uppercase tracking-wide truncate">
+            // Entrez votre mot de passe maître pour déverrouiller
           </p>
         </div>
 
-        <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-8 shadow-glow-lg">
+        <div className="w-full bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg">
           {error && (
             <div className="bg-red-900/30 border-2 border-red-500/50 text-red-300 px-4 py-3 rounded mb-6 font-mono text-sm">
               <span className="text-red-500 font-bold">ERROR:</span> {error}
@@ -48,7 +51,7 @@ export default function UnlockPrompt() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="password" className="block font-mono text-xs text-cyan uppercase tracking-wider mb-2">
-                Mot de passe maitre
+                Mot de passe maître
               </label>
               <input
                 id="password"
@@ -67,19 +70,16 @@ export default function UnlockPrompt() {
               disabled={loading}
               className="w-full bg-lime hover:bg-lime-dim text-dark-navy font-heading text-xl uppercase tracking-wider py-3 rounded transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(194,254,11,0.4)] hover:shadow-[0_0_30px_rgba(194,254,11,0.6)]"
             >
-              {loading ? '[ DEVERROUILLAGE... ]' : '[ DEVERROUILLER ]'}
+              {loading ? '[ DÉVERROUILLAGE... ]' : '[ DÉVERROUILLER ]'}
             </button>
           </form>
 
-          <div className="mt-8 text-center border-t border-cyan/10 pt-6">
-            <p className="font-mono text-grey text-sm mb-3">
-              Connecté en tant que <span className="text-white">{user?.email}</span>
-            </p>
+          <div className="mt-6 sm:mt-8 text-center border-t border-cyan/10 pt-4 sm:pt-6">
             <button
               onClick={logout}
               className="font-mono text-red-400 hover:text-red-300 text-sm uppercase tracking-wide transition-colors"
             >
-              [ Se deconnecter ]
+              [ Se déconnecter ]
             </button>
           </div>
         </div>

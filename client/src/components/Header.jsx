@@ -23,15 +23,13 @@ export default function Header() {
           {/* Logo */}
           <Link
             to="/vault"
-            className="font-display text-2xl sm:text-3xl font-bold text-lime tracking-wider drop-shadow-[0_0_10px_rgba(194,254,11,0.5)] hover:text-lime-dim transition-colors"
+            className="font-display text-xl sm:text-3xl font-bold text-lime tracking-wider drop-shadow-[0_0_10px_rgba(194,254,11,0.5)] hover:text-lime-dim transition-colors whitespace-nowrap"
           >
             VERROUPASS
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-4 text-sm">
-            {user && <span className="font-mono text-grey truncate max-w-[200px]">{user.email}</span>}
-            {user && <span className="text-lime/30">|</span>}
             {navLinks.map(({ to, label }) => (
               <Link
                 key={to}
@@ -73,11 +71,6 @@ export default function Header() {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <nav className="md:hidden mt-4 pt-4 border-t border-lime/10">
-            {user && (
-              <p className="font-mono text-grey text-xs mb-4 truncate">
-                {user.email}
-              </p>
-            )}
             <div className="flex flex-col gap-1">
               {navLinks.map(({ to, label }) => (
                 <Link

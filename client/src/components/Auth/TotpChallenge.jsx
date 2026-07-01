@@ -80,7 +80,7 @@ export default function TotpChallenge() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-8 sm:py-12">
       <div className="text-center mb-8 sm:mb-12 w-full">
-        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
           VERROUPASS
         </h1>
         <p className="font-mono text-cyan text-xs sm:text-sm tracking-widest uppercase">

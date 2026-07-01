@@ -24,12 +24,6 @@ function EntropyDemo({ onClose }) {
   const [chaosSnapshot, setChaosSnapshot] = useState(null);
   const [chaosLoading, setChaosLoading] = useState(false);
 
-  // Toggle pour afficher/masquer les détails techniques
-  const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
-
-  // Toggle pour afficher/masquer la section "Comment ça marche"
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
-
   // Fermer avec Échap (seulement si utilisé en modal)
   useEffect(() => {
     if (!onClose) return;
@@ -88,9 +82,12 @@ function EntropyDemo({ onClose }) {
   };
 
   return (
-    <div className={`${onClose ? 'fixed inset-0 z-50' : 'h-[calc(100vh-73px)]'} bg-dark-navy flex flex-col md:flex-row`}>
-      {/* Section Serpents - En haut sur mobile, à gauche sur desktop */}
-      <div className="h-[30vh] md:h-full w-full md:w-[40%] relative border-b md:border-b-0 md:border-r border-lime/20 shrink-0">
+    <div className={`${onClose ? 'fixed inset-0 z-50' : 'md:h-[calc(100vh-73px)]'} bg-dark-navy flex flex-col md:flex-row`}>
+      {/* Section Serpents - Pleine hauteur mobile, à gauche sur desktop */}
+      <div
+        className="w-full md:w-[40%] md:h-full relative border-b md:border-b-0 md:border-r border-lime/20 shrink-0"
+        style={{ height: 'calc(100svh - 73px)' }}
+      >
         <SymbolSnake ref={snakeRef} primaryColor="#C2FE0B" />
         <div className="absolute bottom-2 md:bottom-4 left-4 right-4 text-center">
           <p className="font-mono text-lime/50 text-[10px] md:text-xs uppercase tracking-wider">
@@ -99,8 +96,8 @@ function EntropyDemo({ onClose }) {
         </div>
       </div>
 
-      {/* Section Contenu - En bas sur mobile, à droite sur desktop */}
-      <div className="flex-1 h-[70vh] md:h-full w-full md:w-[60%] overflow-y-auto p-4 md:p-6">
+      {/* Section Contenu - Sous les serpents sur mobile (scroll page), à droite sur desktop */}
+      <div className="w-full md:flex-1 md:h-full md:w-[60%] md:overflow-y-auto p-4 md:p-6">
         {/* Bouton fermer - seulement si utilisé en modal */}
         {onClose && (
           <button
@@ -197,16 +194,11 @@ function EntropyDemo({ onClose }) {
           {/* Widget Météo - Source d'entropie atmosphérique */}
           {chaosSnapshot?.weather && (
             <div className="bg-dark-navy border border-cyan/30 p-3 md:p-4">
-              <div className="flex items-center justify-between mb-2 md:mb-3">
-                <div>
-                  <h3 className="font-mono text-cyan text-xs md:text-sm uppercase tracking-wider">
-                    Données Météo
-                  </h3>
-                  <p className="font-mono text-cyan/70 text-[10px] md:text-xs mt-1">
-                    {chaosSnapshot.gps.city}, {chaosSnapshot.gps.country}
-                  </p>
-                </div>
-                <span className="font-mono text-cyan/50 text-[10px] md:text-xs">
+              <div className="flex items-center justify-between mb-2 md:mb-3 gap-2">
+                <h3 className="font-mono text-cyan text-xs md:text-sm uppercase tracking-wider">
+                  Données Météo
+                </h3>
+                <span className="font-mono text-cyan/50 text-[10px] md:text-xs shrink-0">
                   {chaosSnapshot.weather.source}
                 </span>
               </div>
@@ -256,30 +248,24 @@ function EntropyDemo({ onClose }) {
           {/* Chaos Snapshot Details */}
           {chaosSnapshot && (
             <div className="bg-dark-navy border border-lime/30 p-3 md:p-4">
-              <div className="flex justify-between items-center mb-2 md:mb-3">
-                <h3 className="font-mono text-lime text-xs md:text-sm uppercase tracking-wider">
-                  Snapshot capturé
-                </h3>
-                <button
-                  onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
-                  className="font-mono text-[10px] md:text-xs text-grey hover:text-lime transition-colors"
-                >
-                  {showTechnicalDetails ? '[ Masquer ]' : '[ Détails ]'}
-                </button>
-              </div>
+              <h3 className="font-mono text-lime text-xs md:text-sm uppercase tracking-wider mb-2 md:mb-3">
+                Snapshot capturé
+              </h3>
 
-              {/* Version simplifiée (toujours visible) */}
               <div className="grid grid-cols-3 gap-2 md:gap-4 text-[10px] md:text-xs font-mono">
-                {/* GPS */}
-                <div className="bg-surface border border-lime/30 p-1.5 md:p-2">
-                  <p className="text-grey mb-0.5 md:mb-1">Lieu</p>
-                  <p className="text-lime truncate">
-                    {showTechnicalDetails
-                      ? `${chaosSnapshot.gps.lat.toFixed(2)}, ${chaosSnapshot.gps.lon.toFixed(2)}`
-                      : `${chaosSnapshot.gps.city}`
-                    }
+                {/* Coordonnees - lien OSM */}
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${chaosSnapshot.gps.lat}&mlon=${chaosSnapshot.gps.lon}#map=5/${chaosSnapshot.gps.lat}/${chaosSnapshot.gps.lon}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-surface border border-lime/30 p-1.5 md:p-2 hover:border-lime transition-colors"
+                  title="Voir sur OpenStreetMap"
+                >
+                  <p className="text-grey mb-0.5 md:mb-1">Coord.</p>
+                  <p className="text-lime truncate underline decoration-dotted">
+                    {chaosSnapshot.gps.lat.toFixed(4)}, {chaosSnapshot.gps.lon.toFixed(4)}
                   </p>
-                </div>
+                </a>
 
                 {/* Segments */}
                 <div className="bg-surface border border-lime/30 p-1.5 md:p-2">
@@ -294,14 +280,11 @@ function EntropyDemo({ onClose }) {
                 </div>
               </div>
 
-              {/* Hash - version tronquée ou complète */}
+              {/* Hash complet */}
               <div className="mt-2 md:mt-3 bg-surface border border-lime/30 p-1.5 md:p-2">
                 <p className="text-grey text-[10px] md:text-xs mb-0.5 md:mb-1">Hash SHA-256</p>
                 <p className="text-lime text-[9px] md:text-xs break-all">
-                  {showTechnicalDetails
-                    ? chaosSnapshot.hash
-                    : `${chaosSnapshot.hash.substring(0, 12)}...${chaosSnapshot.hash.substring(56)}`
-                  }
+                  {chaosSnapshot.hash}
                 </p>
               </div>
 
@@ -320,48 +303,30 @@ function EntropyDemo({ onClose }) {
               </span>
             </div>
 
-            {showTechnicalDetails ? (
-              /* Vue détaillée : grille des 64 octets */
-              <div className="grid gap-[2px] overflow-x-auto" style={{ gridTemplateColumns: 'repeat(16, 1fr)' }}>
-                {poolVisualization.map((byte, i) => (
-                  <div
-                    key={i}
-                    className="text-[6px] font-mono flex items-center justify-center h-4"
-                    style={{
-                      backgroundColor: `rgba(194, 254, 11, ${byte / 255})`,
-                      color: byte > 127 ? '#0A0E1A' : '#C2FE0B',
-                    }}
-                  >
-                    {byte.toString(16).padStart(2, '0').toUpperCase()}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              /* Vue simplifiée : barre de progression */
-              <div className="h-3 bg-surface border border-lime/20 overflow-hidden">
+            {/* Grille des 64 octets du pool */}
+            <div className="grid gap-[2px] overflow-x-auto" style={{ gridTemplateColumns: 'repeat(16, 1fr)' }}>
+              {poolVisualization.map((byte, i) => (
                 <div
-                  className="h-full bg-lime/70 transition-all duration-300"
-                  style={{ width: `${Math.min(entropyLevel * 100, 100)}%` }}
-                />
-              </div>
-            )}
+                  key={i}
+                  className="text-[6px] font-mono flex items-center justify-center h-4"
+                  style={{
+                    backgroundColor: `rgba(194, 254, 11, ${byte / 255})`,
+                    color: byte > 127 ? '#0A0E1A' : '#C2FE0B',
+                  }}
+                >
+                  {byte.toString(16).padStart(2, '0').toUpperCase()}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* How it works - Section détaillée */}
+          {/* How it works - Section détaillée toujours visible */}
           <div className="bg-dark-navy border border-lime/30 p-3 md:p-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-mono text-lime text-xs md:text-sm uppercase tracking-wider">
-                {"// Comment ça marche"}
-              </h3>
-              <button
-                onClick={() => setShowHowItWorks(!showHowItWorks)}
-                className="font-mono text-[10px] md:text-xs text-grey hover:text-lime transition-colors"
-              >
-                {showHowItWorks ? '[ Réduire ]' : '[ + ]'}
-              </button>
-            </div>
+            <h3 className="font-mono text-lime text-xs md:text-sm uppercase tracking-wider">
+              {"// Comment ça marche"}
+            </h3>
 
-            {/* Concept - toujours visible */}
+            {/* Concept */}
             <div className="border-l-2 border-lime/30 pl-2 md:pl-3 mt-3 md:mt-4">
               <p className="text-grey text-xs md:text-sm leading-relaxed">
                 <span className="text-lime">Cloudflare</span> filme des lampes à lave pour générer du hasard.
@@ -371,8 +336,6 @@ function EntropyDemo({ onClose }) {
               </p>
             </div>
 
-            {/* Contenu détaillé - toggle */}
-            {showHowItWorks && (
             <div className="space-y-3 md:space-y-5 mt-3 md:mt-5">
 
             {/* Données capturées par segment */}
@@ -478,16 +441,16 @@ function EntropyDemo({ onClose }) {
                 <div className="bg-surface/30 border border-lime/20 p-2">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lime font-bold">2.</span>
-                    <span className="text-white">Conversion en coordonnées GPS</span>
+                    <span className="text-white">Conversion en coordonnées GPS aléatoires</span>
                   </div>
-                  <p className="text-grey/70 pl-5">Les positions des 12 premiers segments génèrent lat/lon</p>
+                  <p className="text-grey/70 pl-5">Positions des 12 premiers segments × performance.now() → lat/lon terrestres</p>
                 </div>
                 <div className="bg-surface/30 border border-cyan/20 p-2">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-cyan font-bold">3.</span>
-                    <span className="text-white">Récupération météo + géolocalisation</span>
+                    <span className="text-white">Récupération météo</span>
                   </div>
-                  <p className="text-grey/70 pl-5">API Open-Meteo (météo) + BigDataCloud (ville/pays)</p>
+                  <p className="text-grey/70 pl-5">API Open-Meteo sur ce point aléatoire (souvent en pleine mer)</p>
                 </div>
                 <div className="bg-surface/30 border border-lime/20 p-2">
                   <div className="flex items-center gap-2 mb-1">
@@ -512,6 +475,78 @@ function EntropyDemo({ onClose }) {
               <code className="text-lime text-xs block bg-dark-navy p-2 border border-lime/30">
                 password[i] = charset[ (SHA256(snapshot)[i] XOR crypto.getRandomValues()[i]) % charset.length ]
               </code>
+            </div>
+
+            {/* Pool d'entropie - explication dediee */}
+            <div className="bg-surface/30 border border-lime/20 p-3">
+              <p className="font-mono text-lime text-xs uppercase tracking-wider mb-2">
+                Pool d&apos;entropie : le réservoir de hasard
+              </p>
+              <p className="text-grey text-xs leading-relaxed mb-3">
+                Le pool est un tableau de <span className="text-lime">256 octets</span> (visualisé ici en 64 cases)
+                qui accumule du hasard <span className="text-white">en continu</span>, indépendamment de la génération
+                de mots de passe. Chaque nouvel évènement le mélange à l&apos;existant par XOR - il ne se vide jamais.
+              </p>
+
+              <p className="font-mono text-grey text-[10px] uppercase tracking-wider mb-2 mt-3">
+                Comment il est alimenté
+              </p>
+              <ul className="text-xs text-grey space-y-1.5 mb-3">
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Changement de symbole des serpents</span> (toutes les ~150ms) :
+                    index du segment + index du symbole + microtime mixés par XOR dans une case du pool.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Mouvements de souris</span> (dans le générateur classique) :
+                    chaque position X/Y injecte 2 octets d&apos;entropie.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Feedback des snapshots</span> : après chaque génération Chaos,
+                    les 32 octets du hash SHA-256 sont re-injectés dans le pool. Il s&apos;auto-alimente.
+                  </span>
+                </li>
+              </ul>
+
+              <p className="font-mono text-grey text-[10px] uppercase tracking-wider mb-2 mt-3">
+                À quoi il sert
+              </p>
+              <ul className="text-xs text-grey space-y-1.5">
+                <li className="flex items-start gap-2">
+                  <span className="text-cyan">→</span>
+                  <span>
+                    <span className="text-white">Sel supplémentaire</span> mélangé par XOR à chaque caractère
+                    généré par <code className="text-cyan/80">crypto.getRandomValues()</code>.
+                    Si le CSPRNG était compromis (peu probable), le pool casserait quand même la reproductibilité.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-cyan">→</span>
+                  <span>
+                    <span className="text-white">Source pour la passphrase</span> : la sélection de mots
+                    combine le CSPRNG et le pool via XOR.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-cyan">→</span>
+                  <span>
+                    <span className="text-white">Composant du snapshot Chaos</span> : la position d&apos;écriture,
+                    de lecture, le total d&apos;entropie et un échantillon de 32 octets rentrent dans le hash final.
+                  </span>
+                </li>
+              </ul>
+
+              <p className="text-grey/70 text-[10px] font-mono mt-3 pt-2 border-t border-lime/10">
+                Barre d&apos;état (16 premiers octets) : plus il y a de vert vif, plus les octets sont &quot;chargés&quot;
+                (proches de 255). L&apos;accumulation continue même si vous restez inactif : les serpents tournent tout seuls.
+              </p>
             </div>
 
             {/* Sécurité */}
@@ -583,6 +618,87 @@ function EntropyDemo({ onClose }) {
               </div>
             </div>
 
+            {/* Grade militaire */}
+            <div className="bg-surface/30 border border-lime p-3">
+              <p className="font-mono text-lime text-xs uppercase tracking-wider mb-2">
+                Pourquoi &quot;grade militaire&quot; ?
+              </p>
+              <p className="text-grey text-xs leading-relaxed mb-3">
+                L&apos;expression &quot;grade militaire&quot; désigne les algorithmes et niveaux d&apos;entropie
+                approuvés par les agences de sécurité gouvernementales (NSA, NIST, ANSSI) pour protéger
+                l&apos;information classifiée. Ce Chaos Engine remplit ces critères sur chaque étage
+                de la chaîne :
+              </p>
+              <ul className="text-xs text-grey space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">SHA-256</span> = standard fédéral américain
+                    <span className="text-lime/70"> FIPS 180-4</span>, autorisé pour signer les
+                    documents TOP SECRET (Suite B de la NSA, remplacée par CNSA).
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">crypto.getRandomValues()</span> est un CSPRNG
+                    (Cryptographically Secure Pseudo-Random Number Generator) impose par la
+                    <span className="text-lime/70"> W3C Web Crypto API</span>, conforme
+                    <span className="text-lime/70"> NIST SP 800-90A</span> (recommandation officielle
+                    pour la génération de nombres aléatoires cryptographiques).
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">256 bits d&apos;entropie</span> = le niveau de
+                    protection requis par la
+                    <span className="text-lime/70"> CNSA (Commercial National Security Algorithm Suite)</span>
+                    de la NSA pour l&apos;information classifiée jusqu&apos;a TOP SECRET.
+                    À titre de comparaison, AES-256 (utilisé par le gouvernement US) offre le même
+                    ordre de grandeur.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Multi-sources d&apos;entropie</span> : le
+                    <span className="text-lime/70"> NIST SP 800-90B</span> recommande de combiner
+                    plusieurs sources indépendantes (physique + logicielle + temporelle) pour
+                    résister aux compromissions ciblees. Ce moteur combine 4 sources :
+                    visuelle (serpents), atmosphérique (météo), matérielle (CPU), temporelle
+                    (microtime).
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Zero-knowledge côté serveur</span> : le mot de passe
+                    est généré et utilisé <span className="text-white">100 % dans votre navigateur</span>.
+                    Il n&apos;est jamais transmis en clair au serveur (le vault stocke uniquement
+                    des blobs chiffrés AES-256-GCM avec une clé dérivée en Argon2id, RFC 9106).
+                    Même en cas de compromission complète du VPS, les mots de passe restent
+                    illisibles.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-lime">→</span>
+                  <span>
+                    <span className="text-white">Bruteforce impossible physiquement</span> :
+                    tester 2²⁵⁶ combinaisons à la vitesse d&apos;un supercalculateur exascale
+                    (10¹⁸ ops/s) prendrait
+                    <span className="text-lime/70"> ~3,7 × 10⁵¹ années</span>, soit
+                    <span className="text-lime/70"> 27 milliards de milliards de fois</span> l&apos;âge
+                    actuel de l&apos;univers (13,8 milliards d&apos;années). L&apos;énergie requise
+                    dépasserait la production totale d&apos;énergie du Soleil sur sa durée de vie.
+                  </span>
+                </li>
+              </ul>
+              <p className="text-grey/70 text-[10px] font-mono mt-3 pt-2 border-t border-lime/20">
+                Sources : NIST SP 800-90A/B/C · FIPS 180-4 · CNSA (NSA) · W3C Web Crypto API · RFC 9106 (Argon2)
+              </p>
+            </div>
+
             {/* Note technique */}
             <div className="border-t border-lime/10 pt-3">
               <p className="text-grey/70 text-xs">
@@ -592,7 +708,6 @@ function EntropyDemo({ onClose }) {
               </p>
             </div>
             </div>
-            )}
           </div>
 
           {/* Close hint - seulement si utilisé en modal */}

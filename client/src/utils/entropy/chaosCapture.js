@@ -8,20 +8,21 @@
 import { entropyPool } from './entropyPool';
 
 /**
- * Convertit les positions des serpents en coordonnées GPS
- * @param {Array} segments - Tableau des refs des segments
+ * Convertit les positions des serpents en coordonnees GPS totalement
+ * aleatoires (n'importe ou sur Terre). Ce n'est PAS la position reelle de
+ * l'utilisateur - c'est une source d'entropie pour la meteo, et un point
+ * curieux affichable / copiable dans OpenStreetMap.
+ * @param {Array} segments - Tableau des refs des segments DOM
  * @returns {{ lat: number, lon: number }}
  */
 function segmentsToGPS(segments) {
   if (!segments || segments.length < 12) {
-    // Fallback aléatoire si pas assez de segments
     return {
-      lat: (Math.random() * 180) - 90,
-      lon: (Math.random() * 360) - 180
+      lat: parseFloat(((Math.random() * 180) - 90).toFixed(6)),
+      lon: parseFloat(((Math.random() * 360) - 180).toFixed(6))
     };
   }
 
-  // Prendre 6 segments pour la latitude, 6 pour la longitude
   let latSum = 0;
   let lonSum = 0;
 
@@ -32,7 +33,6 @@ function segmentsToGPS(segments) {
       latSum += rect.x + rect.y;
     }
   }
-
   for (let i = 6; i < 12; i++) {
     const el = segments[i];
     if (el) {
@@ -41,9 +41,6 @@ function segmentsToGPS(segments) {
     }
   }
 
-  // Normaliser vers des coordonnées GPS valides
-  // Latitude: -90 à +90
-  // Longitude: -180 à +180
   const lat = ((latSum * performance.now()) % 180) - 90;
   const lon = ((lonSum * performance.now()) % 360) - 180;
 
@@ -51,36 +48,6 @@ function segmentsToGPS(segments) {
     lat: parseFloat(lat.toFixed(6)),
     lon: parseFloat(lon.toFixed(6))
   };
-}
-
-/**
- * Géocodage inversé - trouve le lieu le plus proche des coordonnées
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @returns {Promise<{city: string, country: string}>}
- */
-async function reverseGeocode(lat, lon) {
-  try {
-    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`;
-    const response = await fetch(url);
-
-    if (!response.ok) throw new Error('Geocoding failed');
-
-    const data = await response.json();
-
-    return {
-      city: data.city || data.locality || data.principalSubdivision || 'Inconnu',
-      country: data.countryName || 'Inconnu',
-      countryCode: data.countryCode || 'XX'
-    };
-  } catch (error) {
-    console.warn('Reverse geocoding failed:', error);
-    return {
-      city: 'Inconnu',
-      country: 'Inconnu',
-      countryCode: 'XX'
-    };
-  }
 }
 
 /**
@@ -238,25 +205,14 @@ async function hashData(data) {
 export async function captureFullSnapshot(segmentRefs) {
   const startTime = performance.now();
 
-  // 1. Capturer l'état des serpents
+  // 1. Capturer l'état des serpents (source d'entropie visuelle)
   const segmentsState = captureSegmentsState(segmentRefs);
 
-  // 2. Convertir en coordonnées GPS
-  const gpsCoords = segmentsToGPS(segmentRefs);
-
-  // 3. Récupérer la météo et la localisation en parallèle
-  const [weather, location] = await Promise.all([
-    fetchWeatherData(gpsCoords.lat, gpsCoords.lon),
-    reverseGeocode(gpsCoords.lat, gpsCoords.lon)
-  ]);
-
-  // Combiner GPS + localisation
-  const gps = {
-    ...gpsCoords,
-    city: location.city,
-    country: location.country,
-    countryCode: location.countryCode
-  };
+  // 2. Generer des coordonnees GPS aleatoires terrestres a partir des serpents,
+  //    puis recuperer la meteo sur ce point (souvent en pleine mer / desert -
+  //    l'API Open-Meteo repond sur n'importe quel lat/lon valide).
+  const gps = segmentsToGPS(segmentRefs);
+  const weather = await fetchWeatherData(gps.lat, gps.lon);
 
   // 4. Capturer le timing exact
   const timing = {
@@ -330,7 +286,7 @@ export async function generateChaosPassword(segmentRefs, length = 24) {
     password,
     snapshot,
     strength: 'chaos-level',
-    source: snapshot.weather.source === 'openweathermap' ? 'GPS + Real Weather' : 'GPS + Simulated Weather'
+    source: snapshot.weather.source === 'open-meteo' ? 'IP + Meteo reelle' : 'IP + Meteo simulee'
   };
 }
 

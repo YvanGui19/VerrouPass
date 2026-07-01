@@ -27,7 +27,7 @@ export function Goodbye() {
           </div>
 
           {/* Title */}
-          <h1 className="font-display text-4xl sm:text-5xl font-bold text-lime tracking-wider mb-6 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+          <h1 className="font-display text-2xl sm:text-4xl md:text-5xl font-bold text-lime tracking-wider mb-6 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] whitespace-nowrap tracked-center">
             [ COMPTE SUPPRIMÉ ]
           </h1>
 

@@ -42,7 +42,7 @@ export function Settings() {
         <div className="max-w-4xl mx-auto">
           {/* Page Title */}
           <div className="mb-8">
-            <h1 className="font-display text-4xl font-bold text-lime tracking-wider drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] m-0">
+            <h1 className="font-display text-2xl sm:text-4xl font-bold text-lime tracking-wider drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] m-0 whitespace-nowrap tracked-center">
               [ PARAMÈTRES ]
             </h1>
           </div>

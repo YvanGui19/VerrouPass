@@ -55,7 +55,7 @@ export default function Register() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-dark-navy px-4 py-8 sm:py-12">
       {/* Logo/Titre - centre */}
       <div className="text-center mb-8 sm:mb-12 w-full">
-        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)]">
+        <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-bold text-lime tracking-wider mb-2 drop-shadow-[0_0_15px_rgba(194,254,11,0.5)] tracked-center">
           VERROUPASS
         </h1>
         <p className="font-mono text-cyan text-xs sm:text-sm tracking-widest uppercase">
@@ -67,7 +67,7 @@ export default function Register() {
         {/* Formulaire */}
         <div className="bg-mid-navy border-2 border-lime/20 rounded-lg p-6 sm:p-8 shadow-glow-lg backdrop-blur-sm">
           <h2 className="font-heading text-xl sm:text-2xl text-lime uppercase tracking-wider mb-6 border-b border-lime/30 pb-2">
-            Creer un compte
+            Créer un compte
           </h2>
 
           {error && (

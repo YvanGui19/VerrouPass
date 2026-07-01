@@ -1,13 +1,32 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { vaultApi } from '../utils/api';
 import { encrypt, decrypt } from '../utils/crypto';
 import { useAuth } from './useAuth';
+
+// Extrait uniquement les champs chiffres d'un item (retire les meta serveur).
+function pickPayload(item) {
+  return {
+    name: item.name ?? '',
+    username: item.username ?? '',
+    password: item.password ?? '',
+    url: item.url ?? '',
+    notes: item.notes ?? '',
+    favorite: !!item.favorite,
+  };
+}
+
+// Plafond de favoris affiches dans la bande sous le carousel.
+export const MAX_FAVORITES = 5;
 
 export function usePasswords() {
   const { encKey } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const itemsRef = useRef(items);
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
 
   // Récupérer et déchiffrer toutes les entrées
   const fetchItems = useCallback(async () => {
@@ -134,6 +153,29 @@ export function usePasswords() {
     }
   }, []);
 
+  // Toggle du favori sur une entree. Plafonne a MAX_FAVORITES : au-dela on
+  // rejette avec un message clair, la modification n'est pas appliquee.
+  const setFavorite = useCallback(async (id) => {
+    if (!encKey) throw new Error('Coffre verrouille');
+    const current = itemsRef.current;
+    const target = current.find((i) => i.id === id);
+    if (!target) return;
+    const willBecomeFavorite = !target.favorite;
+    if (willBecomeFavorite) {
+      const count = current.filter((i) => i.favorite).length;
+      if (count >= MAX_FAVORITES) {
+        const err = new Error(
+          `Maximum ${MAX_FAVORITES} favoris. Retirez-en un pour en ajouter un autre.`
+        );
+        err.code = 'FAVORITES_FULL';
+        setError(err.message);
+        throw err;
+      }
+    }
+    await updateItem(id, { ...pickPayload(target), favorite: willBecomeFavorite });
+    if (error) setError(null);
+  }, [encKey, updateItem, error]);
+
   return {
     items,
     loading,
@@ -141,7 +183,8 @@ export function usePasswords() {
     fetchItems,
     addItem,
     updateItem,
-    deleteItem
+    deleteItem,
+    setFavorite,
   };
 }
 
